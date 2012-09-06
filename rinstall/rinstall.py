@@ -1,279 +1,211 @@
-import os
 import sys
-import tempfile
-import shutil
-from pip.req import InstallRequirement, RequirementSet
-from pip.req import parse_requirements
+import os
+from pip.req import InstallRequirement, _make_build_dir, parse_requirements
+from pip.commands.install import InstallCommand
+import pkg_resources
 from pip.log import logger
-from pip.locations import build_prefix, src_prefix
-from pip.basecommand import Command
-from pip.index import PackageFinder
-from pip.exceptions import InstallationError, CommandError
 
+unpatched_requirementset_prepare_files = sys.modules['pip.req'].RequirementSet.prepare_files
+opts = None
 
-class InstallCommand(Command):
+def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False, bundle=False):
+    """Prepare process. Create temp directories, download and/or unpack files."""
+    unnamed = list(self.unnamed_requirements)
+    reqs = list(self.requirements.values())
+    while reqs or unnamed:
+        if unnamed:
+            req_to_install = unnamed.pop(0)
+        else:
+            req_to_install = reqs.pop(0)
+        install = True
+        best_installed = False
+        if not self.ignore_installed and not req_to_install.editable:
+            req_to_install.check_if_exists()
+            if req_to_install.satisfied_by:
+                if self.upgrade:
+                    if not self.force_reinstall:
+                        try:
+                            url = finder.find_requirement(
+                                req_to_install, self.upgrade)
+                        except BestVersionAlreadyInstalled:
+                            best_installed = True
+                            install = False
+                        else:
+                            # Avoid the need to call find_requirement again
+                            req_to_install.url = url.url
+
+                    if not best_installed:
+                        req_to_install.conflicts_with = req_to_install.satisfied_by
+                        req_to_install.satisfied_by = None
+                else:
+                    install = False
+            if req_to_install.satisfied_by:
+                if best_installed:
+                    logger.notify('Requirement already up-to-date: %s'
+                    % req_to_install)
+                else:
+                    logger.notify('Requirement already satisfied '
+                                  '(use --upgrade to upgrade): %s'
+                    % req_to_install)
+        if req_to_install.editable:
+            logger.notify('Obtaining %s' % req_to_install)
+        elif install:
+            if req_to_install.url and req_to_install.url.lower().startswith('file:'):
+                logger.notify('Unpacking %s' % display_path(url_to_path(req_to_install.url)))
+            else:
+                logger.notify('Downloading/unpacking %s' % req_to_install)
+        logger.indent += 2
+        try:
+            is_bundle = False
+            if req_to_install.editable:
+                if req_to_install.source_dir is None:
+                    location = req_to_install.build_location(self.src_dir)
+                    req_to_install.source_dir = location
+                else:
+                    location = req_to_install.source_dir
+                if not os.path.exists(self.build_dir):
+                    _make_build_dir(self.build_dir)
+                req_to_install.update_editable(not self.is_download)
+                if self.is_download:
+                    req_to_install.run_egg_info()
+                    req_to_install.archive(self.download_dir)
+                else:
+                    req_to_install.run_egg_info()
+            elif install:
+                ##@@ if filesystem packages are not marked
+                ##editable in a req, a non deterministic error
+                ##occurs when the script attempts to unpack the
+                ##build directory
+
+                location = req_to_install.build_location(self.build_dir, not self.is_download)
+                ## FIXME: is the existance of the checkout good enough to use it?  I don't think so.
+                unpack = True
+                url = None
+                if not os.path.exists(os.path.join(location, 'setup.py')):
+                    ## FIXME: this won't upgrade when there's an existing package unpacked in `location`
+                    if req_to_install.url is None:
+                        url = finder.find_requirement(req_to_install, upgrade=self.upgrade)
+                    else:
+                        ## FIXME: should req_to_install.url already be a link?
+                        url = Link(req_to_install.url)
+                        assert url
+                    if url:
+                        try:
+                            self.unpack_url(url, location, self.is_download)
+                        except HTTPError:
+                            e = sys.exc_info()[1]
+                            logger.fatal('Could not install requirement %s because of error %s'
+                            % (req_to_install, e))
+                            raise InstallationError(
+                                'Could not install requirement %s because of HTTP error %s for URL %s'
+                                % (req_to_install, e, url))
+                    else:
+                        unpack = False
+                if unpack:
+                    is_bundle = req_to_install.is_bundle
+                    if is_bundle:
+                        req_to_install.move_bundle_files(self.build_dir, self.src_dir)
+                        for subreq in req_to_install.bundle_requirements():
+                            reqs.append(subreq)
+                            self.add_requirement(subreq)
+                    elif self.is_download:
+                        req_to_install.source_dir = location
+                        req_to_install.run_egg_info()
+                        if url and url.scheme in vcs.all_schemes:
+                            req_to_install.archive(self.download_dir)
+                    else:
+                        req_to_install.source_dir = location
+                        req_to_install.run_egg_info()
+                        if force_root_egg_info:
+                            # We need to run this to make sure that the .egg-info/
+                            # directory is created for packing in the bundle
+                            req_to_install.run_egg_info(force_root_egg_info=True)
+                        req_to_install.assert_source_matches_version()
+                        #@@ sketchy way of identifying packages not grabbed from an index
+                        if bundle and req_to_install.url:
+                            self.copy_to_build_dir(req_to_install)
+                            install = False
+                        # req_to_install.req is only avail after unpack for URL pkgs
+                    # repeat check_if_exists to uninstall-on-upgrade (#14)
+                    req_to_install.check_if_exists()
+                    if req_to_install.satisfied_by:
+                        if self.upgrade or self.ignore_installed:
+                            req_to_install.conflicts_with = req_to_install.satisfied_by
+                            req_to_install.satisfied_by = None
+                        else:
+                            install = False
+            if not is_bundle:
+                ## FIXME: shouldn't be globally added:
+                finder.add_dependency_links(req_to_install.dependency_links)
+                if (req_to_install.extras):
+                    logger.notify("Installing extra requirements: %r" % ','.join(req_to_install.extras))
+                if not self.ignore_dependencies:
+                    for req in req_to_install.requirements(req_to_install.extras):
+                        try:
+                            name = pkg_resources.Requirement.parse(req).project_name
+                        except ValueError:
+                            e = sys.exc_info()[1]
+                            ## FIXME: proper warning
+                            logger.error('Invalid requirement: %r (%s) in requirement %s' % (req, e, req_to_install))
+                            continue
+                        if self.has_requirement(name):
+                            ## FIXME: check for conflict
+                            continue
+                        subreq = InstallRequirement(req, req_to_install)
+                        reqs.append(subreq)
+                        self.add_requirement(subreq)
+                    # include requirements.txt if available
+                    if req_to_install.editable and req_to_install.source_dir:
+                        for subreq in install_requirements_txt(req_to_install.name, req_to_install.source_dir):
+                            reqs.append(subreq)
+                            self.add_requirement(subreq)
+                if req_to_install.name not in self.requirements:
+                    self.requirements[req_to_install.name] = req_to_install
+                if self.is_download:
+                    self.reqs_to_cleanup.append(req_to_install)
+            else:
+                self.reqs_to_cleanup.append(req_to_install)
+
+            if install:
+                self.successfully_downloaded.append(req_to_install)
+                if bundle and (req_to_install.url and req_to_install.url.startswith('file:///')):
+                    self.copy_to_build_dir(req_to_install)
+        finally:
+            logger.indent -= 2
+
+def install_requirements_txt(parent_req_name, source_dir):
+    fullpath = os.path.join(source_dir, "requirements.txt")
+    logger.notify("Found requirements.txt in {0}, installing extra dependencies.".format(parent_req_name))
+    if os.path.exists(fullpath):
+        return parse_requirements(fullpath, parent_req_name, None, opts)
+    return []
+
+class RInstallCommand(InstallCommand):
     name = 'rinstall'
     usage = '%prog [OPTIONS] PACKAGE_NAMES...'
     summary = 'Recursively install packages'
     bundle = False
 
     def __init__(self):
-        super(InstallCommand, self).__init__()
-        self.parser.add_option(
-            '-e', '--editable',
-            dest='editables',
-            action='append',
-            default=[],
-            metavar='VCS+REPOS_URL[@REV]#egg=PACKAGE',
-            help='Install a package directly from a checkout. Source will be checked '
-            'out into src/PACKAGE (lower-case) and installed in-place (using '
-            'setup.py develop). You can run this on an existing directory/checkout (like '
-            'pip install -e src/mycheckout). This option may be provided multiple times. '
-            'Possible values for VCS are: svn, git, hg and bzr.')
-        self.parser.add_option(
-            '-r', '--requirement',
-            dest='requirements',
-            action='append',
-            default=[],
-            metavar='FILENAME',
-            help='Install all the packages listed in the given requirements file.  '
-            'This option can be used multiple times.')
-        self.parser.add_option(
-            '-f', '--find-links',
-            dest='find_links',
-            action='append',
-            default=[],
-            metavar='URL',
-            help='URL to look for packages at')
-        self.parser.add_option(
-            '-i', '--index-url', '--pypi-url',
-            dest='index_url',
-            metavar='URL',
-            default='http://pypi.python.org/simple/',
-            help='Base URL of Python Package Index (default %default)')
-        self.parser.add_option(
-            '--extra-index-url',
-            dest='extra_index_urls',
-            metavar='URL',
-            action='append',
-            default=[],
-            help='Extra URLs of package indexes to use in addition to --index-url')
-        self.parser.add_option(
-            '--no-index',
-            dest='no_index',
-            action='store_true',
-            default=False,
-            help='Ignore package index (only looking at --find-links URLs instead)')
-        self.parser.add_option(
-            '-M', '--use-mirrors',
-            dest='use_mirrors',
-            action='store_true',
-            default=False,
-            help='Use the PyPI mirrors as a fallback in case the main index is down.')
-        self.parser.add_option(
-            '--mirrors',
-            dest='mirrors',
-            metavar='URL',
-            action='append',
-            default=[],
-            help='Specific mirror URLs to query when --use-mirrors is used')
+        super(RInstallCommand, self).__init__()
 
-        self.parser.add_option(
-            '-b', '--build', '--build-dir', '--build-directory',
-            dest='build_dir',
-            metavar='DIR',
-            default=build_prefix,
-            help='Unpack packages into DIR (default %default) and build from there')
-        self.parser.add_option(
-            '-t', '--target',
-            dest='target_dir',
-            metavar='DIR',
-            default=None,
-            help='Install packages into DIR.')
-        self.parser.add_option(
-            '-d', '--download', '--download-dir', '--download-directory',
-            dest='download_dir',
-            metavar='DIR',
-            default=None,
-            help='Download packages into DIR instead of installing them')
-        self.parser.add_option(
-            '--download-cache',
-            dest='download_cache',
-            metavar='DIR',
-            default=None,
-            help='Cache downloaded packages in DIR')
-        self.parser.add_option(
-            '--src', '--source', '--source-dir', '--source-directory',
-            dest='src_dir',
-            metavar='DIR',
-            default=src_prefix,
-            help='Check out --editable packages into DIR (default %default)')
+    def prerun(self):
+        sys.modules['pip.req'].RequirementSet.prepare_files = patched_requirementset_prepare_files
 
-        self.parser.add_option(
-            '-U', '--upgrade',
-            dest='upgrade',
-            action='store_true',
-            help='Upgrade all packages to the newest available version')
-        self.parser.add_option(
-            '--force-reinstall',
-            dest='force_reinstall',
-            action='store_true',
-            help='When upgrading, reinstall all packages even if they are '
-                 'already up-to-date.')
-        self.parser.add_option(
-            '-I', '--ignore-installed',
-            dest='ignore_installed',
-            action='store_true',
-            help='Ignore the installed packages (reinstalling instead)')
-        self.parser.add_option(
-            '--no-deps', '--no-dependencies',
-            dest='ignore_dependencies',
-            action='store_true',
-            default=False,
-            help='Ignore package dependencies')
-        self.parser.add_option(
-            '--no-install',
-            dest='no_install',
-            action='store_true',
-            help="Download and unpack all packages, but don't actually install them")
-        self.parser.add_option(
-            '--no-download',
-            dest='no_download',
-            action="store_true",
-            help="Don't download any packages, just install the ones already downloaded "
-            "(completes an install run with --no-install)")
-
-        self.parser.add_option(
-            '--install-option',
-            dest='install_options',
-            action='append',
-            help="Extra arguments to be supplied to the setup.py install "
-            "command (use like --install-option=\"--install-scripts=/usr/local/bin\").  "
-            "Use multiple --install-option options to pass multiple options to setup.py install.  "
-            "If you are using an option with a directory path, be sure to use absolute path.")
-
-        self.parser.add_option(
-            '--global-option',
-            dest='global_options',
-            action='append',
-            help="Extra global options to be supplied to the setup.py"
-            "call before the install command")
-
-        self.parser.add_option(
-            '--user',
-            dest='use_user_site',
-            action='store_true',
-            help='Install to user-site')
-
-    def _build_package_finder(self, options, index_urls):
-        """
-        Create a package finder appropriate to this install command.
-        This method is meant to be overridden by subclasses, not
-        called directly.
-        """
-        return PackageFinder(find_links=options.find_links,
-                             index_urls=index_urls,
-                             use_mirrors=options.use_mirrors,
-                             mirrors=options.mirrors)
+    def postrun(self):
+        sys.modules['pip.req'].RequirementSet.prepare_files = unpatched_requirementset_prepare_files
 
     def run(self, options, args):
-        if options.download_dir:
-            options.no_install = True
-            options.ignore_installed = True
-        options.build_dir = os.path.abspath(options.build_dir)
-        options.src_dir = os.path.abspath(options.src_dir)
-        install_options = options.install_options or []
-        if options.use_user_site:
-            install_options.append('--user')
-        if options.target_dir:
-            options.ignore_installed = True
-            temp_target_dir = tempfile.mkdtemp()
-            options.target_dir = os.path.abspath(options.target_dir)
-            if os.path.exists(options.target_dir) and not os.path.isdir(options.target_dir):
-                raise CommandError("Target path exists but is not a directory, will not continue.")
-            install_options.append('--home=' + temp_target_dir)
-        global_options = options.global_options or []
-        index_urls = [options.index_url] + options.extra_index_urls
-        if options.no_index:
-            logger.notify('Ignoring indexes: %s' % ','.join(index_urls))
-            index_urls = []
+        global opts
+        opts = options
+        retval = None
+        try:
+            self.prerun()
+            retval = super(RInstallCommand, self).run(options, args)
+        except:
+            self.postrun()
+            raise
+        self.postrun()
+        return retval
 
-        finder = self._build_package_finder(options, index_urls)
-
-        requirement_set = RequirementSet(
-            build_dir=options.build_dir,
-            src_dir=options.src_dir,
-            download_dir=options.download_dir,
-            download_cache=options.download_cache,
-            upgrade=options.upgrade,
-            ignore_installed=options.ignore_installed,
-            ignore_dependencies=options.ignore_dependencies,
-            force_reinstall=options.force_reinstall)
-        for name in args:
-            requirement_set.add_requirement(
-                InstallRequirement.from_line(name, None))
-        for name in options.editables:
-            requirement_set.add_requirement(
-                InstallRequirement.from_editable(name, default_vcs=options.default_vcs))
-        for filename in options.requirements:
-            for req in parse_requirements(filename, finder=finder, options=options):
-                requirement_set.add_requirement(req)
-        if not requirement_set.has_requirements:
-            opts = {'name': self.name}
-            if options.find_links:
-                msg = ('You must give at least one requirement to %(name)s '
-                       '(maybe you meant "pip %(name)s %(links)s"?)' %
-                       dict(opts, links=' '.join(options.find_links)))
-            else:
-                msg = ('You must give at least one requirement '
-                       'to %(name)s (see "pip help %(name)s")' % opts)
-            logger.warn(msg)
-            return
-
-        if (options.use_user_site and
-            sys.version_info < (2, 6)):
-            raise InstallationError('--user is only supported in Python version 2.6 and newer')
-
-        import setuptools
-        if (options.use_user_site and
-            requirement_set.has_editables and
-            not getattr(setuptools, '_distribute', False)):
-
-            raise InstallationError('--user --editable not supported with setuptools, use distribute')
-
-        if not options.no_download:
-            requirement_set.prepare_files(finder, force_root_egg_info=self.bundle, bundle=self.bundle)
-        else:
-            requirement_set.locate_files()
-
-        if not options.no_install and not self.bundle:
-            requirement_set.install(install_options, global_options)
-            installed = ' '.join([req.name for req in
-                                  requirement_set.successfully_installed])
-            if installed:
-                logger.notify('Successfully installed %s' % installed)
-        elif not self.bundle:
-            downloaded = ' '.join([req.name for req in
-                                   requirement_set.successfully_downloaded])
-            if downloaded:
-                logger.notify('Successfully downloaded %s' % downloaded)
-        elif self.bundle:
-            requirement_set.create_bundle(self.bundle_filename)
-            logger.notify('Created bundle in %s' % self.bundle_filename)
-        # Clean up
-        if not options.no_install or options.download_dir:
-            requirement_set.cleanup_files(bundle=self.bundle)
-        if options.target_dir:
-            if not os.path.exists(options.target_dir):
-                os.makedirs(options.target_dir)
-            lib_dir = os.path.join(temp_target_dir, "lib/python/")
-            for item in os.listdir(lib_dir):
-                shutil.move(
-                    os.path.join(lib_dir, item),
-                    os.path.join(options.target_dir, item)
-                    )
-            shutil.rmtree(temp_target_dir)
-        return requirement_set
-
-
-InstallCommand()
+RInstallCommand()
