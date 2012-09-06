@@ -154,11 +154,13 @@ def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False
                         subreq = InstallRequirement(req, req_to_install)
                         reqs.append(subreq)
                         self.add_requirement(subreq)
+                    # ---- START OF PATCH ----
                     # include requirements.txt if available
                     if req_to_install.editable and req_to_install.source_dir:
                         for subreq in install_requirements_txt(req_to_install.name, req_to_install.source_dir):
                             reqs.append(subreq)
                             self.add_requirement(subreq)
+                    # ---- END OF PATCH ----
                 if req_to_install.name not in self.requirements:
                     self.requirements[req_to_install.name] = req_to_install
                 if self.is_download:
