@@ -1,12 +1,30 @@
 import sys
 import os
-from pip.req import InstallRequirement, _make_build_dir, parse_requirements
+from pip.req import InstallRequirement, InstallationError, _make_build_dir, parse_requirements, display_path, url_to_path
 from pip.commands.install import InstallCommand
+from pip.exceptions import BestVersionAlreadyInstalled
+from pip.vcs import vcs
+from urllib2 import HTTPError
 import pkg_resources
 from pip.log import logger
+from pip.index import Link
+import re
 
 unpatched_requirementset_prepare_files = sys.modules['pip.req'].RequirementSet.prepare_files
+unpatched_requirementset_add_requirement = sys.modules['pip.req'].RequirementSet.add_requirement
 opts = None
+
+def patched_requirementset_add_requirement(self, install_req):
+    name = install_req.name
+    if not name:
+        self.unnamed_requirements.append(install_req)
+    else:
+        if self.has_requirement(name):
+            attempt_to_resolve_double_requirement(self, install_req)
+        self.requirements[name] = install_req
+        ## FIXME: what about other normalizations?  E.g., _ vs. -?
+        if name.lower() != name:
+            self.requirement_aliases[name.lower()] = name
 
 def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False, bundle=False):
     """Prepare process. Create temp directories, download and/or unpack files."""
@@ -182,6 +200,35 @@ def install_requirements_txt(parent_req_name, source_dir):
         return parse_requirements(fullpath, parent_req_name, None, opts)
     return []
 
+def attempt_to_resolve_double_requirement(requirement_set, install_req):
+
+    reqa = requirement_set.get_requirement(install_req.name)
+    reqb = install_req
+    (vera, verb) = (extract_version_from_url(reqa.url), extract_version_from_url(reqb.url))
+    if vera and verb:
+        #logger.notify("Found requirements.txt in {0}, installing extra dependencies.".format(parent_req_name))
+        if vera[0] != verb[0]:
+            raise InstallationError(
+                'Unable to reconcile versions {0} and {1} of {2} because of major version mismatch'.format(version_to_string(vera), version_to_string(verb), install_req.name))
+        # update requirement set if verb > vera
+        if verb > vera:
+            requirement_set.requirements[reqa.name] = reqb
+            logger.notify("Using version {} of {} (previously used version {}).".format(reqa.name, version_to_string(verb), version_to_string(vera)))
+            return
+    raise InstallationError(
+        'Unresolvable double requirement given: %s (aready in %s, name=%r)'
+        % (install_req, requirement_set.get_requirement(install_req.name), install_req.name))
+
+def extract_version_from_url(url):
+    regexp = re.compile("@v(\d+)\.(\d+)\.(\d+)#");
+    result = regexp.findall(url)
+    if len(result) == 1 and len(result[0]) == 3:
+        return result[0]
+    return None
+
+def version_to_string(version):
+    return ".".join(version)
+
 class RInstallCommand(InstallCommand):
     name = 'rinstall'
     usage = '%prog [OPTIONS] PACKAGE_NAMES...'
@@ -193,9 +240,11 @@ class RInstallCommand(InstallCommand):
 
     def prerun(self):
         sys.modules['pip.req'].RequirementSet.prepare_files = patched_requirementset_prepare_files
+        sys.modules['pip.req'].RequirementSet.add_requirement = patched_requirementset_add_requirement
 
     def postrun(self):
         sys.modules['pip.req'].RequirementSet.prepare_files = unpatched_requirementset_prepare_files
+        sys.modules['pip.req'].RequirementSet.add_requirement = unpatched_requirementset_add_requirement
 
     def run(self, options, args):
         global opts

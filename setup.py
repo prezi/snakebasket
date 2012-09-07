@@ -9,5 +9,5 @@ setup(
     url='https://github.com/prezi/pip-rinstall',
     description='recursive requirements.txt processing for pip',
     long_description='This is part of the example-project.',
-    install_requires=['pip'],
+    install_requires=['pip==1.1'],
 )
