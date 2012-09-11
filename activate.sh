@@ -1,6 +1,6 @@
 #!/bin/sh
 
-APP="example_project"
+APP="snakebasket"
 
 # You don't need modify below this line
 

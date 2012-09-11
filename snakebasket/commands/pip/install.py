@@ -230,7 +230,7 @@ def version_to_string(version):
     return ".".join(version)
 
 class RInstallCommand(InstallCommand):
-    name = 'rinstall'
+    name = 'install'
     usage = '%prog [OPTIONS] PACKAGE_NAMES...'
     summary = 'Recursively install packages'
     bundle = False
