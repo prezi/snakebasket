@@ -1,4 +1,4 @@
-example-project
+Snakebasket
 ===============
 
 The pip++ which will eventually make python development a little easier:
