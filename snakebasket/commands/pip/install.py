@@ -21,7 +21,8 @@ def patched_requirementset_add_requirement(self, install_req):
     else:
         if self.has_requirement(name):
             attempt_to_resolve_double_requirement(self, install_req)
-        self.requirements[name] = install_req
+        else:
+            self.requirements[name] = install_req
         ## FIXME: what about other normalizations?  E.g., _ vs. -?
         if name.lower() != name:
             self.requirement_aliases[name.lower()] = name
@@ -200,18 +201,30 @@ def install_requirements_txt(parent_req_name, source_dir):
         return parse_requirements(fullpath, parent_req_name, None, opts)
     return []
 
+def get_version_from_req(req):
+    version = None
+    if req.url is not None:
+        version = extract_version_from_url(req.url)
+    if version is None:
+        # Very ugly hack!
+        version = req.req.specs[0][1]
+    return version
+
 def attempt_to_resolve_double_requirement(requirement_set, install_req):
 
     reqa = requirement_set.get_requirement(install_req.name)
     reqb = install_req
-    (vera, verb) = (extract_version_from_url(reqa.url), extract_version_from_url(reqb.url))
+    (vera, verb) = (get_version_from_req(reqa), get_version_from_req(reqb))
     if vera and verb:
         #logger.notify("Found requirements.txt in {0}, installing extra dependencies.".format(parent_req_name))
-        if vera[0] != verb[0]:
+        if vera == verb:
+            # silently use the existing req version from the requirement set.
+            return
+        elif vera[0] != verb[0]:
             raise InstallationError(
                 'Unable to reconcile versions {0} and {1} of {2} because of major version mismatch'.format(version_to_string(vera), version_to_string(verb), install_req.name))
         # update requirement set if verb > vera
-        if verb > vera:
+        elif verb > vera:
             requirement_set.requirements[reqa.name] = reqb
             logger.notify("Using version {} of {} (previously used version {}).".format(reqa.name, version_to_string(verb), version_to_string(vera)))
             return
