@@ -1,10 +1,9 @@
 example-project
 ===============
-This repository includes an example project which contains
-a minimum environment of sorts.
 
-For a more complete description of what this repository does,
-see:
-http://href.prezi.com/pythonguide#h.dsxoctbecemw 
+The pip++ which will eventually make python development a little easier:
 
-Example usage (for now): /bin/rinstall -e git+git@github.com:prezi/config.git@v1.0.1#egg=prezi-config
+`pip install -e git+git@github.prezi.com:infra/snakebasket.git@v1.0.0#egg=snakebasket`
+
+`sb freeze` will correctly print the tag of editable packages (broken in vanilla pip)
+and requirements.txt-s in dependencies will also be processed by `sb install`
