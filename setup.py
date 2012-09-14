@@ -6,7 +6,7 @@ setup(
     author_email='peter.neumark@prezi.com',
     packages=find_packages(),
     scripts=['bin/sb'],
-    url='https://github.com/prezi/snakebasket',
+    url='https://github.prezi.com/infra/snakebasket',
     description='Python environment and release management for prezi.',
     long_description='This is part of the example-project.',
     install_requires=['pip==1.1'],
