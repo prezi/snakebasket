@@ -217,6 +217,12 @@ def attempt_to_resolve_double_requirement(requirement_set, install_req):
     reqa = requirement_set.get_requirement(install_req.name)
     reqb = install_req
     (vera, verb) = (get_version_from_req(reqa), get_version_from_req(reqb))
+    if vera is not None and verb is None:
+        verb = vera
+    elif verb is not None and vera is None:
+        vera = verb
+    elif vera is None and verb is None:
+        return
     if vera and verb:
         #logger.notify("Found requirements.txt in {0}, installing extra dependencies.".format(parent_req_name))
         if vera == verb:
