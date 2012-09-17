@@ -206,8 +206,10 @@ def get_version_from_req(req):
     if req.url is not None:
         version = extract_version_from_url(req.url)
     if version is None:
-        # Very ugly hack!
-        version = req.req.specs[0][1]
+        if req.req.specs is not None and len(req.req.specs) > 0 and len(req.req.specs[0]) > 1:
+            version = req.req.specs[0][1]
+        else:
+            return None
     return version
 
 def attempt_to_resolve_double_requirement(requirement_set, install_req):
