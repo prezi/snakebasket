@@ -224,6 +224,8 @@ def attempt_to_resolve_double_requirement(requirement_set, install_req):
     elif vera is None and verb is None:
         return
     if vera and verb:
+        import pdb
+        pdb.set_trace()
         #logger.notify("Found requirements.txt in {0}, installing extra dependencies.".format(parent_req_name))
         if vera == verb:
             # silently use the existing req version from the requirement set.
@@ -236,6 +238,11 @@ def attempt_to_resolve_double_requirement(requirement_set, install_req):
             requirement_set.requirements[reqa.name] = reqb
             logger.notify("Using version {} of {} (previously used version {}).".format(reqa.name, version_to_string(verb), version_to_string(vera)))
             return
+        elif vera > verb:
+            requirement_set.requirements[reqb.name] = reqa
+            logger.notify("Using version {} of {} (previously used version {}).".format(reqb.name, version_to_string(vera), version_to_string(verb)))
+            return
+
     raise InstallationError(
         'Unresolvable double requirement given: %s (aready in %s, name=%r)'
         % (install_req, requirement_set.get_requirement(install_req.name), install_req.name))
