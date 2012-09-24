@@ -227,7 +227,6 @@ def get_version_from_req(req):
             return None
     return version
 
-
 def attempt_to_resolve_double_requirement(requirement_set, req_new):
     req_existing = requirement_set.get_requirement(req_new.name)
     def replace_req():
@@ -246,6 +245,40 @@ def attempt_to_resolve_double_requirement(requirement_set, req_new):
     # 1) both version numbers are None or they are equal,
     # 2) the existing version has a higher version number
     # Either way, there is nothing for us to do here...
+=======
+    reqa = requirement_set.get_requirement(install_req.name)
+    reqb = install_req
+    (vera, verb) = (get_version_from_req(reqa), get_version_from_req(reqb))
+    if vera is not None and verb is None:
+        verb = vera
+    elif verb is not None and vera is None:
+        vera = verb
+    elif vera is None and verb is None:
+        return
+    if vera and verb:
+        import pdb
+        pdb.set_trace()
+        #logger.notify("Found requirements.txt in {0}, installing extra dependencies.".format(parent_req_name))
+        if vera == verb:
+            # silently use the existing req version from the requirement set.
+            return
+        elif vera[0] != verb[0]:
+            raise InstallationError(
+                'Unable to reconcile versions {0} and {1} of {2} because of major version mismatch'.format(version_to_string(vera), version_to_string(verb), install_req.name))
+        # update requirement set if verb > vera
+        elif verb > vera:
+            requirement_set.requirements[reqa.name] = reqb
+            logger.notify("Using version {} of {} (previously used version {}).".format(reqa.name, version_to_string(verb), version_to_string(vera)))
+            return
+        elif vera > verb:
+            requirement_set.requirements[reqb.name] = reqa
+            logger.notify("Using version {} of {} (previously used version {}).".format(reqb.name, version_to_string(vera), version_to_string(verb)))
+            return
+
+    raise InstallationError(
+        'Unresolvable double requirement given: %s (aready in %s, name=%r)'
+        % (install_req, requirement_set.get_requirement(install_req.name), install_req.name))
+>>>>>>> 992fd9fbea80fd96f5a2d9b33a06c8efb34a6f93
 
 def extract_version_from_url(url):
     regexp = re.compile("@v(\d+)\.(\d+)\.(\d+)#");

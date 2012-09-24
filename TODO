@@ -1,0 +1,2 @@
+Uninstall existing package if newer package is required by another dependency
+Check if a package is satisifed already before attempting to install
