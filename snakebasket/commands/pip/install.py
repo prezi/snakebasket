@@ -27,6 +27,15 @@ def patched_requirementset_add_requirement(self, install_req):
         if name.lower() != name:
             self.requirement_aliases[name.lower()] = name
 
+def extended_requirementset_check_if_exists(rset, req):
+    if req.url and req.req and len(req.req.specs) < 1:
+        ver = extract_version_from_url(req.url)
+        if ver:
+            newspec = ('==', ".".join(ver))
+            req.req.specs.append(newspec)
+    result = req.check_if_exists()
+    return result
+
 def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False, bundle=False):
     """Prepare process. Create temp directories, download and/or unpack files."""
     unnamed = list(self.unnamed_requirements)
@@ -38,8 +47,10 @@ def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False
             req_to_install = reqs.pop(0)
         install = True
         best_installed = False
-        if not self.ignore_installed and not req_to_install.editable:
-            req_to_install.check_if_exists()
+        # BEGIN PATCH
+        if not self.ignore_installed:
+            extended_requirementset_check_if_exists(self, req_to_install)
+            # END PATCH
             if req_to_install.satisfied_by:
                 if self.upgrade:
                     if not self.force_reinstall:
@@ -59,7 +70,10 @@ def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False
                 else:
                     install = False
             if req_to_install.satisfied_by:
+                # BEGIN PATCH
+                best_installed = False
                 if best_installed:
+                    # END PATCH
                     logger.notify('Requirement already up-to-date: %s'
                     % req_to_install)
                 else:
@@ -207,30 +221,31 @@ def get_version_from_req(req):
         version = extract_version_from_url(req.url)
     if version is None:
         # Very ugly hack!
-        version = req.req.specs[0][1]
+        try:
+            return req.req.specs[0][1]
+        except IndexError, exc:
+            return None
     return version
 
-def attempt_to_resolve_double_requirement(requirement_set, install_req):
 
-    reqa = requirement_set.get_requirement(install_req.name)
-    reqb = install_req
-    (vera, verb) = (get_version_from_req(reqa), get_version_from_req(reqb))
-    if vera and verb:
-        #logger.notify("Found requirements.txt in {0}, installing extra dependencies.".format(parent_req_name))
-        if vera == verb:
-            # silently use the existing req version from the requirement set.
-            return
-        elif vera[0] != verb[0]:
-            raise InstallationError(
-                'Unable to reconcile versions {0} and {1} of {2} because of major version mismatch'.format(version_to_string(vera), version_to_string(verb), install_req.name))
-        # update requirement set if verb > vera
-        elif verb > vera:
-            requirement_set.requirements[reqa.name] = reqb
-            logger.notify("Using version {} of {} (previously used version {}).".format(reqa.name, version_to_string(verb), version_to_string(vera)))
-            return
-    raise InstallationError(
-        'Unresolvable double requirement given: %s (aready in %s, name=%r)'
-        % (install_req, requirement_set.get_requirement(install_req.name), install_req.name))
+def attempt_to_resolve_double_requirement(requirement_set, req_new):
+    req_existing = requirement_set.get_requirement(req_new.name)
+    def replace_req():
+        requirement_set.requirements[req_new.name] = req_new
+    (ver_existing, ver_new) = (get_version_from_req(req_existing), get_version_from_req(req_new))
+    if ver_existing and ver_new and ver_existing[0] != ver_new[0]:
+        raise InstallationError(
+            'Unable to reconcile versions {0} and {1} of {2} because of major version mismatch'.format(version_to_string(vera), version_to_string(verb), install_req.name))
+    if ver_new and (ver_existing is None or ver_new > ver_existing):
+        # replace the current requirement with the new one
+        logger.notify("Replacing version {} of {} with version {} in the list of requirements.".format(
+            ver_existing, req_existing.name, ver_new
+        ))
+        return replace_req()
+    # By this point either
+    # 1) both version numbers are None or they are equal,
+    # 2) the existing version has a higher version number
+    # Either way, there is nothing for us to do here...
 
 def extract_version_from_url(url):
     regexp = re.compile("@v(\d+)\.(\d+)\.(\d+)#");
