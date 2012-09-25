@@ -8,6 +8,7 @@ from urllib2 import HTTPError
 import pkg_resources
 from pip.log import logger
 from pip.index import Link
+from pip import FrozenRequirement
 import re
 
 unpatched_requirementset_prepare_files = sys.modules['pip.req'].RequirementSet.prepare_files
@@ -28,13 +29,14 @@ def patched_requirementset_add_requirement(self, install_req):
             self.requirement_aliases[name.lower()] = name
 
 def extended_requirementset_check_if_exists(rset, req):
-    if req.url and req.req and len(req.req.specs) < 1:
-        ver = extract_version_from_url(req.url)
-        if ver:
-            newspec = ('==', ".".join(ver))
-            req.req.specs.append(newspec)
     result = req.check_if_exists()
     return result
+
+def is_satisfied_by_editable(req_to_install):
+    new_version = get_version_from_req(req_to_install)
+    installed = FrozenRequirement.from_dist(req_to_install.satisfied_by, [], find_tags=True)
+    installed_version = extract_version_from_url(installed.req) if type(installed.req) == str else get_version_from_req(installed.req)
+    return  installed_version >= new_version
 
 def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False, bundle=False):
     """Prepare process. Create temp directories, download and/or unpack files."""
@@ -71,17 +73,19 @@ def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False
                     install = False
             if req_to_install.satisfied_by:
                 # BEGIN PATCH
-                best_installed = False
+                best_installed = best_installed or is_satisfied_by_editable(req_to_install)
+                logger.debug("Best installed is %s for %s version %s" % (best_installed, req_to_install.name, get_version_from_req(req_to_install)))
                 if best_installed:
                     # END PATCH
-                    logger.notify('Requirement already up-to-date: %s'
-                    % req_to_install)
+                    logger.notify('Requirement already up-to-date: %s'   % req_to_install)
+                    continue
                 else:
-                    logger.notify('Requirement already satisfied '
-                                  '(use --upgrade to upgrade): %s'
-                    % req_to_install)
-        if req_to_install.editable:
-            logger.notify('Obtaining %s' % req_to_install)
+                    logger.notify('Requirement already satisfied (use --upgrade to upgrade): %s' % req_to_install)
+        # BEGIN PATCH
+        # Behave the same if -e is present
+        # if req_to_install.editable:
+        #    logger.notify('Obtaining %s' % req_to_install)
+        # END PATCH
         elif install:
             if req_to_install.url and req_to_install.url.lower().startswith('file:'):
                 logger.notify('Unpacking %s' % display_path(url_to_path(req_to_install.url)))
@@ -217,13 +221,13 @@ def install_requirements_txt(parent_req_name, source_dir):
 
 def get_version_from_req(req):
     version = None
-    if req.url is not None:
+    if hasattr(req, 'url') and req.url is not None:
         version = extract_version_from_url(req.url)
     if version is None:
         # Very ugly hack!
         try:
             return req.req.specs[0][1]
-        except IndexError, exc:
+        except Exception, exc:
             return None
     return version
 
