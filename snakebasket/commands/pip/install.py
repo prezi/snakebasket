@@ -38,6 +38,14 @@ def is_satisfied_by_editable(req_to_install):
     installed_version = extract_version_from_url(installed.req) if type(installed.req) == str else get_version_from_req(installed.req)
     return  installed_version >= new_version
 
+def greater_version_in_rset(req, rset):
+    try:
+        req_version = get_version_from_req(req)
+        rset_version = get_version_from_req(rset.requirements[req.name])
+        return rset_version > req_version
+    except KeyError, exc:
+        return False
+
 def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False, bundle=False):
     """Prepare process. Create temp directories, download and/or unpack files."""
     unnamed = list(self.unnamed_requirements)
@@ -72,20 +80,18 @@ def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False
                 else:
                     install = False
             if req_to_install.satisfied_by:
-                # BEGIN PATCH
                 best_installed = best_installed or is_satisfied_by_editable(req_to_install)
                 logger.debug("Best installed is %s for %s version %s" % (best_installed, req_to_install.name, get_version_from_req(req_to_install)))
                 if best_installed:
-                    # END PATCH
                     logger.notify('Requirement already up-to-date: %s'   % req_to_install)
-                    continue
+                    install = False
                 else:
                     logger.notify('Requirement already satisfied (use --upgrade to upgrade): %s' % req_to_install)
-        # BEGIN PATCH
-        # Behave the same if -e is present
-        # if req_to_install.editable:
-        #    logger.notify('Obtaining %s' % req_to_install)
-        # END PATCH
+            if greater_version_in_rset(req_to_install, self):
+                logger.notify('Skipping %s (a newer version will be installed)' % req_to_install)
+                continue
+        if req_to_install.editable and install:
+            logger.notify('Obtaining %s' % req_to_install)
         elif install:
             if req_to_install.url and req_to_install.url.lower().startswith('file:'):
                 logger.notify('Unpacking %s' % display_path(url_to_path(req_to_install.url)))
@@ -94,7 +100,7 @@ def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False
         logger.indent += 2
         try:
             is_bundle = False
-            if req_to_install.editable:
+            if req_to_install.editable and install:
                 if req_to_install.source_dir is None:
                     location = req_to_install.build_location(self.src_dir)
                     req_to_install.source_dir = location
@@ -221,6 +227,8 @@ def install_requirements_txt(parent_req_name, source_dir):
 
 def get_version_from_req(req):
     version = None
+    if req is None:
+        return version
     if hasattr(req, 'url') and req.url is not None:
         version = extract_version_from_url(req.url)
     if version is None:
@@ -241,7 +249,7 @@ def attempt_to_resolve_double_requirement(requirement_set, req_new):
             'Unable to reconcile versions {0} and {1} of {2} because of major version mismatch'.format(version_to_string(vera), version_to_string(verb), install_req.name))
     if ver_new and (ver_existing is None or ver_new > ver_existing):
         # replace the current requirement with the new one
-        logger.notify("Replacing version {0} of {0} with version {0} in the list of requirements.".format(
+        logger.notify("Replacing version {0} of {1} with version {2} in the list of requirements.".format(
             ver_existing, req_existing.name, ver_new
         ))
         return replace_req()
