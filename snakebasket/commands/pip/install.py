@@ -225,8 +225,8 @@ def install_requirements_txt(parent_req_name, source_dir):
         rtxt_candidates.insert(0, "requirements-{0}.txt".format(opts.env))
     for r in rtxt_candidates:
         fullpath = os.path.join(source_dir, r)
-        logger.notify("Found {0} in {1}, installing extra dependencies.".format(r, parent_req_name))
         if os.path.exists(fullpath):
+            logger.notify("Found {0} in {1}, installing extra dependencies.".format(r, parent_req_name))
             return parse_requirements(fullpath, parent_req_name, None, opts)
     return []
 
