@@ -219,8 +219,11 @@ def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False
             logger.indent -= 2
 
 def install_requirements_txt(parent_req_name, source_dir):
-    fullpath = os.path.join(source_dir, "requirements.txt")
-    logger.notify("Found requirements.txt in {0}, installing extra dependencies.".format(parent_req_name))
+    filename = "requirements.txt"
+    if self.env:
+        filename = "requirements-{0}.txt".format(self.env)
+    fullpath = os.path.join(source_dir, filename)
+    logger.notify("Found {0} in {1}, installing extra dependencies.".format(filename, parent_req_name))
     if os.path.exists(fullpath):
         return parse_requirements(fullpath, parent_req_name, None, opts)
     return []
@@ -276,6 +279,15 @@ class RInstallCommand(InstallCommand):
 
     def __init__(self):
         super(RInstallCommand, self).__init__()
+        # Add env variable to specify which requirements.txt to run
+        self.parser.add_option(
+            '--env',
+            dest='env',
+            action='store',
+            default=None,
+            metavar='ENVIRONMENT',
+            help='Specifies an environment (eg, production). This means requirements-ENV.txt will be evaluated by snakebasket.')
+
 
     def prerun(self):
         sys.modules['pip.req'].RequirementSet.prepare_files = patched_requirementset_prepare_files
@@ -291,6 +303,7 @@ class RInstallCommand(InstallCommand):
         retval = None
         try:
             self.prerun()
+            self.env = options.env
             retval = super(RInstallCommand, self).run(options, args)
         except:
             self.postrun()
