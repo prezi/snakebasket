@@ -219,9 +219,10 @@ def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False
             logger.indent -= 2
 
 def install_requirements_txt(parent_req_name, source_dir):
+    global opts
     filename = "requirements.txt"
-    if self.env:
-        filename = "requirements-{0}.txt".format(self.env)
+    if opts.env:
+        filename = "requirements-{0}.txt".format(opts.env)
     fullpath = os.path.join(source_dir, filename)
     logger.notify("Found {0} in {1}, installing extra dependencies.".format(filename, parent_req_name))
     if os.path.exists(fullpath):
@@ -303,7 +304,6 @@ class RInstallCommand(InstallCommand):
         retval = None
         try:
             self.prerun()
-            self.env = options.env
             retval = super(RInstallCommand, self).run(options, args)
         except:
             self.postrun()
