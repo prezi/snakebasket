@@ -220,13 +220,14 @@ def patched_requirementset_prepare_files(self, finder, force_root_egg_info=False
 
 def install_requirements_txt(parent_req_name, source_dir):
     global opts
-    filename = "requirements.txt"
+    rtxt_candidates = ["requirements.txt"]
     if opts.env:
-        filename = "requirements-{0}.txt".format(opts.env)
-    fullpath = os.path.join(source_dir, filename)
-    logger.notify("Found {0} in {1}, installing extra dependencies.".format(filename, parent_req_name))
-    if os.path.exists(fullpath):
-        return parse_requirements(fullpath, parent_req_name, None, opts)
+        rtxt_candidates.insert(0, "requirements-{0}.txt".format(opts.env))
+    if r in rtxt_candidates:
+        fullpath = os.path.join(source_dir, r)
+        logger.notify("Found {0} in {1}, installing extra dependencies.".format(filename, parent_req_name))
+        if os.path.exists(fullpath):
+            return parse_requirements(fullpath, parent_req_name, None, opts)
     return []
 
 def get_version_from_req(req):
