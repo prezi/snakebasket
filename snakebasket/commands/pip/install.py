@@ -29,8 +29,9 @@ def patched_requirementset_add_requirement(self, install_req):
             self.requirement_aliases[name.lower()] = name
 
 def extended_requirementset_check_if_exists(rset, req):
-    if req.url and '@master#' in req.url:
-        return False
+    if req.url:
+        if '@master#' in req.url or '@' not in req.url:
+            return False
     result = req.check_if_exists()
     return result
 
