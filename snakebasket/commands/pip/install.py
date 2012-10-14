@@ -29,6 +29,8 @@ def patched_requirementset_add_requirement(self, install_req):
             self.requirement_aliases[name.lower()] = name
 
 def extended_requirementset_check_if_exists(rset, req):
+    if req.url and '@master#' in req.url:
+        return False
     result = req.check_if_exists()
     return result
 
@@ -36,7 +38,9 @@ def is_satisfied_by_editable(req_to_install):
     new_version = get_version_from_req(req_to_install)
     installed = FrozenRequirement.from_dist(req_to_install.satisfied_by, [], find_tags=True)
     installed_version = extract_version_from_url(installed.req) if type(installed.req) == str else get_version_from_req(installed.req)
-    return  installed_version >= new_version
+    if installed_version is None:
+        return False
+    return installed_version >= new_version
 
 def greater_version_in_rset(req, rset):
     try:
