@@ -256,7 +256,7 @@ def attempt_to_resolve_double_requirement(requirement_set, req_new):
     (ver_existing, ver_new) = (get_version_from_req(req_existing), get_version_from_req(req_new))
     if ver_existing and ver_new and ver_existing[0] != ver_new[0]:
         raise InstallationError(
-            'Unable to reconcile versions {0} and {1} of {2} because of major version mismatch'.format(version_to_string(vera), version_to_string(verb), install_req.name))
+            'Unable to reconcile versions {0} and {1} of {2} because of major version mismatch'.format(version_to_string(ver_existing), version_to_string(ver_new), req_new.name))
     if ver_new and (ver_existing is None or ver_new > ver_existing):
         # replace the current requirement with the new one
         logger.notify("Replacing version {0} of {1} with version {2} in the list of requirements.".format(
