@@ -1,0 +1,344 @@
+200 OK
+content-length: 13291
+accept-ranges: bytes
+x-served: Nginx
+server: nginx/1.1.19
+last-modified: Thu, 18 Oct 2012 23:21:34 GMT
+connection: close
+x-loaded-deity: Asgard
+x-cname: www.pip-installer.org
+date: Mon, 22 Oct 2012 13:10:04 GMT
+x-deity: Ladon
+content-type: text/html
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+
+    <title>pip &mdash; pip 1.2.1.post1 documentation</title>
+<!-- RTD <head> -->
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://media.readthedocs.org/javascript/underscore.js"></script>
+<script type="text/javascript" src="http://media.readthedocs.org/javascript/doctools.js"></script>
+
+<script type="text/javascript">
+  // This is included here for Javascript that doesn't have access to the templates.
+  var doc_version = "latest";
+  var doc_slug = "pip";
+</script>
+
+<script type="text/javascript" src="http://media.readthedocs.org/javascript/rtd.js"></script>
+<!-- end RTD <head> -->
+
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.2.1.post1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <link rel="top" title="pip 1.2.1.post1 documentation" href="#" />
+    <link rel="next" title="Installation instructions" href="installing.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="installing.html" title="Installation instructions"
+             accesskey="N">next</a></li>
+        <li><a href="#">pip 1.2.1.post1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pip">
+<h1>pip<a class="headerlink" href="#pip" title="Permalink to this headline">¶</a></h1>
+<p><cite>pip</cite> is a tool for installing and managing Python packages, such as
+those found in the <a class="reference external" href="http://pypi.python.org/pypi">Python Package Index</a>. It&#8217;s a replacement for
+<a class="reference external" href="http://peak.telecommunity.com/DevCenter/EasyInstall">easy_install</a>.</p>
+<div class="highlight-python"><pre>$ pip install simplejson
+[... progress report ...]
+Successfully installed simplejson</pre>
+</div>
+<p>Upgrading a package:</p>
+<div class="highlight-python"><pre>$ pip install --upgrade simplejson
+[... progress report ...]
+Successfully installed simplejson</pre>
+</div>
+<p>Removing a package:</p>
+<div class="highlight-python"><pre>$ pip uninstall simplejson
+Uninstalling simplejson:
+  /home/me/env/lib/python2.7/site-packages/simplejson
+  /home/me/env/lib/python2.7/site-packages/simplejson-2.2.1-py2.7.egg-info
+Proceed (y/n)? y
+  Successfully uninstalled simplejson</pre>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installing.html">Installation instructions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installing.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installing.html#using-the-installer">Using the installer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installing.html#alternative-installation-procedures">Alternative installation procedures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#install-packages">Install packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#uninstall-packages">Uninstall packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#searching-for-packages">Searching for packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#checking-installed-package-status">Checking installed package status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#bundles">Bundles</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#freezing-requirements">Freezing Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#the-requirements-file-format">The requirements file format</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#config-files">Config files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#environment-variables">Environment variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#configuration-options">Configuration options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="other-tools.html">Relationship with other tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="other-tools.html#pip-compared-to-easy-install">Pip Compared To easy_install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other-tools.html#using-pip-with-virtualenv">Using pip with virtualenv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other-tools.html#using-pip-with-buildout">Using pip with buildout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other-tools.html#using-pip-with-the-user-scheme">Using pip with the &#8220;user scheme&#8221;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other-tools.html#command-line-completion">Command line completion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">How to contribute</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#release-schedule">Release Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#contributing-with-code">Contributing with Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#running-the-tests">Running the Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#contributing-with-tests">Contributing with Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#contributing-with-bug-reports">Contributing with Bug Reports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#contributing-with-ideas">Contributing with Ideas</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="news.html">News</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="news.html#changelog">Changelog</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+</div>
+<div class="section" id="community">
+<h2>Community<a class="headerlink" href="#community" title="Permalink to this headline">¶</a></h2>
+<p>The homepage for pip is at <a class="reference external" href="http://www.pip-installer.org/">pip-installer.org</a>.
+Bugs can be filed in the <a class="reference external" href="https://github.com/pypa/pip/issues/">pip issue tracker</a>.  Discussion happens on the
+<a class="reference external" href="http://groups.google.com/group/python-virtualenv?hl=en">virtualenv email group</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+
+
+
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pip</a><ul>
+<li><a class="reference internal" href="#community">Community</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="installing.html"
+                        title="next chapter">Installation instructions</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="installing.html" title="Installation instructions"
+             >next</a></li>
+        <li><a href="#">pip 1.2.1.post1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+
+    <div class="footer">
+        &copy; Copyright 2008-2012, The pip developers.
+      Last updated on Oct 18, 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3+.
+    </div>
+ <!-- End original user content -->
+
+
+<br>
+<br>
+<br>
+
+
+<style type="text/css">
+  .rtd-badge {
+    position: fixed;
+    display: block;
+    bottom: 5px;
+    height: 40px;
+    text-indent: -9999em;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+    -moz-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+    -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  }
+  #version_menu {
+    position: fixed;
+    display: none;
+    bottom: 11px;
+    right: 166px;
+    list-style-type: none;
+    margin: 0;
+  }
+  .footer_popout:hover #version_menu {
+    display: block;
+  }
+  #version_menu li {
+    display: block;
+    float: right;
+  }
+  #version_menu li a {
+    display: block;
+    padding: 6px 10px 4px 10px;
+    margin: 7px 7px 0 0;
+    font-weight: bold;
+    font-size: 14px;
+    height: 20px;
+    line-height: 17px;
+    text-decoration: none;
+    color: #fff;
+    background: #8ca1af url(../images/gradient-light.png) bottom left repeat-x;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    box-shadow: 0 1px 1px #465158;
+    -moz-box-shadow: 0 1px 1px #465158;
+    -webkit-box-shadow: 0 1px 1px #465158;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  }
+  #version_menu li a:hover {
+    text-decoration: none;
+    background-color: #697983;
+    box-shadow: 0 1px 0px #465158;
+    -moz-box-shadow: 0 1px 0px #465158;
+    -webkit-box-shadow: 0 1px 0px #465158;
+  }
+  .rtd-badge.rtd {
+    background: #3b4449 url(//media.readthedocs.org/images/badge-rtd.png) scroll 0px -46px no-repeat;
+    border: 1px solid #282E32;
+    width: 41px;
+    right: 5px;
+  }
+  .footer_popout:hover .rtd-badge.rtd {
+    background-position: top left;
+    width: 160px;
+  }
+  .rtd-badge.revsys { background: #465158 url(//media.readthedocs.org/images/badge-revsys.png) top left no-repeat;
+    border: 1px solid #1C5871;
+    width: 290px;
+    right: 173px;
+  }
+  .rtd-badge.revsys-inline-sponsored {
+    position: inherit;
+    margin-left: auto;
+    margin-right: 175px;
+    margin-bottom: 5px;
+    background: #465158 url(//media.readthedocs.org/images/badge-revsys.png) top left no-repeat;
+    border: 1px solid #1C5871;
+    width: 290px;
+    right: 173px;
+  }
+  .rtd-badge.revsys-inline {
+    position: inherit;
+    margin-left: auto;
+    margin-right: 175px;
+    margin-bottom: 5px;
+    background: #465158 url(//media.readthedocs.org/images/badge-revsys-sm.png) top left no-repeat;
+    border: 1px solid #1C5871;
+    width: 205px;
+    right: 173px;
+  }
+
+</style>
+<div class="rtd_doc_footer">
+  <div class="footer_popout">
+    <a href="//readthedocs.org/projects/pip/?fromdocs=pip" class="rtd-badge rtd"> TEST Brought to you by Read the Docs</a>
+    <ul id="version_menu">
+      
+        <li><a href="/en/latest/">latest</a></li>
+      
+        <li><a href="/en/1.0.1/">1.0.1</a></li>
+      
+        <li><a href="/en/1.0/">1.0</a></li>
+      
+        <li><a href="/en/0.8.3/">0.8.3</a></li>
+      
+        <li><a href="/en/0.7.2/">0.7.2</a></li>
+      
+        <li><a href="/en/0.6.1/">0.6.1</a></li>
+      
+        <li><a href="/en/0.5/">0.5</a></li>
+      
+    </ul>
+  </div>
+</div>
+<!-- RTD Analytics Code -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17997319-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+
+
+
+  </body>
+</html>

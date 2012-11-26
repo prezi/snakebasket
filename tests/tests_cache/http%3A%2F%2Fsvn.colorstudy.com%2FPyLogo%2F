@@ -1,0 +1,22 @@
+200 OK
+content-length: 397
+accept-ranges: bytes
+vary: Accept-Encoding
+server: Apache/2.2.14 (Ubuntu)
+last-modified: Thu, 29 May 2008 00:15:22 GMT
+connection: close
+etag: W/"3473//PyLogo"
+date: Mon, 22 Oct 2012 13:11:39 GMT
+content-type: text/html; charset=UTF-8
+
+<html><head><title>/ - Revision 4567: /PyLogo</title></head>
+<body>
+ <h2>/ - Revision 4567: /PyLogo</h2>
+ <ul>
+  <li><a href="../">..</a></li>
+  <li><a href="branches/">branches/</a></li>
+  <li><a href="tags/">tags/</a></li>
+  <li><a href="trunk/">trunk/</a></li>
+ </ul>
+ <hr noshade><em>Powered by <a href="http://subversion.tigris.org/">Subversion</a> version 1.6.6 (r40053).</em>
+</body></html>

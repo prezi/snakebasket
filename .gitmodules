@@ -1,0 +1,3 @@
+[submodule "pip"]
+	path = pip
+	url = git://github.com/pypa/pip.git

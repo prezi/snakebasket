@@ -1,0 +1,25 @@
+200 OK
+content-length: 1705
+accept-ranges: bytes
+vary: Accept-Encoding
+server: nginx
+last-modified: Mon, 09 May 2011 11:23:41 GMT
+connection: close
+date: Mon, 22 Oct 2012 13:03:45 GMT
+content-type: text/html
+
+<html><head><title>Links for INITools</title></head><body><h1>Links for INITools</h1><a href="../../packages/2.4/I/INITools/INITools-0.1-py2.4.egg#md5=726e327596aa5431a1d307cf5e899928">INITools-0.1-py2.4.egg</a><br/>
+<a href="../../packages/source/I/INITools/INITools-0.1.tar.gz#md5=94dc7d7c6156ad0d7f436a959184b031">INITools-0.1.tar.gz</a><br/>
+<a href="../../packages/source/I/INITools/INITools-0.3.tar.gz#md5=078026b712cd4017ee1b79587e617ebd">INITools-0.3.tar.gz</a><br/>
+<a href="../../packages/2.4/I/INITools/INITools-0.2-py2.4.egg#md5=1ed05942e018eaaf0086383052a4fc97">INITools-0.2-py2.4.egg</a><br/>
+<a href="../../packages/source/I/INITools/INITools-0.3.1.tar.gz#md5=1e46bf333e93abeb5b5a827169a80dca">INITools-0.3.1.tar.gz</a><br/>
+<a href="../../packages/source/I/INITools/INITools-0.2.tar.gz#md5=23bf98b52aa9d8fe38d2467fcecf1071">INITools-0.2.tar.gz</a><br/>
+<a href="http://pythonpaste.org/initools/" rel="homepage">0.3.1 home_page</a><br/>
+<a href="http://pythonpaste.org/initools/" rel="homepage">0.3 home_page</a><br/>
+<a href="http://pythonpaste.org/initools/" rel="homepage">0.2 home_page</a><br/>
+<a href="http://pythonpaste.org/initools/" rel="homepage">0.1 home_page</a><br/>
+<a href="http://svn.colorstudy.com/INITools/trunk#egg=INITools-dev">http://svn.colorstudy.com/INITools/trunk#egg=INITools-dev</a><br/>
+<a href="http://svn.colorstudy.com/INITools/trunk#egg=INITools">http://svn.colorstudy.com/INITools/trunk#egg=INITools</a><br/>
+<a href="http://bitbucket.org/ianb/initools">http://bitbucket.org/ianb/initools</a><br/>
+<a href="http://bitbucket.org/ianb/initools/get/tip.gz#egg=INITools-dev">http://bitbucket.org/ianb/initools/get/tip.gz#egg=INITools-dev</a><br/>
+</body></html>
