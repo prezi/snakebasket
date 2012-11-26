@@ -1,0 +1,19 @@
+200 OK
+expires: Fri, 01 Jan 1990 00:00:00 GMT
+vary: Accept-Encoding
+server: Google Frontend
+connection: close
+cache-control: no-cache
+date: Mon, 22 Oct 2012 13:09:18 GMT
+content-type: text/html; charset=utf-8
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>PyPI mirror</title>
+</head>
+<body>
+<a href="simple/">simple<a><br>
+<a href="packages/">packages<a><br>
+<a href="serversig/">serversig<a><br>
+<a href="local-stats/days/">stats<a><br>
+</body> </html>

@@ -3,7 +3,7 @@
 APP="snakebasket"
 
 # You don't need modify below this line
-
+export PIP_TEST_USE_DISTRIBUTE="true"
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROD_VIRTUALENV="/opt/prezi/virtual_environments/${APP}/"
 DEVELOPMENT_VIRTUALENV="${ROOT}/virtualenv"

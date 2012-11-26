@@ -1,0 +1,119 @@
+200 OK
+date: Mon, 22 Oct 2012 13:11:03 GMT
+transfer-encoding: chunked
+connection: close
+content-type: text/html
+server: nginx/1.2.0
+
+<html>
+<head><title>Index of /</title></head>
+<body bgcolor="white">
+<h1>Index of /</h1><hr><pre><a href="../">../</a>
+<a href="releases/">releases/</a>                                          28-Aug-2009 11:46                   -
+<a href="stats/">stats/</a>                                             31-Mar-2010 22:06                   -
+<a href="BeautifulSoup-3.0.7a.tar.gz">BeautifulSoup-3.0.7a.tar.gz</a>                        05-Dec-2009 23:09               30255
+<a href="Django-1.0.2-final.tar.gz">Django-1.0.2-final.tar.gz</a>                          19-Nov-2008 05:45             4649433
+<a href="Django-1.0.3.tar.gz">Django-1.0.3.tar.gz</a>                                29-Jul-2009 04:23             5086964
+<a href="Django-1.1-beta-1.tar.gz">Django-1.1-beta-1.tar.gz</a>                           24-Mar-2009 00:35             4902069
+<a href="Django-1.1.tar.gz">Django-1.1.tar.gz</a>                                  29-Jul-2009 05:59             5609609
+<a href="Django-1.2.dev12229.tar.gz">Django-1.2.dev12229.tar.gz</a>                         16-Jan-2010 20:47             5324360
+<a href="Django-1.2.dev12258.tar.gz">Django-1.2.dev12258.tar.gz</a>                         18-Jan-2010 22:49             5327322
+<a href="Django-1.2.dev12278.tar.gz">Django-1.2.dev12278.tar.gz</a>                         23-Jan-2010 10:30             5333627
+<a href="Django-1.2.dev12279.tar.gz">Django-1.2.dev12279.tar.gz</a>                         23-Jan-2010 16:53             5334041
+<a href="Django-1.2.dev12295.tar.gz">Django-1.2.dev12295.tar.gz</a>                         26-Jan-2010 02:36             5338347
+<a href="Django-1.2.dev12299.tar.gz">Django-1.2.dev12299.tar.gz</a>                         26-Jan-2010 15:51             5408842
+<a href="Django-1.2.dev12312.tar.gz">Django-1.2.dev12312.tar.gz</a>                         27-Jan-2010 23:38             5548309
+<a href="Django-1.2.dev12373.tar.gz">Django-1.2.dev12373.tar.gz</a>                         01-Feb-2010 18:51             5609277
+<a href="Django-1.2.dev12380.tar.gz">Django-1.2.dev12380.tar.gz</a>                         03-Feb-2010 22:19             5609655
+<a href="Django-1.2.dev12394.tar.gz">Django-1.2.dev12394.tar.gz</a>                         06-Feb-2010 06:42             5615923
+<a href="Django-1.2.dev12453.tar.gz">Django-1.2.dev12453.tar.gz</a>                         16-Feb-2010 14:53             5622653
+<a href="Django-1.2.dev12495.tar.gz">Django-1.2.dev12495.tar.gz</a>                         22-Feb-2010 22:27             5681584
+<a href="Django-1.2.dev12623.tar.gz">Django-1.2.dev12623.tar.gz</a>                         28-Feb-2010 16:12             5692793
+<a href="Django-1.2.dev12693.tar.gz">Django-1.2.dev12693.tar.gz</a>                         06-Mar-2010 23:13             5701008
+<a href="Django-1.2.dev12735.tar.gz">Django-1.2.dev12735.tar.gz</a>                         09-Mar-2010 07:27             5709834
+<a href="Django-1.2.dev12791.tar.gz">Django-1.2.dev12791.tar.gz</a>                         15-Mar-2010 18:56             5717464
+<a href="Django-1.2.dev12807.tar.gz">Django-1.2.dev12807.tar.gz</a>                         20-Mar-2010 01:27             5721165
+<a href="Django-1.2.dev12887.tar.gz">Django-1.2.dev12887.tar.gz</a>                         30-Mar-2010 02:17             5791540
+<a href="Django-1.2.dev12892.tar.gz">Django-1.2.dev12892.tar.gz</a>                         31-Mar-2010 08:13             5792855
+<a href="Django-1.2.dev12957.tar.gz">Django-1.2.dev12957.tar.gz</a>                         12-Apr-2010 14:59             5796554
+<a href="PIL-1.1.6.tar.gz">PIL-1.1.6.tar.gz</a>                                   20-Jun-2009 07:50              440890
+<a href="Pinax-0.9a1.dev1.tar.gz">Pinax-0.9a1.dev1.tar.gz</a>                            07-Mar-2010 23:12             4796208
+<a href="Pinax-0.9a1.dev2.tar.gz">Pinax-0.9a1.dev2.tar.gz</a>                            15-Mar-2010 21:07             6783675
+<a href="Pinax-0.9a1.dev3.tar.gz">Pinax-0.9a1.dev3.tar.gz</a>                            31-Mar-2010 19:14             8224497
+<a href="Pygments-1.1dev-20090818.tar.gz">Pygments-1.1dev-20090818.tar.gz</a>                    18-Aug-2009 17:19              918808
+<a href="biblion-0.1.0-dev1.tar.gz">biblion-0.1.0-dev1.tar.gz</a>                          22-Dec-2009 03:58                7575
+<a href="biblion-0.1.0-dev2.tar.gz">biblion-0.1.0-dev2.tar.gz</a>                          22-Dec-2009 04:53                7686
+<a href="biblion-0.1.0-dev3.tar.gz">biblion-0.1.0-dev3.tar.gz</a>                          22-Dec-2009 05:58                7686
+<a href="biblion-0.1.0-dev4.tar.gz">biblion-0.1.0-dev4.tar.gz</a>                          22-Dec-2009 07:40                7296
+<a href="biblion-0.1.dev4.tar.gz">biblion-0.1.dev4.tar.gz</a>                            01-Jan-2010 22:27                7685
+<a href="biblion-0.1.dev5.tar.gz">biblion-0.1.dev5.tar.gz</a>                            06-Feb-2010 07:12                8049
+<a href="biblion-0.1.dev6.tar.gz">biblion-0.1.dev6.tar.gz</a>                            06-Feb-2010 23:32                8321
+<a href="brabeion-0.1.dev1.tar.gz">brabeion-0.1.dev1.tar.gz</a>                           22-Feb-2010 23:07                1965
+<a href="brabeion-0.1.dev2.tar.gz">brabeion-0.1.dev2.tar.gz</a>                           23-Feb-2010 03:56                3312
+<a href="brabeion-0.1.dev3.tar.gz">brabeion-0.1.dev3.tar.gz</a>                           23-Feb-2010 03:59                3517
+<a href="brabeion-0.1.dev4.tar.gz">brabeion-0.1.dev4.tar.gz</a>                           23-Feb-2010 04:53                3690
+<a href="brabeion-0.1.dev5.tar.gz">brabeion-0.1.dev5.tar.gz</a>                           23-Feb-2010 04:58                3701
+<a href="creole-1.0.1.tar.gz">creole-1.0.1.tar.gz</a>                                31-Aug-2009 21:32               14112
+<a href="creole-1.0.tar.gz">creole-1.0.tar.gz</a>                                  30-Aug-2009 00:13               14295
+<a href="diff-match-patch-20090110.tar.gz">diff-match-patch-20090110.tar.gz</a>                   20-Jun-2009 07:50               16127
+<a href="diff-match-patch-20090804.tar.gz">diff-match-patch-20090804.tar.gz</a>                   12-Aug-2009 01:16               22782
+<a href="django-app-plugins-0.1.0.tar.gz">django-app-plugins-0.1.0.tar.gz</a>                    20-Jun-2009 07:50                9862
+<a href="django-atomformat-0.1.0dev.tar.gz">django-atomformat-0.1.0dev.tar.gz</a>                  20-Jun-2009 07:50                6013
+<a href="django-atomformat-0.1.1dev.tar.gz">django-atomformat-0.1.1dev.tar.gz</a>                  21-Oct-2009 22:46                6052
+<a href="django-avatar-1.0.2.tar.gz">django-avatar-1.0.2.tar.gz</a>                         31-Jul-2009 04:05                9511
+<a href="django-email-confirmation-0.2.dev1.tar.gz">django-email-confirmation-0.2.dev1.tar.gz</a>          07-Jan-2010 22:08                4471
+<a href="django-filter-0.5.3.dev1.tar.gz">django-filter-0.5.3.dev1.tar.gz</a>                    28-Feb-2010 20:41               15937
+<a href="django-friends-0.1.2.tar.gz">django-friends-0.1.2.tar.gz</a>                        29-Jul-2009 16:17                7094
+<a href="django-groups-0.1-dev1.tar.gz">django-groups-0.1-dev1.tar.gz</a>                      15-Nov-2009 04:26                5328
+<a href="django-groups-0.1.dev10.tar.gz">django-groups-0.1.dev10.tar.gz</a>                     29-Mar-2010 06:03                6775
+<a href="django-groups-0.1.dev2.tar.gz">django-groups-0.1.dev2.tar.gz</a>                      01-Jan-2010 22:24                5664
+<a href="django-groups-0.1.dev3.tar.gz">django-groups-0.1.dev3.tar.gz</a>                      01-Jan-2010 22:39                5658
+<a href="django-groups-0.1.dev4.tar.gz">django-groups-0.1.dev4.tar.gz</a>                      09-Jan-2010 04:01                5713
+<a href="django-groups-0.1.dev5.tar.gz">django-groups-0.1.dev5.tar.gz</a>                      03-Mar-2010 23:10                5752
+<a href="django-groups-0.1.dev6.tar.gz">django-groups-0.1.dev6.tar.gz</a>                      04-Mar-2010 10:17                6001
+<a href="django-groups-0.1.dev7.tar.gz">django-groups-0.1.dev7.tar.gz</a>                      16-Mar-2010 00:07                6568
+<a href="django-groups-0.1.dev8.tar.gz">django-groups-0.1.dev8.tar.gz</a>                      20-Mar-2010 03:36                6563
+<a href="django-groups-0.1.dev9.tar.gz">django-groups-0.1.dev9.tar.gz</a>                      29-Mar-2010 06:03                6493
+<a href="django-mailer-0.2.0dev1.tar.gz">django-mailer-0.2.0dev1.tar.gz</a>                     15-Dec-2009 11:15               10686
+<a href="django-microblogging-0.2.dev1.tar.gz">django-microblogging-0.2.dev1.tar.gz</a>               05-Feb-2010 00:33                7237
+<a href="django-mptt-0.3-pre.tar.gz">django-mptt-0.3-pre.tar.gz</a>                         18-Jul-2009 15:33               38377
+<a href="django-mptt-0.3_pre.tar.gz">django-mptt-0.3_pre.tar.gz</a>                         20-Jun-2009 07:50               38377
+<a href="django-notification-0.2.0.dev2.tar.gz">django-notification-0.2.0.dev2.tar.gz</a>              05-Jan-2010 06:35               73783
+<a href="django-notification-0.2.0dev1.tar.gz">django-notification-0.2.0dev1.tar.gz</a>               11-Dec-2009 15:30               47847
+<a href="django-openid-0.1.0.tar.gz">django-openid-0.1.0.tar.gz</a>                         20-Jun-2009 07:50               33642
+<a href="django-openid-0.1.1.tar.gz">django-openid-0.1.1.tar.gz</a>                         20-Jun-2009 07:50               34027
+<a href="django-openid-0.2.0.tar.gz">django-openid-0.2.0.tar.gz</a>                         27-Aug-2009 15:22               82877
+<a href="django-openid-0.2.1.tar.gz">django-openid-0.2.1.tar.gz</a>                         29-Nov-2009 19:11               40043
+<a href="django-openid-0.2.2.tar.gz">django-openid-0.2.2.tar.gz</a>                         10-Dec-2009 03:40               81925
+<a href="django-openid-0.2.3.dev1.tar.gz">django-openid-0.2.3.dev1.tar.gz</a>                    16-Jan-2010 19:53               82189
+<a href="django-page-cms-1.0.0.tar.gz">django-page-cms-1.0.0.tar.gz</a>                       25-Mar-2009 18:21              475828
+<a href="django-page-cms-1.0.1.tar.gz">django-page-cms-1.0.1.tar.gz</a>                       23-Apr-2009 20:34              476781
+<a href="django-page-cms-1.0.2.tar.gz">django-page-cms-1.0.2.tar.gz</a>                       28-Apr-2009 09:57              482145
+<a href="django-page-cms-1.0.3.tar.gz">django-page-cms-1.0.3.tar.gz</a>                       15-May-2009 12:52              495379
+<a href="django-page-cms-1.0.4.tar.gz">django-page-cms-1.0.4.tar.gz</a>                       08-Jun-2009 14:14              498782
+<a href="django-page-cms-1.0.5.tar.gz">django-page-cms-1.0.5.tar.gz</a>                       21-Jun-2009 14:17              734454
+<a href="django-page-cms-1.0.6.tar.gz">django-page-cms-1.0.6.tar.gz</a>                       03-Aug-2009 15:03              748382
+<a href="django-pagination-1.0.5.1.tar.gz">django-pagination-1.0.5.1.tar.gz</a>                   31-Jul-2009 06:05               11761
+<a href="django-sorting-0.1.tar.gz">django-sorting-0.1.tar.gz</a>                          20-Aug-2009 14:12                4848
+<a href="django-staticfiles-0.1.0.tar.gz">django-staticfiles-0.1.0.tar.gz</a>                    02-Sep-2009 11:44                9238
+<a href="django-tagging-0.3-pre.tar.gz">django-tagging-0.3-pre.tar.gz</a>                      18-Jul-2009 15:27               28950
+<a href="django-tagging-0.3_pre.tar.gz">django-tagging-0.3_pre.tar.gz</a>                      20-Jun-2009 07:50               28950
+<a href="django-timezones-0.2.dev1.tar.gz">django-timezones-0.2.dev1.tar.gz</a>                   16-Jan-2010 23:21                5044
+<a href="django-uni-form-0.5.1.tar.gz">django-uni-form-0.5.1.tar.gz</a>                       31-Jul-2009 05:38               32650
+<a href="django-voting-0.1-pre.tar.gz">django-voting-0.1-pre.tar.gz</a>                       23-Aug-2009 18:19               13328
+<a href="django-voting-0.1_pre.tar.gz">django-voting-0.1_pre.tar.gz</a>                       23-Aug-2009 17:03               13328
+<a href="dregni-0.1.dev1.tar.gz">dregni-0.1.dev1.tar.gz</a>                             23-Jan-2010 22:39                4760
+<a href="geopy-0.93dev-r0.tar.gz">geopy-0.93dev-r0.tar.gz</a>                            20-Jun-2009 07:50               68820
+<a href="idios-0.1.dev1.tar.gz">idios-0.1.dev1.tar.gz</a>                              01-Jan-2010 22:22                5686
+<a href="idios-0.1.dev2.tar.gz">idios-0.1.dev2.tar.gz</a>                              01-Jan-2010 22:44                5689
+<a href="photologue-2.1.zip">photologue-2.1.zip</a>                                 20-Jun-2009 07:50               60472
+<a href="pip-0.4.1dev.tar.gz">pip-0.4.1dev.tar.gz</a>                                28-Aug-2009 03:32               44360
+<a href="pip-0.5.2dev.tar.gz">pip-0.5.2dev.tar.gz</a>                                06-Nov-2009 23:53               66296
+<a href="pysolr-2.0.10.tar.gz">pysolr-2.0.10.tar.gz</a>                               25-Jan-2010 13:02                6487
+<a href="python-yadis-1.1.0.tar.gz">python-yadis-1.1.0.tar.gz</a>                          21-Jul-2009 08:11              192569
+<a href="pytz-2009e.zip">pytz-2009e.zip</a>                                     20-Jun-2009 07:50              509612
+<a href="sorl-3.1.tar.gz">sorl-3.1.tar.gz</a>                                    25-Jul-2009 03:25               14826
+<a href="template_utils-0.4p2.tar.gz">template_utils-0.4p2.tar.gz</a>                        28-Aug-2009 11:54               15137
+<a href="ybrowserauth-1.2.zip">ybrowserauth-1.2.zip</a>                               20-Jun-2009 07:50                8048
+</pre><hr></body>
+</html>

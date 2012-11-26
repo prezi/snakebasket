@@ -1,0 +1,108 @@
+{% load permissions %}<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>{{ flatpage.title }}</title>
+</head>
+<body>
+<h1>Title: {{ flatpage.title }}</h1>
+<p>Content: {{ flatpage.content }}</p>
+
+<h2>Examples</h2>
+<ol>
+<li>The permissions granted for this flatpage:
+
+  {% get_permissions flatpage for request.user %}
+  <ul><h4>get_permissions flatpage for request.user</h4>
+  {% for perm in permissions %}
+      <li>{{ perm.user }}: {{ perm }} {% permission_delete_link perm %}</li>
+  {% endfor %}
+  </ul>
+
+  {% get_permissions flatpage for request.user as "request_user_permissions" %}
+  <ul><h4>get_permissions flatpage for request.user as "request_user_permissions"</h4>
+  {% for perm in request_user_permissions %}
+      <li>{{ perm.user }}: {{ perm }} {% permission_delete_link perm %}</li>
+  {% endfor %}
+  </ul>
+
+  {% get_permissions flatpage as "all_permissions" %}
+  <ul><h4>get_permissions flatpage as "all_permissions"</h4>
+  {% for perm in all_permissions %}
+      <li>{{ perm.user }}: {{ perm }} {% permission_delete_link perm %}</li>
+  {% endfor %}
+  </ul>
+
+</li>
+
+<li>The permissions requested for this flatpage:
+    
+  {% get_permission_requests flatpage as "all_perm_requests" %}
+  <ul><h4>get_permission_requests flatpage as "all_perm_requests"</h4>
+  {% for perm_request in all_perm_requests %}
+      <li>{{ perm_request.user }}: {{ perm_request }} {% permission_request_approve_link perm_request %}{% permission_request_delete_link perm_request %}</li>
+  {% endfor %}
+  </ul>
+
+</li>
+
+<li>Permission form for adding a specific permission "top_secret"
+{% permission_form for flatpage using "flatpage_permission.top_secret" %}
+</li>
+
+<li>Permission form with a list of options queried from the authority
+{% permission_form for flatpage %}
+</li>
+
+<li>Add permission for this flatpage here:
+<a href="{% add_url_for_obj flatpage %}">{% add_url_for_obj flatpage %}</a>
+</li>
+
+<li>Request a kind of access:
+{% permission_request_form for flatpage %}
+</li>
+
+<li>Permission request form for adding a specific permission "add_flatpage"
+{% permission_request_form for flatpage using "flatpage_permission.add_flatpage" %}
+</li>
+
+<li>Request permission for this flatpage here:
+<a href="{% request_url_for_obj flatpage %}">{% request_url_for_obj flatpage %}</a>
+</li>
+
+<li><h2>Detailed tests</h2>
+
+  <h3>Can I change this flatpage?</h3>
+  <p>ifhasperm "flatpage_permission.change_flatpage" request.user:</p> 
+  <blockquote>
+  {% ifhasperm "flatpage_permission.change_flatpage" request.user %}
+      Yes, you are allowed.
+  {% else %}
+      Nope, sorry.
+  {% endifhasperm %}
+  </blockquote>
+
+  <h3>Can I access this top secret flat page?</h3>
+  <p>ifhasperm "flatpage_permission.top_secret" request.user flatpage:</p> 
+  <blockquote>
+  {% ifhasperm "flatpage_permission.top_secret" request.user flatpage %}
+      Yes, you are of course allowed to view flatpage '{{ flatpage }}', aren't you?
+  {% else %}
+      Nope, sorry. Wait, how can you read this then?
+  {% endifhasperm %}
+  </blockquote>
+
+  <h3>Again, can I really access this top secret flat page?</h3>
+  <p>get_permission "flatpage_permission.top_secret" for request.user and flatpage as "secret_agent":</p> 
+  {% get_permission "flatpage_permission.top_secret" for request.user and flatpage as "secret_agent" %}
+  <blockquote>
+      {% if secret_agent %}
+        Yes {{ request.user }}, you are a secret agent
+      {% else %}
+        Nope, only a programmer, sorry
+      {% endif %}
+  </blockquote>
+</li>
+</ol>
+
+</body>

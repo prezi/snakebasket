@@ -1,0 +1,70 @@
+PLAIN
+K 16
+README-moved.txt
+V 17
+file 1-6.0.r6/259
+K 4
+docs
+V 17
+dir 1-4.0.r4/6023
+K 3
+foo
+V 16
+file 1-9.0.r9/29
+K 8
+initools
+V 18
+dir 1-5.0.r5/23323
+K 3
+lol
+V 18
+file 1-10.0.r10/29
+K 10
+regen-docs
+V 17
+file 1-7.0.r7/316
+K 9
+setup.cfg
+V 18
+file 1-8.0.r8/7325
+K 5
+tests
+V 17
+dir 6-8.0.r8/7022
+END
+ENDREP
+id: 0-3.0.r11/303
+type: dir
+pred: 0-3.0.r10/537
+count: 8
+text: 11 0 290 290 0de42fa81e0a7df468c4ae08daf75647
+cpath: /trunk
+copyroot: 0 /
+
+PLAIN
+K 8
+branches
+V 14
+dir 0-1.0.r1/0
+K 4
+tags
+V 18
+dir 0-2.0.r2/23076
+K 5
+trunk
+V 17
+dir 0-3.0.r11/303
+END
+ENDREP
+id: 0.0.r11/557
+type: dir
+pred: 0.0.r10/792
+count: 11
+text: 11 441 103 103 28257b9e98ceb006646bd5287eaa7922
+cpath: /
+copyroot: 0 /
+
+4-8.0.r8/7148 delete-file false false /trunk/setup.py
+
+
+557 689

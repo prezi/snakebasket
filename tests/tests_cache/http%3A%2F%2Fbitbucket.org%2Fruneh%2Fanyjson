@@ -1,0 +1,1355 @@
+200 OK
+x-served-by: bitbucket15
+transfer-encoding: chunked
+x-static-version: e0d251052a46
+strict-transport-security: max-age=2592000
+vary: Host, User-Agent, Cookie
+x-version: d57e47f2e566
+server: nginx/1.0.6
+connection: close
+x-request-count: 115
+date: Mon, 22 Oct 2012 13:10:48 GMT
+content-type: text/html; charset=utf-8
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>
+  runeh / anyjson   &mdash; Bitbucket
+</title>
+  <link rel="icon" type="image/png" href="https://dwz7u9t8u8usb.cloudfront.net/m/e0d251052a46/img/favicon.png">
+  <meta id="bb-canon-url" name="bb-canon-url" content="https://bitbucket.org">
+  
+  
+<link rel="stylesheet" href="https://dwz7u9t8u8usb.cloudfront.net/m/e0d251052a46/compressed/css/d86ba1467b5c.css" type="text/css" />
+
+  <!--[if IE]><link rel="stylesheet" href="https://dwz7u9t8u8usb.cloudfront.net/m/e0d251052a46/css/aui/aui-ie.css" media="all"><![endif]-->
+  <!--[if IE 9]><link rel="stylesheet" href="https://dwz7u9t8u8usb.cloudfront.net/m/e0d251052a46/css/aui/aui-ie9.css" media="all"><![endif]-->
+  <!--[if IE]><link rel="stylesheet" href="https://dwz7u9t8u8usb.cloudfront.net/m/e0d251052a46/css/aui-overrides-ie.css" media="all"><![endif]-->
+  <meta name="description" content="
+  
+    Convenience module to import the best available json serialize/deserializer installed
+  
+"/>
+  <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Bitbucket" />
+  
+  <link href="/runeh/anyjson/rss" rel="alternate nofollow" type="application/rss+xml" title="RSS feed for anyjson" />
+
+</head>
+<body class="aui-layout production ">
+<script type="text/javascript" src="https://dwz7u9t8u8usb.cloudfront.net/m/e0d251052a46/compressed/js/e98deabf8a2e.js"></script>
+<div id="page">
+  <div id="wrapper">
+    
+    <header id="header" role="banner">
+      <nav class="aui-header aui-dropdown2-trigger-group" role="navigation">
+        <div class="aui-header-inner">
+          <div class="aui-header-primary">
+            <h1 class="aui-header-logo aui-header-logo-bitbucket">
+              <a href="/" class="aui-nav-imagelink">
+                <span class="aui-header-logo-device">Bitbucket</span>
+              </a>
+            </h1>
+            <script id="repo-dropdown-template" type="text/html">
+  
+
+[[#hasViewed]]
+  <div class="aui-dropdown2-section">
+    <strong class="viewed">Recently viewed</strong>
+    <ul class="aui-list-truncate">
+      [[#viewed]]
+        <li class="[[#is_private]]private[[/is_private]][[^is_private]]public[[/is_private]] repository">
+          <a href="[[url]]" title="[[owner]]/[[name]]" class=" aui-icon-container">
+            <img class="repo-avatar size16" src="[[{avatar}]]" alt="[[owner]]/[[name]] avatar"/>
+            [[owner]] / [[name]]
+          </a>
+        </li>
+      [[/viewed]]
+    </ul>
+  </div>
+[[/hasViewed]]
+[[#hasUpdated]]
+<div class="aui-dropdown2-section">
+  <strong class="updated">Recently updated</strong>
+  <ul class="aui-list-truncate">
+    [[#updated]]
+    <li class="[[#is_private]]private[[/is_private]][[^is_private]]public[[/is_private]] repository">
+      <a href="[[url]]" title="[[owner]]/[[name]]" class=" aui-icon-container">
+        <img class="repo-avatar size16" src="[[{avatar}]]" alt="[[owner]]/[[name]] avatar"/>
+        [[owner]] / [[name]]
+      </a>
+    </li>
+    [[/updated]]
+  </ul>
+</div>
+[[/hasUpdated]]
+
+</script>
+            <ul role="menu" class="aui-nav">
+              
+                <li>
+                  <a href="/plans">
+                    Pricing &amp; Signup
+                  </a>
+                </li>
+              
+            </ul>
+          </div>
+          <div class="aui-header-secondary">
+            <ul role="menu" class="aui-nav">
+              <li>
+                <form action="/repo/all" method="get" class="aui-quicksearch">
+                  <label for="search-query" class="assistive">owner/repository</label>
+                  <input  id="search-query" class="search" type="text" placeholder="owner/repository" name="name">
+                </form>
+              </li>
+              <li>
+                <a class="aui-dropdown2-trigger"aria-controls="header-help-dropdown" aria-owns="header-help-dropdown"
+                   aria-haspopup="true" data-container="#header .aui-header-inner" href="#header-help-dropdown">
+                  <span class="aui-icon aui-icon-small aui-iconfont-help">Help</span><span class="aui-icon-dropdown"></span>
+                </a>
+                <nav id="header-help-dropdown" class="aui-dropdown2 aui-style-default aui-dropdown2-in-header" aria-hidden="true">
+                  <div class="aui-dropdown2-section">
+                    <ul>
+                      <li><a href="https://confluence.atlassian.com/display/BITBUCKET/bitbucket+Documentation+Home" target="_blank">Documentation</a></li>
+                      <li><a href="https://confluence.atlassian.com/display/BITBUCKET/bitbucket+101" target="_blank">Bitbucket 101</a></li>
+                      <li><a href="https://confluence.atlassian.com/display/BBKB/Bitbucket+Knowledge+Base+Home" target="_blank">Knowledge Base</a></li>
+                    </ul>
+                  </div>
+                  <div class="aui-dropdown2-section">
+                    <ul>
+                      <li><a href="https://answers.atlassian.com/tags/bitbucket/" target="_blank">Bitbucket on Atlassian Answers</a></li>
+                      <li><a href="/support">Support</a></li>
+                    </ul>
+                  </div>
+                </nav>
+              </li>
+              
+                <li id="user-options">
+                  <a href="/account/signin/?next=/runeh/anyjson" class="aui-nav-link login-link">Log In</a>
+                </li>
+              
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+      <header id="account-warning" role="banner"
+              class="aui-message-banner warning ">
+        <div class="center-content">
+          <span class="aui-icon aui-icon-warning"></span>
+          <span class="message">
+            
+          </span>
+        </div>
+      </header>
+    
+      <header id="aui-message-bar">
+        
+      </header>
+    
+    
+  <header id="repo-header" class="subhead row">
+    <div class="center-content">
+      <div class="repo-summary">
+        <a class="repo-avatar-link" href="/runeh/anyjson">
+          <span class="repo-avatar-container size64">
+  <img alt="anyjson" src="https://dwz7u9t8u8usb.cloudfront.net/m/e0d251052a46/img/language-avatars/default_64.png"/>
+</span>
+
+          
+        </a>
+        <h1><a class="repo-link" href="/runeh/anyjson">anyjson</a></h1>
+        <ul class="repo-metadata clearfix">
+          <li>
+            <a class="user" href="/runeh">
+              <span class="icon user">User Icon</span>
+              <span>runeh</span>
+            </a>
+          </li>
+          
+          
+          <li class="social">
+            <a class="follow" id="repo-follow"
+               rel="nofollow"
+               href="/runeh/anyjson/follow">
+              <span class="icon follow">Follow Icon</span>
+              <span class="text">Follow</span>
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+      <div id="repo-toolbar" class="bb-toolbar">
+        <div class="aui-buttons">
+          <a id="repo-clone-button" class="aui-button aui-style" href="https://bitbucket.org/runeh/anyjson">
+            <span class="icon clone">Clone Icon</span>
+            <span>Clone</span>
+            <span class="aui-icon-dropdown"></span>
+          </a>
+          <a id="fork-button" class="aui-button aui-style"
+             href="/runeh/anyjson/fork">
+            <span class="icon fork">Fork Icon</span>
+            <span>Fork</span>
+          </a>
+        </div>
+        <div class="aui-buttons">
+          <a id="compare-button" class="aui-button aui-style"
+             href="/runeh/anyjson/compare">
+            <span class="icon compare">Compare Icon</span>
+            <span>Compare</span>
+          </a>
+          <a id="pull-request-button" class="aui-button aui-style"
+             href="/runeh/anyjson/pull-request/new">
+            <span class="icon pull-request">Pull Request Icon</span>
+            <span>Pull Request</span>
+          </a>
+        </div>
+        
+
+<div id="repo-clone-dialog" class="clone-dialog hidden">
+  
+<div class="clone-url">
+  <div class="aui-buttons">
+    <a href="https://bitbucket.org/runeh/anyjson"
+       class="aui-button aui-style aui-dropdown2-trigger" aria-haspopup="true"
+       aria-owns="clone-url-dropdown-header">
+      <span class="dropdown-text">HTTPS</span>
+    </a>
+    <div id="clone-url-dropdown-header" class="aui-dropdown2 aui-style-default">
+      <ul class="aui-list-truncate">
+        <li>
+          <a href="https://bitbucket.org/runeh/anyjson"
+            
+              data-command="hg clone https://bitbucket.org/runeh/anyjson"
+            
+            class="item-link https">HTTPS
+          </a>
+        </li>
+        <li>
+          <a href="ssh://hg@bitbucket.org/runeh/anyjson"
+            
+              data-command="hg clone ssh://hg@bitbucket.org/runeh/anyjson"
+            
+            class="item-link ssh">SSH
+          </a>
+        </li>
+      </ul>
+    </div>
+    <input type="text" readonly="readonly" value="hg clone https://bitbucket.org/runeh/anyjson">
+  </div>
+  
+  <p>Need help cloning? Visit
+     <a href="https://confluence.atlassian.com/x/cgozDQ" target="_blank">Bitbucket 101</a>.</p>
+  
+</div>
+
+  
+  
+  <div class="clone-in-sourcetree"
+       data-https-url="https://bitbucket.org/runeh/anyjson"
+       data-ssh-url="ssh://hg@bitbucket.org/runeh/anyjson">
+    <p><button class="aui-button aui-style aui-button-primary">Clone in SourceTree</button></p>
+
+    <p><a href="http://www.sourcetreeapp.com" target="_blank">SourceTree</a>
+       is a free Mac client by Atlassian for Git, Mercurial and Subversion.</p>
+  </div>
+  
+</div>
+
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </header>
+  <nav id="repo-tabs" class="aui-navbar aui-navbar-roomy">
+    <div class="aui-navbar-inner">
+      <ul class="aui-nav aui-nav-horizontal">
+        
+          <li class="aui-nav-selected">
+            <a href="/runeh/anyjson/overview" id="repo-overview-link">Overview</a>
+          </li>
+        
+        
+          <li>
+            <a href="/runeh/anyjson/src" id="repo-source-link">Source</a>
+          </li>
+        
+        
+          <li>
+            <a href="/runeh/anyjson/changesets" id="repo-commits-link">
+              Commits
+            </a>
+          </li>
+        
+        
+          <li>
+            <a href="/runeh/anyjson/pull-requests" id="repo-pullrequests-link">
+              Pull Requests
+              
+                
+              
+            </a>
+          </li>
+        
+          <li id="issues-tab" class="
+            
+              
+            
+          ">
+            <a href="/runeh/anyjson/issues?status=new&amp;status=open" id="repo-issues-link">
+              Issues
+              
+                
+                  <span class="aui-badge">4</span>
+                
+              
+            </a>
+          </li>
+          <li id="wiki-tab" class="
+              
+                
+              
+            ">
+            <a href="/runeh/anyjson/wiki" id="repo-wiki-link">Wiki</a>
+          </li>
+        
+          <li>
+          <a href="/runeh/anyjson/downloads" id="repo-downloads-link">
+            Downloads
+            
+              
+            
+          </a>
+          </li>
+        
+        
+      </ul>
+    </div>
+  </nav>
+
+    <div id="content" role="main">
+      
+  <div id="repo-content">
+    
+  <div id="repo-overview">
+  
+    
+    
+      <div class="column">
+        
+          
+            
+              <section id="readme">
+                
+                  <article class="readme file">
+                    <pre class="plaintext">##############################
+anyjson - JSON library wrapper
+##############################
+
+Overview
+--------
+
+Anyjson loads whichever is the fastest JSON module installed and provides
+a uniform API regardless of which JSON implementation is used.
+
+Originally part of carrot (<a href="http://github.com/ask/carrot/" rel="nofollow">http://github.com/ask/carrot/</a>)
+
+Examples
+--------
+
+To serialize a python object to a JSON string, call the `serialize` function:
+
+&gt;&gt;&gt; import anyjson
+&gt;&gt;&gt; anyjson.serialize(["test", 1, {"foo": 3.141592}, "bar"])
+'["test", 1, {"foo": 3.141592}, "bar"]'
+
+Conversion the other way is done with the `deserialize` call.
+
+&gt;&gt;&gt; anyjson.deserialize("""["test", 1, {"foo": 3.141592}, "bar"]""")
+['test', 1, {'foo': 3.1415920000000002}, 'bar']
+
+Regardless of the JSON implementation used, the exceptions will be the same.
+This means that trying to serialize something not compatible with JSON
+raises a TypeError:
+
+&gt;&gt;&gt; anyjson.serialize([object()])
+Traceback (most recent call last):
+  &lt;snipped traceback&gt;
+TypeError: object is not JSON encodable
+
+And deserializing a JSON string with invalid JSON raises a ValueError:
+
+&gt;&gt;&gt; anyjson.deserialize("""['missing square brace!""")
+Traceback (most recent call last):
+  &lt;snipped traceback&gt;
+ValueError: cannot parse JSON description
+
+
+Contact
+-------
+
+The module is maintaned by Rune F. Halvorsen &lt;<a href="mailto:runefh@gmail.com">runefh@gmail.com</a>&gt;.
+The project resides at <a href="http://bitbucket.org/runeh/anyjson">http://bitbucket.org/runeh/anyjson</a> . Bugs and feature
+requests can be submitted there. Patches are also very welcome.
+
+Changelog
+---------
+
+See CHANGELOG file
+
+License
+-------
+
+see the LICENSE file
+</pre>
+                  </article>
+                
+              </section>
+            
+          
+        
+        <section id="repo-activity">
+          <h1>
+            Recent Activity
+            <a href="/runeh/anyjson/rss" class="rss"><img src="https://dwz7u9t8u8usb.cloudfront.net/m/e0d251052a46/img/icons/rss.png" alt="RSS feed for anyjson" title="RSS feed for anyjson" /></a>
+          </h1>
+          
+            
+              
+                
+
+
+   
+
+
+<div class="newsfeed">
+  
+    
+      
+        
+          
+            
+            
+            
+              
+                
+
+            <article class="news-item start_follow_repo">
+              <span class="icon start_follow_repo"></span>
+              
+
+
+  <a href="/perone"><img alt="Christian Perone" src="https://secure.gravatar.com/avatar/7735d49d1b04ba5e18bbe107ad756b0d?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" /></a>
+
+
+              
+              <p>
+
+  <a href="/perone">Christian Perone</a>
+ began following 
+
+
+<a href="/runeh/anyjson" title="runeh/anyjson">runeh/anyjson</a>
+
+</p>
+    
+    
+              <time datetime="2012-07-07T16:10:02+00:00">2012-07-07</time>
+    
+
+              
+            
+          
+          
+        
+      
+    
+  
+    
+      
+        
+          
+            
+              </article>
+            
+            
+            
+              <article class="news-item commit">
+                <span class="icon commit"></span>
+                
+
+
+  <a href="/runeh"><img alt="Rune Halvorsen" src="https://secure.gravatar.com/avatar/28f69e57f505679c022436f7e2325feb?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" /></a>
+
+
+                <p>
+                  
+
+  <a href="/runeh">Rune Halvorsen</a>
+
+                  committed to 
+
+
+<a href="/runeh/anyjson" title="runeh/anyjson">runeh/anyjson</a>
+
+
+                </p>
+                <time datetime="2012-06-21T23:15:47+00:00">2012-06-21</time>
+                <div class="changeset">
+                  <a href="/runeh/anyjson/changeset/0026a68c0356" class="changeset-hash">0026a68</a>
+                  -
+                  
+                    Added tag 0.3.3 for changeset <a href="/runeh/anyjson/changeset/5d726a88af5b" rel="nofollow">5d726a88af5b</a>
+                  
+                </div>
+            
+          
+          
+        
+      
+    
+  
+    
+      
+        
+          
+            
+              <div class="changeset">
+                <a href="/runeh/anyjson/changeset/272f54ad3a41" class="changeset-hash">272f54a</a>
+                -
+                
+                  Added tag 0.3.2 for changeset <a href="/runeh/anyjson/changeset/99b1c6042073" rel="nofollow">99b1c6042073</a>
+                
+              </div>
+            
+          
+          
+        
+      
+    
+  
+    
+      
+        
+          
+            
+              <div class="changeset">
+                <a href="/runeh/anyjson/changeset/5d726a88af5b" class="changeset-hash">5d726a8</a>
+                -
+                
+                  Bumped version, updated changelog
+                
+              </div>
+            
+          
+          
+        
+      
+    
+  
+    
+      
+        
+          
+            
+              </article>
+            
+            
+            
+              
+                
+
+            <article class="news-item pullrequest_fulfilled">
+              <span class="icon pullrequest_fulfilled"></span>
+              
+
+
+  <a href="/runeh"><img alt="Rune Halvorsen" src="https://secure.gravatar.com/avatar/28f69e57f505679c022436f7e2325feb?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" /></a>
+
+
+              
+              
+              <p>
+
+  <a href="/runeh">Rune Halvorsen</a>
+ merged  <a href="/runeh/anyjson/pull-request/3/seems-like-json-cant-load-stringio-to-a">pull request #3</a> for 
+
+
+<a href="/runeh/anyjson" title="runeh/anyjson">runeh/anyjson</a>
+
+</p>
+              <time datetime="2012-06-21T15:45:59+00:00">2012-06-21</time>
+              <p class="additional-info">Seems like json can&#39;t load StringIO to a unicode string</p>
+              
+    
+    
+
+              
+            
+          
+          
+        
+      
+    
+  
+    
+      
+        
+          
+            
+              </article>
+            
+            
+            
+              <article class="news-item commit">
+                <span class="icon commit"></span>
+                
+
+
+  <a href="/runeh"><img alt="Rune Halvorsen" src="https://secure.gravatar.com/avatar/28f69e57f505679c022436f7e2325feb?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" /></a>
+
+
+                <p>
+                  
+
+  <a href="/runeh">Rune Halvorsen</a>
+
+                  committed to 
+
+
+<a href="/runeh/anyjson" title="runeh/anyjson">runeh/anyjson</a>
+
+
+                </p>
+                <time datetime="2012-06-21T15:45:59+00:00">2012-06-21</time>
+                <div class="changeset">
+                  <a href="/runeh/anyjson/changeset/b7e48d207a64" class="changeset-hash">b7e48d2</a>
+                  -
+                  
+                    Merged in <a href="/asksol/anyjson/overview" rel="nofollow">asksol/anyjson</a> (<a href="/runeh/anyjson/pull-request/3/seems-like-json-cant-load-stringio-to-a" rel="nofollow">pull request #3</a>)
+                  
+                </div>
+            
+          
+          
+        
+      
+    
+  
+    
+      
+        
+          
+            
+              </article>
+            
+            
+            
+              <article class="news-item commit">
+                <span class="icon commit"></span>
+                
+
+
+  <img alt="Ask Solem" src="https://dwz7u9t8u8usb.cloudfront.net/m/e0d251052a46/img/default_avatar/32/user_blue.png" class="avatar avatar32" />
+
+
+                <p>
+                  
+
+  
+    Ask Solem
+  
+
+                  committed to 
+
+
+<a href="/runeh/anyjson" title="runeh/anyjson">runeh/anyjson</a>
+
+
+                </p>
+                <time datetime="2012-06-21T15:45:59+00:00">2012-06-21</time>
+                <div class="changeset">
+                  <a href="/runeh/anyjson/changeset/c828bf8aab54" class="changeset-hash">c828bf8</a>
+                  -
+                  
+                    Seems like json can&#39;t load StringIO to a unicode string
+                  
+                </div>
+            
+          
+          
+        
+      
+    
+  
+    
+      
+        
+          
+            
+              </article>
+            
+            
+            
+              
+                
+
+            <article class="news-item pullrequest_created">
+              <span class="icon pullrequest_created"></span>
+              
+
+
+  <a href="/asksol"><img alt="Ask Solem Hoel" src="https://secure.gravatar.com/avatar/7e8b501f7f579c66ddac7e65cb7962b4?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" /></a>
+
+
+              
+              
+              <p>
+
+  <a href="/asksol">Ask Solem Hoel</a>
+ created <a href="/runeh/anyjson/pull-request/3/seems-like-json-cant-load-stringio-to-a">pull request #3</a> for 
+
+
+<a href="/runeh/anyjson" title="runeh/anyjson">runeh/anyjson</a>
+
+</p>
+              <time datetime="2012-06-21T15:42:53+00:00">2012-06-21</time>
+              <p class="additional-info">Seems like json can&#39;t load StringIO to a unicode string</p>
+              
+    
+    
+
+              
+            
+          
+          
+        
+      
+    
+  
+    
+      
+        
+          
+            
+              </article>
+            
+            
+            
+              <article class="news-item commit">
+                <span class="icon commit"></span>
+                
+
+
+  <a href="/runeh"><img alt="Rune Halvorsen" src="https://secure.gravatar.com/avatar/28f69e57f505679c022436f7e2325feb?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" /></a>
+
+
+                <p>
+                  
+
+  <a href="/runeh">Rune Halvorsen</a>
+
+                  committed to 
+
+
+<a href="/runeh/anyjson" title="runeh/anyjson">runeh/anyjson</a>
+
+
+                </p>
+                <time datetime="2012-06-21T14:21:52+00:00">2012-06-21</time>
+                <div class="changeset">
+                  <a href="/runeh/anyjson/changeset/99b1c6042073" class="changeset-hash">99b1c60</a>
+                  -
+                  
+                    Updated changelog and bumped version
+                  
+                </div>
+            
+          
+          
+        
+      
+    
+  
+    
+      
+        
+          
+            
+              </article>
+            
+            
+            
+              
+                
+
+            <article class="news-item pullrequest_fulfilled">
+              <span class="icon pullrequest_fulfilled"></span>
+              
+
+
+  <a href="/runeh"><img alt="Rune Halvorsen" src="https://secure.gravatar.com/avatar/28f69e57f505679c022436f7e2325feb?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" /></a>
+
+
+              
+              
+              <p>
+
+  <a href="/runeh">Rune Halvorsen</a>
+ merged  <a href="/runeh/anyjson/pull-request/2/please-merge">pull request #2</a> for 
+
+
+<a href="/runeh/anyjson" title="runeh/anyjson">runeh/anyjson</a>
+
+</p>
+              <time datetime="2012-06-21T14:15:40+00:00">2012-06-21</time>
+              <p class="additional-info">Please merge :)</p>
+              
+    
+    
+
+              
+            
+          
+          
+            </article>
+          
+        
+      
+    
+  
+</div>
+
+
+
+              
+            
+          
+        </section>
+      </div>
+
+      <div class="column">
+
+        <section id="repo-stats">
+          
+<div class="clone-url">
+  <div class="aui-buttons">
+    <a href="https://bitbucket.org/runeh/anyjson"
+       class="aui-button aui-style aui-dropdown2-trigger" aria-haspopup="true"
+       aria-owns="clone-url-dropdown-overview">
+      <span class="dropdown-text">HTTPS</span>
+    </a>
+    <div id="clone-url-dropdown-overview" class="aui-dropdown2 aui-style-default">
+      <ul class="aui-list-truncate">
+        <li>
+          <a href="https://bitbucket.org/runeh/anyjson"
+            
+              data-command="https://bitbucket.org/runeh/anyjson"
+            
+            class="item-link https">HTTPS
+          </a>
+        </li>
+        <li>
+          <a href="ssh://hg@bitbucket.org/runeh/anyjson"
+            
+              data-command="ssh://hg@bitbucket.org/runeh/anyjson"
+            
+            class="item-link ssh">SSH
+          </a>
+        </li>
+      </ul>
+    </div>
+    <input type="text" readonly="readonly" value="https://bitbucket.org/runeh/anyjson">
+  </div>
+  
+</div>
+
+
+          <ul class="stats">
+            
+              <li class="branches">
+                <a href="#branches" id="branches-dialog-trigger">
+                  
+                    <span class="value">1</span> Branch
+                  
+                </a>
+              </li>
+              <li class="tags" id="tags-dialog-trigger">
+                <a href="#tags">
+                  
+                    <span class="value">13</span> Tags
+                  
+                </a>
+              </li>
+              <li class="forks" id="forks-dialog-trigger">
+                <a href="#forks">
+                  
+                    <span class="value">4</span> Forks
+                  
+                </a>
+              </li>
+            
+            <li class="followers">
+              <a href="#followers" id="followers-dialog-trigger">
+                
+                  <span class="value">21</span> Followers
+                
+              </a>
+            </li>
+          </ul>
+
+          <div class="tabbed-filter-widget repo-stats-dialog branches hidden" id="branches-dialog">
+            <div class="tabbed-filter">
+              <input placeholder="Filter Branches" class="filter-box" autosave="branch-dropdown-14809" type="text">
+            </div>
+            
+              <div class="tab-pane active-pane branches" id="branch-list">
+                <ol class="filter-list">
+                  <li class="empty-msg">No matching branches</li>
+                  
+                    <li class="comprev filter-item">
+                      <a href="/runeh/anyjson/src/0026a68c0356/?at=default" title="Browse source of default">default</a>
+                      
+                    </li>
+                  
+                </ol>
+              </div>
+            
+          </div>
+
+          <div class="tabbed-filter-widget repo-stats-dialog tags hidden" id="tags-dialog">
+            <div class="tabbed-filter">
+              <input placeholder="Filter Tags" class="filter-box" autosave="tag-dropdown-14809" type="text">
+            </div>
+            <div class="tab-pane active-pane tags" id="tag-list">
+              <ol class="filter-list">
+                <li class="empty-msg">No matching tags</li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/0026a68c0356?at=tip" title="Browse source of tip">tip</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/tip.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/5d726a88af5b?at=0.3.3" title="Browse source of 0.3.3">0.3.3</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/0.3.3.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/99b1c6042073?at=0.3.2" title="Browse source of 0.3.2">0.3.2</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/0.3.2.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/2af2e5fa992c?at=0.3.1" title="Browse source of 0.3.1">0.3.1</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/0.3.1.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/b5d33ab23b8f?at=0.3" title="Browse source of 0.3">0.3</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/0.3.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/40150de124d6?at=0.2.5" title="Browse source of 0.2.5">0.2.5</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/0.2.5.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/6a0a193e51e4?at=0.2.4" title="Browse source of 0.2.4">0.2.4</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/0.2.4.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/af4c2174382b?at=0.2.3" title="Browse source of 0.2.3">0.2.3</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/0.2.3.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/db8a3d83cef9?at=0.2.2" title="Browse source of 0.2.2">0.2.2</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/0.2.2.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/943d6ba3f91c?at=0.2.1" title="Browse source of 0.2.1">0.2.1</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/0.2.1.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/e3217a8e0f21?at=0.2" title="Browse source of 0.2">0.2</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/0.2.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/0610a0c4bf9a?at=0.1.1" title="Browse source of 0.1.1">0.1.1</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/0.1.1.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+                  <li class="comprev filter-item">
+                    <a href="/runeh/anyjson/src/90bdeed0a6ff?at=0.1" title="Browse source of 0.1">0.1</a>
+                    <a rel="nofollow" class="compare"
+                       href="/runeh/anyjson/compare/0.1.."
+                       title="Show changes between  and the main branch.">Compare</a>
+                  </li>
+                
+              </ol>
+            </div>
+          </div>
+
+          <div class="tabbed-filter-widget repo-stats-dialog forks hidden" id="forks-dialog">
+            <div class="tabbed-filter">
+              <input placeholder="Filter Forks" class="filter-box" autosave="fork-dropdown-14809" type="text">
+            </div>
+            
+              <div class="tab-pane active-pane forks" id="fork-list">
+                <ol class="filter-list">
+                  <li class="empty-msg">No matching forks</li>
+                  
+                    
+                    <li class="comprev filter-item">
+                      <a href="/asksol/anyjson" title="asksol/anyjson">asksol / anyjson</a>
+                      <a rel="nofollow" class="compare"
+                           href="/runeh/anyjson/compare/asksol/anyjson.."
+                        title="Show changes between asksol/anyjson and this repository.">Compare</a>
+                    </li>
+                    
+                  
+                    
+                    <li class="comprev filter-item">
+                      <a href="/banjiewen/anyjson" title="banjiewen/anyjson">banjiewen / anyjson</a>
+                      <a rel="nofollow" class="compare"
+                           href="/runeh/anyjson/compare/banjiewen/anyjson.."
+                        title="Show changes between banjiewen/anyjson and this repository.">Compare</a>
+                    </li>
+                    
+                  
+                    
+                    <li class="comprev filter-item">
+                      <a href="/benoitc/anyjson" title="benoitc/anyjson">benoitc / anyjson</a>
+                      <a rel="nofollow" class="compare"
+                           href="/runeh/anyjson/compare/benoitc/anyjson.."
+                        title="Show changes between benoitc/anyjson and this repository.">Compare</a>
+                    </li>
+                    
+                  
+                    
+                    <li class="comprev filter-item">
+                      <a href="/sprintly/anyjson" title="sprintly/anyjson">sprintly / anyjson</a>
+                      <a rel="nofollow" class="compare"
+                           href="/runeh/anyjson/compare/sprintly/anyjson.."
+                        title="Show changes between sprintly/anyjson and this repository.">Compare</a>
+                    </li>
+                    
+                  
+                </ol>
+              </div>
+            
+          </div>
+
+          <div class="followers-dialog repo-stats-dialog hidden" id="followers-dialog">
+            <div id="followers-list" class="user-list">
+              <ol>
+                <li class="empty-msg">No followers yet</li>
+                
+                  <li>
+                    <a href="/runeh" title="Rune Halvorsen">
+                      <img alt="runeh" src="https://secure.gravatar.com/avatar/28f69e57f505679c022436f7e2325feb?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/asksol" title="Ask Solem Hoel">
+                      <img alt="asksol" src="https://secure.gravatar.com/avatar/7e8b501f7f579c66ddac7e65cb7962b4?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/namlook" title="namlook">
+                      <img alt="namlook" src="https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2009/Jun/12/namlook_avatar_avatar.jpeg" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/benoitc" title="Benoit Chesneau">
+                      <img alt="benoitc" src="https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2009/Feb/07/Avatar_48x48_avatar.png" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/theatilla" title="theatilla">
+                      <img alt="theatilla" src="https://secure.gravatar.com/avatar/b767aad6ee69a38bdd7702ad540beb00?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/stevvooe" title="Stephen Day">
+                      <img alt="stevvooe" src="https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2009/Apr/24/me2_avatar.jpg" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/adamhadani" title="Adam Ever-Hadani">
+                      <img alt="adamhadani" src="https://secure.gravatar.com/avatar/443ae3a6a67b7deee1ad22ce4df9842e?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/Almad" title="Lukas Linhart">
+                      <img alt="Almad" src="https://secure.gravatar.com/avatar/f38b7d2954a2494564ba1a55a66fff83?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/daevaorn" title="Alex Koshelev">
+                      <img alt="daevaorn" src="https://secure.gravatar.com/avatar/bf006a3c36ddaab45f8796e43fe8e4de?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/eferro" title="Eduardo Ferro">
+                      <img alt="eferro" src="https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2010/Jan/06/eferro-mii-738080_avatar.jpg" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/edwardgeorge" title="Edward George">
+                      <img alt="edwardgeorge" src="https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2009/May/25/1493337_avatar.jpg" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/jezdez" title="Jannis Leidel">
+                      <img alt="jezdez" src="https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2010/Oct/24/485047bd02c6dccbfe0a0f82a835d83f_avatar.jpg" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/xiaobo" title="Bo Xiao">
+                      <img alt="xiaobo" src="https://secure.gravatar.com/avatar/708c2434547c9b9b3fc7c486b09d0325?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/petersanchez" title="Peter Sanchez">
+                      <img alt="petersanchez" src="https://secure.gravatar.com/avatar/e1b7b3c5b8892d301b6971d0dc91e8f9?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/mopemope" title="yutaka matsubara">
+                      <img alt="mopemope" src="https://secure.gravatar.com/avatar/3ae568b8f48484c62a978eaed0756642?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/funya" title="Timur Myakinin">
+                      <img alt="funya" src="https://secure.gravatar.com/avatar/75f2812d4827a5499682102636ff468b?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/flack" title="Zoltán Szalai">
+                      <img alt="flack" src="https://secure.gravatar.com/avatar/d664bc87eacf12ef3b1064c057576ef3?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/monsun" title="Marek Bryling">
+                      <img alt="monsun" src="https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2010/Mar/23/ja_01_avatar.jpeg" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/greghaskins" title="Gregory Haskins">
+                      <img alt="greghaskins" src="https://secure.gravatar.com/avatar/0f38df3d16a2b141b68d2d2db57c2d7a?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/esauro" title="esauro">
+                      <img alt="esauro" src="https://secure.gravatar.com/avatar/8249db9906b8117b159b73cca61fb601?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/perone" title="Christian Perone">
+                      <img alt="perone" src="https://secure.gravatar.com/avatar/7735d49d1b04ba5e18bbe107ad756b0d?d=https%3A%2F%2Fdwz7u9t8u8usb.cloudfront.net%2Fm%2Fe0d251052a46%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&amp;s=32" class="avatar avatar32" />
+                    </a>
+                  </li>
+                
+              </ol>
+            </div>
+          </div>
+
+          <dl class="metadata">
+            <dt>Owner</dt>
+            <dd><a href="/runeh">Rune Halvorsen</a></dd>
+
+            
+
+            <dt>Access Level</dt>
+            <dd>Public</dd>
+
+            <dt>Type</dt>
+            <dd>Mercurial</dd>
+
+            
+
+            <dt>Last Updated</dt>
+            <dd><time datetime="2012-06-22T01:15:47.759464">2012-06-21</time></dd>
+
+            <dt>Created</dt>
+            <dd><time datetime="2009-06-20T11:33:19.114503">2009-06-20</time></dd>
+
+            <dt>Size</dt>
+            <dd>
+              60.7 KB
+              <a rel="nofollow"
+              
+                  href="/runeh/anyjson/get/0026a68c0356.zip"
+                
+              >(download)</a>
+            </dd>
+            
+              
+            
+          </dl>
+        </section>
+        
+          
+            
+          
+        
+      </div>
+      <div class="clearfix"></div>
+    
+    
+    
+  </div>
+
+  
+
+  </div>
+
+    </div>
+  </div>
+  <footer id="footer" role="contentinfo">
+    <section class="footer-body">
+      <ul>
+        <li><a href="http://blog.bitbucket.org">Blog</a></li>
+        <li><a href="//bitbucket.org/site/master/issues/new">Report a Bug</a></li>
+        <li><a href="/support">Support</a></li>
+        <li><a href="http://confluence.atlassian.com/display/BITBUCKET">Documentation</a></li>
+        <li><a href="http://confluence.atlassian.com/x/IYBGDQ">API</a></li>
+        <li><a href="http://groups.google.com/group/bitbucket-users">Forum</a></li>
+        <li><a href="http://status.bitbucket.org/">Server Status</a></li>
+        <li><a href="http://www.atlassian.com/hosted/terms.jsp">Terms of Service</a></li>
+        <li><a href="http://www.atlassian.com/about/privacy.jsp">Privacy Policy</a></li>
+      </ul>
+    </section>
+  </footer>
+</div>
+
+<script type="text/javascript" src="https://dwz7u9t8u8usb.cloudfront.net/m/e0d251052a46/compressed/js/22e9495c4ecd.js"></script>
+
+<!-- This script exists purely for the benefit of our selenium tests -->
+<script>
+  setTimeout(function () {
+    BB.JsLoaded = true;
+  }, 3000);
+</script>
+
+
+
+<script>
+  (function (window) {
+    BB.images = {
+      invitation: 'https://dwz7u9t8u8usb.cloudfront.net/m/e0d251052a46/img/icons/fugue/card_address.png',
+      noAvatar: 'https://dwz7u9t8u8usb.cloudfront.net/m/e0d251052a46/img/default_avatar/16/user_blue.png'
+    };
+    BB.user = {"isKbdShortcutsEnabled": true, "isSshEnabled": false, "isAuthenticated": false};
+    BB.repo || (BB.repo = {});
+    
+      BB.repo.id = 14809;
+      
+      
+        BB.repo.language = null;
+        BB.repo.pygmentsLanguage = null;
+      
+      
+        BB.repo.slug = 'anyjson';
+      
+      
+        BB.repo.owner = {};
+        BB.repo.owner.username = 'runeh';
+      
+      // Coerce `BB.repo` to a string to get
+      // "davidchambers/mango" or whatever.
+      BB.repo.toString = function () {
+        return BB.cname ? this.slug : '{owner.username}/{slug}'.format(this);
+      }
+      
+      
+    
+    window.setInterval(BB.localize, 60 * 1000);
+
+  })(window);
+</script>
+
+
+
+<script>
+    // Bitbucket Google Analytics
+    (function (window) {
+        // Track the main pageview to the Bitbucket GA account.
+        BB.gaqPush(['_trackPageview']);
+        // Track the main pageview to the Atlassian GA account.
+        BB.gaqPush(['atl._trackPageview']);
+
+        
+
+
+        
+
+        // Include GA commands from sub-templates
+        
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            ga.setAttribute('async', 'true');
+            document.documentElement.firstChild.appendChild(ga);
+        }());
+    })(window);
+</script>
+
+
+
+
+</body>
+</html>

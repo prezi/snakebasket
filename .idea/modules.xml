@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../conversion-client/.idea/ConversionClient.iml" filepath="$PROJECT_DIR$/../conversion-client/.idea/ConversionClient.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../conversion/.idea/conversion.iml" filepath="$PROJECT_DIR$/../conversion/.idea/conversion.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/pip-rinstall.iml" filepath="$PROJECT_DIR$/.idea/pip-rinstall.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/snakebasket.iml" filepath="$PROJECT_DIR$/.idea/snakebasket.iml" />
     </modules>
   </component>
 </project>

@@ -1,8 +1,8 @@
 import sys
 import os
 from pip.req import InstallRequirement, InstallationError, _make_build_dir, parse_requirements, display_path, url_to_path
-from pip.commands.install import InstallCommand
-from pip.exceptions import BestVersionAlreadyInstalled
+from pip.commands.install import InstallCommand, RequirementSet
+from pip.exceptions import BestVersionAlreadyInstalled, CommandError
 from pip.vcs import vcs
 from urllib2 import HTTPError
 import pkg_resources
@@ -10,6 +10,9 @@ from pip.log import logger
 from pip.index import Link
 from pip import FrozenRequirement
 import re
+import tempfile
+import shutil
+
 
 unpatched_requirementset_prepare_files = sys.modules['pip.req'].RequirementSet.prepare_files
 unpatched_requirementset_add_requirement = sys.modules['pip.req'].RequirementSet.add_requirement
@@ -274,10 +277,7 @@ def version_to_string(version):
     return ".".join(version)
 
 class RInstallCommand(InstallCommand):
-    name = 'install'
-    usage = '%prog [OPTIONS] PACKAGE_NAMES...'
     summary = 'Recursively install packages'
-    bundle = False
 
     def __init__(self):
         super(RInstallCommand, self).__init__()
@@ -290,6 +290,107 @@ class RInstallCommand(InstallCommand):
             metavar='ENVIRONMENT',
             help='Specifies an environment (eg, production). This means requirements-ENV.txt will be evaluated by snakebasket.')
 
+    def run(self, options, args):
+        import pdb
+        pdb.set_trace()
+        if options.download_dir:
+            options.no_install = True
+            options.ignore_installed = True
+        options.build_dir = os.path.abspath(options.build_dir)
+        options.src_dir = os.path.abspath(options.src_dir)
+        install_options = options.install_options or []
+        if options.use_user_site:
+            install_options.append('--user')
+        if options.target_dir:
+            options.ignore_installed = True
+            temp_target_dir = tempfile.mkdtemp()
+            options.target_dir = os.path.abspath(options.target_dir)
+            if os.path.exists(options.target_dir) and not os.path.isdir(options.target_dir):
+                raise CommandError("Target path exists but is not a directory, will not continue.")
+            install_options.append('--home=' + temp_target_dir)
+        global_options = options.global_options or []
+        index_urls = [options.index_url] + options.extra_index_urls
+        if options.no_index:
+            logger.notify('Ignoring indexes: %s' % ','.join(index_urls))
+            index_urls = []
+
+        finder = self._build_package_finder(options, index_urls)
+
+        requirement_set = RequirementSet(
+            build_dir=options.build_dir,
+            src_dir=options.src_dir,
+            download_dir=options.download_dir,
+            download_cache=options.download_cache,
+            upgrade=options.upgrade,
+            ignore_installed=options.ignore_installed,
+            ignore_dependencies=options.ignore_dependencies,
+            force_reinstall=options.force_reinstall)
+        for name in args:
+            requirement_set.add_requirement(
+                InstallRequirement.from_line(name, None))
+        for name in options.editables:
+            requirement_set.add_requirement(
+                InstallRequirement.from_editable(name, default_vcs=options.default_vcs))
+        for filename in options.requirements:
+            for req in parse_requirements(filename, finder=finder, options=options):
+                requirement_set.add_requirement(req)
+        if not requirement_set.has_requirements:
+            opts = {'name': self.name}
+            if options.find_links:
+                msg = ('You must give at least one requirement to %(name)s '
+                       '(maybe you meant "pip %(name)s %(links)s"?)' %
+                       dict(opts, links=' '.join(options.find_links)))
+            else:
+                msg = ('You must give at least one requirement '
+                       'to %(name)s (see "pip help %(name)s")' % opts)
+            logger.warn(msg)
+            return
+
+        if (options.use_user_site and
+            sys.version_info < (2, 6)):
+            raise InstallationError('--user is only supported in Python version 2.6 and newer')
+
+        import setuptools
+        if (options.use_user_site and
+            requirement_set.has_editables and
+            not getattr(setuptools, '_distribute', False)):
+
+            raise InstallationError('--user --editable not supported with setuptools, use distribute')
+
+        if not options.no_download:
+            requirement_set.prepare_files(finder, force_root_egg_info=self.bundle, bundle=self.bundle)
+        else:
+            requirement_set.locate_files()
+
+        if not options.no_install and not self.bundle:
+            requirement_set.install(install_options, global_options)
+            installed = ' '.join([req.name for req in
+                                  requirement_set.successfully_installed])
+            if installed:
+                logger.notify('Successfully installed %s' % installed)
+        elif not self.bundle:
+            downloaded = ' '.join([req.name for req in
+                                   requirement_set.successfully_downloaded])
+            if downloaded:
+                logger.notify('Successfully downloaded %s' % downloaded)
+        elif self.bundle:
+            requirement_set.create_bundle(self.bundle_filename)
+            logger.notify('Created bundle in %s' % self.bundle_filename)
+            # Clean up
+        if not options.no_install or options.download_dir:
+            requirement_set.cleanup_files(bundle=self.bundle)
+        if options.target_dir:
+            if not os.path.exists(options.target_dir):
+                os.makedirs(options.target_dir)
+            lib_dir = os.path.join(temp_target_dir, "lib/python/")
+            for item in os.listdir(lib_dir):
+                shutil.move(
+                    os.path.join(lib_dir, item),
+                    os.path.join(options.target_dir, item)
+                )
+            shutil.rmtree(temp_target_dir)
+        return requirement_set
+
 
     def prerun(self):
         sys.modules['pip.req'].RequirementSet.prepare_files = patched_requirementset_prepare_files
@@ -298,18 +399,5 @@ class RInstallCommand(InstallCommand):
     def postrun(self):
         sys.modules['pip.req'].RequirementSet.prepare_files = unpatched_requirementset_prepare_files
         sys.modules['pip.req'].RequirementSet.add_requirement = unpatched_requirementset_add_requirement
-
-    def run(self, options, args):
-        global opts
-        opts = options
-        retval = None
-        try:
-            self.prerun()
-            retval = super(RInstallCommand, self).run(options, args)
-        except:
-            self.postrun()
-            raise
-        self.postrun()
-        return retval
 
 RInstallCommand()

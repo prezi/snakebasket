@@ -1,0 +1,83 @@
+.. _index:
+
+============================================
+Welcome to django-authority's documentation!
+============================================
+
+django-authority is a powerful layer between Django's basic permission system
+(provided through ``django.contrib.auth``) and your application:
+
+.. image:: .static/authority-scheme-layer.png
+
+This application provides three abilities:
+
+1. It gives you the ability to add permissions like Django's generic
+   permissions to any kind of model without having to add them to the model's
+   Meta class.
+
+2. It provides a very simple way to create per-object-permissions. You might
+   be more familiar with the term *row level permissions*.
+
+3. It wraps Django's generic permissions so you can use the same syntax as
+   for the options above. But note that django-authority does not add any
+   voodoo-code to Django's ``contrib.auth`` system, it keeps your existing
+   permission system intact!
+
+.. warning:: We have just started with the documentation and it's far from
+   being perfect. If you find glitches, errors or just have feedback, please
+   contact the team: :ref:`support`.
+
+Documentation
+=============
+
+.. note:: The create-permission topics are based on each other. If you are new
+   to django-authority we encourage to read from top to bottom.
+
+**Installation topics:**
+
+.. toctree::
+   :maxdepth: 1
+   
+   installation
+   configuration
+
+**Create and check permissions:**
+   
+.. toctree::
+   :maxdepth: 1
+   
+   create_basic_permission
+   create_per_object_permission
+   create_custom_permission
+
+**Permission checks in detail**
+
+.. toctree::
+   :maxdepth: 2
+   
+   check_python
+   check_decorator
+   check_templates
+
+**Permission assigning and handling**
+
+.. toctree::
+   :maxdepth: 1
+   
+   handling_python
+   handling_admin
+   handling_template
+
+Other pages
+===========
+ 
+* :ref:`search`
+* :ref:`genindex`
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   
+   tips_tricks
+   support
+   documentation_guidelines
