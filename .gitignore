@@ -19,6 +19,6 @@ pip-log.txt
 .coverage
 .tox
 virtualenv
-
+tests/test_cache
 etc/overrides.cfg
 .idea
