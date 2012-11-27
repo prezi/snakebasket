@@ -18,12 +18,8 @@ pyversion = sys.version[:3]
 here = Path(__file__).abspath.folder
 
 # the root of this pip source distribution
-src_folder = os.path.abspath(os.path.join(here.folder, 'pip'))
 download_cache = tempfile.mkdtemp(prefix='pip-test-cache')
 site_packages_suffix = site.USER_SITE[len(site.USER_BASE) + 1:]
-
-def add_dir_to_pythonpath(d):
-    sys.path.insert(0, d)
 
 def load_module(mod_name, append=''):
     _name, path, desc = imp.find_module(mod_name)
@@ -32,23 +28,8 @@ def load_module(mod_name, append=''):
 
 # Tweak the path so we can find up-to-date pip sources
 # (http://bitbucket.org/ianb/pip/issue/98)
-add_dir_to_pythonpath(src_folder)
-add_dir_to_pythonpath(Path(src_folder))
-add_dir_to_pythonpath(src_folder + '/pip')
-add_dir_to_pythonpath(Path(src_folder + '/pip'))
+#add_dir_to_pythonpath(os.path.join(os.path.dirname(__file__), 'pip'))
 
-# remove site-packages pip from python path and sys.modules
-import re
-mre = re.compile(".*pip.*")
-sys.modules = dict((k,v) for k,v in sys.modules.iteritems() if re.match(mre, k) is None)
-dre = re.compile(".*site-packages/pip-.*")
-sys.path = [d for d in sys.path if re.match(dre, d) is None]
-
-from nose.tools import set_trace
-set_trace()
-
-print load_module('pip.util')
-print load_module('pip', '/__init__.py')
 
 from pip.util import rmtree
 
