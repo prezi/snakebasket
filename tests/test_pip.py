@@ -22,15 +22,9 @@ src_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '../pip'))
 download_cache = tempfile.mkdtemp(prefix='pip-test-cache')
 site_packages_suffix = site.USER_SITE[len(site.USER_BASE) + 1:]
 
-def load_module(mod_name, append=''):
-    _name, path, desc = imp.find_module(mod_name)
-    with open(path + append, 'r') as fh:
-        return imp.load_module(mod_name, fh, path, desc)
-
 # Tweak the path so we can find up-to-date pip sources
 # (http://bitbucket.org/ianb/pip/issue/98)
-#add_dir_to_pythonpath(os.path.join(os.path.dirname(__file__), 'pip'))
-
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pip'))
 
 from pip.util import rmtree
 
