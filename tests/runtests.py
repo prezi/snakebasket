@@ -1,3 +1,4 @@
+from nose.tools import set_trace;set_trace()
 import os
 import sys
 import xmlrpclib
@@ -8,7 +9,7 @@ import unittest.case
 def add_dir_to_pythonpath(d):
     sys.path.insert(0, d)
 
-add_dir_to_pythonpath(os.path.join(os.path.dirname(__file__), 'pip'))
+#add_dir_to_pythonpath(os.path.join(os.path.dirname(__file__), 'pip'))
 # remove site-packages pip from python path and sys.modules
 import re
 mre = re.compile(".*pip.*")
@@ -40,6 +41,11 @@ def patched_assert_raises_context_exit(self, exc_type, exc_value, tb):
                  (expected_regexp.pattern, str(exc_value)))
     return True
 sys.modules['unittest.case']._AssertRaisesContext.__exit__ = patched_assert_raises_context_exit
+
+import nose.selector
+def patched_getpackage(filename):
+    return os.path.splitext(os.path.basename(filename))[0]
+sys.modules['nose.selector'].getpackage = patched_getpackage
 
 if __name__ == '__main__':
     sys.exit(
