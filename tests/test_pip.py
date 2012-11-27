@@ -13,9 +13,10 @@ from scripttest import TestFileEnvironment, FoundDir
 from tests.path import Path, curdir, u
 
 pyversion = sys.version[:3]
-
 # the directory containing all the tests
 here = Path(__file__).abspath.folder
+# the directory containing all the tests
+src_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '../pip'))
 
 # the root of this pip source distribution
 download_cache = tempfile.mkdtemp(prefix='pip-test-cache')
