@@ -363,6 +363,8 @@ class TestPipEnvironment(TestFileEnvironment):
 
         # Install this version instead
         self.run('python', 'setup.py', 'install', cwd=src_folder, expect_stderr=True)
+        # Install snakebasket as well
+        self.run('python', 'setup.py', 'install', cwd=os.path.abspath(os.path.join(src_folder, '../')), expect_stderr=True)
 
         #create sitecustomize.py and add patches
         self._create_empty_sitecustomize()
@@ -549,6 +551,11 @@ def run_pip(*args, **kw):
             ignore.append(path)
     for path in ignore:
         del result.files_updated[path]
+    import re
+    # remove "snakebasket==1.0.0" from result.stdout
+    result._impl.stdout = re.sub("snakebasket==[0-9a-zA-Z-_\.]*\n", '', result._impl.stdout)
+    # replace "sb " with "pip "
+    result._impl.args[0] = result._impl.args[0].replace('sb', 'pip')
     return result
 
 
