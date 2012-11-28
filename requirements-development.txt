@@ -1,4 +1,4 @@
-nose
-virtualenv>=1.7
-scripttest>=1.1.1
-mock
+ScriptTest==1.2
+mock==1.0.1
+nose==1.2.1
+virtualenv==1.8.4
