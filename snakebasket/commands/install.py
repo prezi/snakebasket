@@ -2,7 +2,7 @@ import sys
 import os
 from pip.req import InstallRequirement, InstallationError, _make_build_dir, parse_requirements, display_path, url_to_path
 from pip.commands.install import InstallCommand, RequirementSet
-from pip.exceptions import BestVersionAlreadyInstalled, CommandError
+from pip.exceptions import BestVersionAlreadyInstalled, CommandError, DistributionNotFound
 from pip.vcs import vcs
 from urllib2 import HTTPError
 import pkg_resources
@@ -10,20 +10,20 @@ from pip.log import logger
 from pip.index import Link
 import tempfile
 import shutil
+from pip.backwardcompat import home_lib
+from pip.locations import virtualenv_no_global
+from pip.util import dist_in_usersite
+
+
 
 class RecursiveRequirementSet(RequirementSet):
 
     def __init__(self, *args, **kwargs):
         super(RecursiveRequirementSet, self).__init__(*args, **kwargs)
-        self.requirements_env = None
+        self.options = None
 
-    @property
-    def env(self):
-        return self.requirements_env
-
-    @env.setter
-    def env(self, value):
-        self.requirements_env = value
+    def set_options(self, value):
+        self.options = value
 
     def prepare_files(self, finder, force_root_egg_info=False, bundle=False):
         """Prepare process. Create temp directories, download and/or unpack files."""
@@ -36,23 +36,28 @@ class RecursiveRequirementSet(RequirementSet):
                 req_to_install = reqs.pop(0)
             install = True
             best_installed = False
+            not_found = None
             if not self.ignore_installed and not req_to_install.editable:
                 req_to_install.check_if_exists()
                 if req_to_install.satisfied_by:
                     if self.upgrade:
-                        if not self.force_reinstall:
+                        if not self.force_reinstall and not req_to_install.url:
                             try:
                                 url = finder.find_requirement(
                                     req_to_install, self.upgrade)
                             except BestVersionAlreadyInstalled:
                                 best_installed = True
                                 install = False
+                            except DistributionNotFound:
+                                not_found = sys.exc_info()[1]
                             else:
                                 # Avoid the need to call find_requirement again
                                 req_to_install.url = url.url
 
                         if not best_installed:
-                            req_to_install.conflicts_with = req_to_install.satisfied_by
+                            #don't uninstall conflict if user install and conflict is not user install
+                            if not (self.use_user_site and not dist_in_usersite(req_to_install.satisfied_by)):
+                                req_to_install.conflicts_with = req_to_install.satisfied_by
                             req_to_install.satisfied_by = None
                     else:
                         install = False
@@ -94,13 +99,17 @@ class RecursiveRequirementSet(RequirementSet):
                     ##occurs when the script attempts to unpack the
                     ##build directory
 
+                    # NB: This call can result in the creation of a temporary build directory
                     location = req_to_install.build_location(self.build_dir, not self.is_download)
+
                     ## FIXME: is the existance of the checkout good enough to use it?  I don't think so.
                     unpack = True
                     url = None
                     if not os.path.exists(os.path.join(location, 'setup.py')):
                         ## FIXME: this won't upgrade when there's an existing package unpacked in `location`
                         if req_to_install.url is None:
+                            if not_found:
+                                raise not_found
                             url = finder.find_requirement(req_to_install, upgrade=self.upgrade)
                         else:
                             ## FIXME: should req_to_install.url already be a link?
@@ -147,7 +156,9 @@ class RecursiveRequirementSet(RequirementSet):
                         req_to_install.check_if_exists()
                         if req_to_install.satisfied_by:
                             if self.upgrade or self.ignore_installed:
-                                req_to_install.conflicts_with = req_to_install.satisfied_by
+                                #don't uninstall conflict if user install and and conflict is not user install
+                                if not (self.use_user_site and not dist_in_usersite(req_to_install.satisfied_by)):
+                                    req_to_install.conflicts_with = req_to_install.satisfied_by
                                 req_to_install.satisfied_by = None
                             else:
                                 install = False
@@ -175,9 +186,10 @@ class RecursiveRequirementSet(RequirementSet):
                             for subreq in self.install_requirements_txt(req_to_install):
                                 reqs.append(subreq)
                                 self.add_requirement(subreq)
-                    if req_to_install.name not in self.requirements:
-                        self.requirements[req_to_install.name] = req_to_install
-                    if self.is_download:
+                    if not self.has_requirement(req_to_install.name):
+                        #'unnamed' requirements will get added here
+                        self.add_requirement(req_to_install)
+                    if self.is_download or req_to_install._temp_build_dir is not None:
                         self.reqs_to_cleanup.append(req_to_install)
                 else:
                     self.reqs_to_cleanup.append(req_to_install)
@@ -189,16 +201,15 @@ class RecursiveRequirementSet(RequirementSet):
             finally:
                 logger.indent -= 2
 
-
     def install_requirements_txt(self, req_to_install):
         rtxt_candidates = ["requirements.txt"]
-        if self.requirements_env:
-            rtxt_candidates.insert(0, "requirements-{0}.txt".format(self.requirements_env))
+        if self.options and self.options.env:
+            rtxt_candidates.insert(0, "requirements-{0}.txt".format(self.options.env))
         for r in rtxt_candidates:
             fullpath = os.path.join(req_to_install.source_dir, r)
             if os.path.exists(fullpath):
                 logger.notify("Found {0} in {1}, installing extra dependencies.".format(r, req_to_install.name))
-                return parse_requirements(fullpath, req_to_install.name, None, opts)
+                return parse_requirements(fullpath, req_to_install.name, None, self.options)
         return []
 
 class RInstallCommand(InstallCommand):
@@ -223,6 +234,8 @@ class RInstallCommand(InstallCommand):
         options.src_dir = os.path.abspath(options.src_dir)
         install_options = options.install_options or []
         if options.use_user_site:
+            if virtualenv_no_global():
+                raise InstallationError("Can not perform a '--user' install. User site-packages are not visible in this virtualenv.")
             install_options.append('--user')
         if options.target_dir:
             options.ignore_installed = True
@@ -238,16 +251,19 @@ class RInstallCommand(InstallCommand):
             index_urls = []
 
         finder = self._build_package_finder(options, index_urls)
+
         requirement_set = RecursiveRequirementSet(
             build_dir=options.build_dir,
             src_dir=options.src_dir,
             download_dir=options.download_dir,
             download_cache=options.download_cache,
             upgrade=options.upgrade,
+            as_egg=options.as_egg,
             ignore_installed=options.ignore_installed,
             ignore_dependencies=options.ignore_dependencies,
-            force_reinstall=options.force_reinstall)
-        requirement_set.env = options.env
+            force_reinstall=options.force_reinstall,
+            use_user_site=options.use_user_site)
+        requirement_set.set_options(options)
         for name in args:
             requirement_set.add_requirement(
                 InstallRequirement.from_line(name, None))
@@ -286,7 +302,7 @@ class RInstallCommand(InstallCommand):
             requirement_set.locate_files()
 
         if not options.no_install and not self.bundle:
-            requirement_set.install(install_options, global_options)
+            requirement_set.install(install_options, global_options, root=options.root_path)
             installed = ' '.join([req.name for req in
                                   requirement_set.successfully_installed])
             if installed:
@@ -305,7 +321,7 @@ class RInstallCommand(InstallCommand):
         if options.target_dir:
             if not os.path.exists(options.target_dir):
                 os.makedirs(options.target_dir)
-            lib_dir = os.path.join(temp_target_dir, "lib/python/")
+            lib_dir = home_lib(temp_target_dir)
             for item in os.listdir(lib_dir):
                 shutil.move(
                     os.path.join(lib_dir, item),
