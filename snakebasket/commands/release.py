@@ -2,10 +2,8 @@ from __future__ import absolute_import
 from pip.basecommand import Command
 from pip.exceptions import CommandError
 import os
-import tempfile
 from pip.log import logger
-from pip import call_subprocess
-from pip.util import find_command
+from pip.util import find_command, call_subprocess
 
 class ReleaseCommand(Command):
     name = 'release'
