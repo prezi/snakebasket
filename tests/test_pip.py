@@ -519,8 +519,10 @@ class FastTestPipEnvironment(TestPipEnvironment):
 
             # Install this version instead
             self.run('python', 'setup.py', 'install', cwd=src_folder, expect_stderr=True)
+            # Install snakebasket as well
+            self.run('python', 'setup.py', 'install', cwd=os.path.abspath(os.path.join(src_folder, '../')), expect_stderr=True)
+            # Backup up test dir
             shutil.copytree(self.root_path, self.backup_path, True)
-
         #create sitecustomize.py and add patches
         self._create_empty_sitecustomize()
         self._use_cached_pypi_server()
@@ -538,7 +540,7 @@ class FastTestPipEnvironment(TestPipEnvironment):
 
 
 def run_pip(*args, **kw):
-    result = env.run('pip', *args, **kw)
+    result = env.run('sb', *args, **kw)
     ignore = []
     for path, f in result.files_before.items():
         # ignore updated directories, often due to .pyc or __pycache__
