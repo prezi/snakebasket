@@ -400,13 +400,14 @@ class TestPipEnvironment(TestFileEnvironment):
         # 'import pypi_server' ultimately imports pkg_resources (which intializes pkg_resources.working_set based on the current state of sys.path)
         # pkg_resources.get_distribution (used in pip.req) requires an accurate pkg_resources.working_set
         # therefore, 'import pypi_server' shouldn't occur in a pth file.
+        official_pip_tests_dir = os.path.abspath(os.path.join(str(here), '../pip/tests'))
 
         patch = """
             import sys
             sys.path.insert(0, %r)
             import pypi_server
             pypi_server.PyPIProxy.setup()
-            sys.path.remove(%r)""" % (str(here), str(here))
+            sys.path.remove(%r)""" % (official_pip_tests_dir, official_pip_tests_dir)
         self._add_to_sitecustomize(patch)
 
     def _create_empty_sitecustomize(self):
