@@ -18,11 +18,11 @@ class RecursiveRequirementSet(RequirementSet):
         self.requirements_env = None
 
     @property
-    def requirements_env(self):
+    def env(self):
         return self.requirements_env
 
-    @requirements_env.setter
-    def requirements_env(self, value):
+    @env.setter
+    def env(self, value):
         self.requirements_env = value
 
     def prepare_files(self, finder, force_root_egg_info=False, bundle=False):
@@ -247,7 +247,7 @@ class RInstallCommand(InstallCommand):
             ignore_installed=options.ignore_installed,
             ignore_dependencies=options.ignore_dependencies,
             force_reinstall=options.force_reinstall)
-        requirement_set.requirements_env = options.env
+        requirement_set.env = options.env
         for name in args:
             requirement_set.add_requirement(
                 InstallRequirement.from_line(name, None))
