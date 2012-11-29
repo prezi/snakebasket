@@ -6,10 +6,11 @@ def main(*args, **kwargs):
     return pip_main(*args, **kwargs)
 
 def install_pip_patches():
-    from patches import patched_git_get_src_requirement
     from snakebasket.commands import install
-    from snakebasket.commands import release
-    import pip.vcs.git
     sys.modules['pip.commands.install'] = install
+    return
+    from snakebasket.commands import release
     sys.modules['pip.commands.release'] = release
+    import pip.vcs.git
+    from patches import patched_git_get_src_requirement
     sys.modules['pip.vcs.git'].Git.get_src_requirement = patched_git_get_src_requirement
