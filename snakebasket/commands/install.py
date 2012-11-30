@@ -13,8 +13,7 @@ import shutil
 from pip.backwardcompat import home_lib
 from pip.locations import virtualenv_no_global
 from pip.util import dist_in_usersite
-
-
+from ..versions import  is_install_req_newer
 
 class RecursiveRequirementSet(RequirementSet):
 
@@ -201,7 +200,27 @@ class RecursiveRequirementSet(RequirementSet):
             finally:
                 logger.indent -= 2
 
+
+    def add_requirement(self, install_req):
+        name = install_req.name
+        install_req.as_egg = self.as_egg
+        install_req.use_user_site = self.use_user_site
+        if not name:
+            #url or path requirement w/o an egg fragment
+            return self.unnamed_requirements.append(install_req)
+        if self.has_requirement(name):
+            if is_install_req_newer(install_req, self):
+                logger.notify("Selecting {0} source to be {1}".format(install_req.name, install_req.url))
+            else:
+                logger.debug("Newest version of {0} is still {1}".format(install_req.name, install_req.url))
+                return
+        self.requirements[name] = install_req
+        ## FIXME: what about other normalizations?  E.g., _ vs. -?
+        if name.lower() != name:
+            self.requirement_aliases[name.lower()] = name
+
     def install_requirements_txt(self, req_to_install):
+        """If ENV is set, try to parse requirements-ENV.txt, falling back to requirements.txt if it exists."""
         rtxt_candidates = ["requirements.txt"]
         if self.options and self.options.env:
             rtxt_candidates.insert(0, "requirements-{0}.txt".format(self.options.env))
