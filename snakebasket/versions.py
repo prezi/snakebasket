@@ -1,6 +1,9 @@
 """
-This file defines how version of editable (VCS) packages are compared.
-Note that the current implementation only supports comparing versions via git.
+This file defines how versions of packages are compared.
+Currently supported:
+- comparing versions of editable (VCS) packages (if they're stored in git).
+- comparing versions of non-editable packages.
+Mixing the two is not currently supported
 
 pip maintains a requirement set when processing a list of requirements to install.
 When pip encounters a new requirement (by finding another requirements.txt for example),
@@ -120,15 +123,23 @@ class GitVersionComparator(object):
             show_stdout=False, cwd=self.checkout_dir)
         return ret.rstrip() == parent
 
-def assert_candidates_are_editable(reqs_in_conflict):
-    if len([req for req in reqs_in_conflict if req.editable == False]) > 0:
-        raise InstallationError(
-            'Double requirement given (%s) and at least one of the candidates is not editable.'
-            % (str(reqs_in_conflict[0].name)))
+def all_candidates_editable(reqs_in_conflict):
+    """All candidates should be editable or not-editable, no mixing"""
+    non_editables = len([req for req in reqs_in_conflict if req.editable == False])
+    if non_editables == len(reqs_in_conflict):
+        return False
+    elif non_editables == 0:
+        return True
+    else:
+        if len([req for req in reqs_in_conflict if req.editable == False]) > 0:
+            raise InstallationError(
+                'Double requirement given (%s) and one of the candidates is not editable. Mixing editable and non-editable requirements unsupported.' % (str(reqs_in_conflict[0].name)))
 
 def is_install_req_newer(install_req, requirement_set):
     """Find the newer version of two editable packages"""
     reqs_in_conflict = [install_req, requirement_set.get_requirement(install_req.name)]
-    assert_candidates_are_editable(reqs_in_conflict)
-    cmp = GitVersionComparator(install_req.url)
-    return cmp.compare_versions(*[cmp.get_version_string_from_req(r) for r in reqs_in_conflict]) == cmp.GT
+    if all_candidates_editable(reqs_in_conflict):
+        cmp = GitVersionComparator(install_req.url)
+        return cmp.compare_versions(*[cmp.get_version_string_from_req(r) for r in reqs_in_conflict]) == cmp.GT
+    else:
+        return reqs_in_conflict[0].req > reqs_in_conflict[1].req
