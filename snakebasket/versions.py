@@ -19,7 +19,6 @@ must be made to determine the relationship between the two commits.
 """
 
 from pip.exceptions import InstallationError
-from functools import total_ordering
 import re
 from pip.util import call_subprocess
 from pip.log import logger
