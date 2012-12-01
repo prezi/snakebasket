@@ -154,23 +154,11 @@ class InstallReqChecker(object):
             self.comparison_cache[1][b] = {}
         self.comparison_cache[1][b][a] = result
 
-    @classmethod
-    def all_candidates_editable(cls, reqs_in_conflict):
-        """All candidates should be editable or not-editable, no mixing"""
-        non_editables = len([req for req in reqs_in_conflict if req.editable == False])
-        if non_editables == len(reqs_in_conflict):
-            return False
-        elif non_editables == 0:
-            return True
-        else:
-            if len([req for req in reqs_in_conflict if req.editable == False]) > 0:
-                raise InstallationError(
-                    'Double requirement given (%s) and one of the candidates is not editable. Mixing editable and non-editable requirements unsupported.' % (str(reqs_in_conflict[0].name)))
-
     def is_install_req_newer(self, install_req):
         """Find the newer version of two editable packages"""
         reqs_in_conflict = [install_req, self.rset.get_requirement(install_req.name)]
-        if self.all_candidates_editable(reqs_in_conflict):
+        editable_reqs = [req for req in reqs_in_conflict if req.editable == True]
+        if len(editable_reqs) == 2:
             # This is an expensive comparison, so let's cache results
             competing_version_urls = [str(r.url) for r in reqs_in_conflict]
             result = self.get_cached_comparison_result(*competing_version_urls)
@@ -179,7 +167,10 @@ class InstallReqChecker(object):
                 result = cmp.compare_versions(*[GitVersionComparator.get_version_string_from_req(r) for r in reqs_in_conflict]) == cmp.GT
                 self.save_comparison_result(competing_version_urls[0], competing_version_urls[1], result)
             else:
-                logger.notify("USING CACHED COMPARISONG: %s %s -> %s" % (competing_version_urls[0], competing_version_urls[1], result))
+                logger.notify("USING CACHED COMPARISON: %s %s -> %s" % (competing_version_urls[0], competing_version_urls[1], result))
             return result
-        else:
+        elif len(editable_reqs) == 0:
             return reqs_in_conflict[0].req > reqs_in_conflict[1].req
+        else: # mixed bag
+            logger.notify("Conflicting requirements for %s, using editable version" % install_req.name)
+            return editable_reqs[0] == install_req
