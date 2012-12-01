@@ -20,7 +20,6 @@ This may need to change in the future (in this case, we'd also have to deal with
 In these cases there is no existing checkout of the git repo containing the project, so a temporary checkout
 must be made to determine the relationship between the two commits.
 """
-
 from pip.exceptions import InstallationError
 import re
 from pip.util import call_subprocess
