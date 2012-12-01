@@ -37,6 +37,7 @@ class GitVersionComparator(object):
     EQ = 0
     GT = 1
     version_re = re.compile(r'@([^/#@]*)#')
+    commit_hash_re = re.compile("[a-z0-9]{5,40}")
 
     def __init__(self, pkg_repo_url):
         self.pkg_repo_url = pkg_repo_url
@@ -47,13 +48,12 @@ class GitVersionComparator(object):
         self.create_checkout_parent()
         try:
             self.checkout_pkg_repo()
-            commithash1 = self.get_commit_hash_of_version_string(ver1)
-            commithash2 = self.get_commit_hash_of_version_string(ver2)
-            if commithash1 == commithash2:
+            commithashes =  [ver if self.is_valid_commit_hash(ver) else self.get_commit_hash_of_version_string(ver) for ver in [ver1, ver2]]
+            if commithashes[0] == commithashes[1]:
                 response = self.EQ
-            elif self.is_parent_of(commithash1, commithash2):
+            elif self.is_parent_of(commithashes[0], commithashes[1]):
                 response = self.LT
-            elif self.is_parent_of(commithash2, commithash1):
+            elif self.is_parent_of(commithashes[1], commithashes[0]):
                 response = self.GT
         except Exception, e:
             exc = e
@@ -62,8 +62,20 @@ class GitVersionComparator(object):
         if exc is not None:
             raise exc
         if response is None:
-            raise InstallationError("Versions specified (%s and %s) point to commits which are not on the same line (%s and %s)." % (ver1, ver2, commithash1, commithash2))
+            raise InstallationError("Versions specified (%s and %s) point to commits which are not on the same line (%s and %s)." % (ver1, ver2, commithashes[0], commithashes[1]))
         return response
+
+    def is_valid_commit_hash(self, hash_candidate):
+        if re.match(self.commit_hash_re, hash_candidate) is None:
+            return False
+        try:
+            ret = call_subprocess(['git', 'log', '-n', '1', hash_candidate, '--pretty=oneline'],
+                show_stdout=False, cwd=self.checkout_dir)
+            return ret.split(" ")[0] == hash_candidate
+        except InstallationError:
+            # call_subprocess returns raises an InstallationError when the return value of a command is not 0.
+            # In this case it just means the given commit is not in the git repo.
+            return False
 
     # copied from tests/local_repos.py
     def checkout_pkg_repo(self):
