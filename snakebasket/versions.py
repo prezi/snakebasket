@@ -29,8 +29,6 @@ import os
 from pip.vcs import subversion, git, bazaar, mercurial
 from shutil import rmtree
 
-
-
 class GitVersionComparator(object):
 
     LT = -1
@@ -134,23 +132,54 @@ class GitVersionComparator(object):
             show_stdout=False, cwd=self.checkout_dir)
         return ret.rstrip() == parent
 
-def all_candidates_editable(reqs_in_conflict):
-    """All candidates should be editable or not-editable, no mixing"""
-    non_editables = len([req for req in reqs_in_conflict if req.editable == False])
-    if non_editables == len(reqs_in_conflict):
-        return False
-    elif non_editables == 0:
-        return True
-    else:
-        if len([req for req in reqs_in_conflict if req.editable == False]) > 0:
-            raise InstallationError(
-                'Double requirement given (%s) and one of the candidates is not editable. Mixing editable and non-editable requirements unsupported.' % (str(reqs_in_conflict[0].name)))
+class InstallReqChecker(object):
 
-def is_install_req_newer(install_req, requirement_set):
-    """Find the newer version of two editable packages"""
-    reqs_in_conflict = [install_req, requirement_set.get_requirement(install_req.name)]
-    if all_candidates_editable(reqs_in_conflict):
-        cmp = GitVersionComparator(install_req.url)
-        return cmp.compare_versions(*[cmp.get_version_string_from_req(r) for r in reqs_in_conflict]) == cmp.GT
-    else:
-        return reqs_in_conflict[0].req > reqs_in_conflict[1].req
+    def __init__(self, rset):
+        self.rset = rset
+        self.comparison_cache = ({}, {}) # two maps, one does a->b, the other one does b->a
+
+    # The order of the operands doesn't matter, so we search both dicts.
+    def get_cached_comparison_result(self, a, b):
+        if self.comparison_cache[0].has_key(a) and self.comparison_cache[0][a].has_key[b]:
+            return self.comparison_cache[0][a][b]
+        if self.comparison_cache[1].has_key(a) and self.comparison_cache[1][a].has_key[b]:
+            return self.comparison_cache[1][a][b]
+        return None
+
+    def save_comparison_result(self, a, b, result):
+        if not self.comparison_cache[0].has_key(a):
+            self.comparison_cache[0][a] = {}
+        self.comparison_cache[0][a][b] = result
+        if not self.comparison_cache[1].has_key(b):
+            self.comparison_cache[1][b] = {}
+        self.comparison_cache[1][b][a] = result
+
+    @classmethod
+    def all_candidates_editable(cls, reqs_in_conflict):
+        """All candidates should be editable or not-editable, no mixing"""
+        non_editables = len([req for req in reqs_in_conflict if req.editable == False])
+        if non_editables == len(reqs_in_conflict):
+            return False
+        elif non_editables == 0:
+            return True
+        else:
+            if len([req for req in reqs_in_conflict if req.editable == False]) > 0:
+                raise InstallationError(
+                    'Double requirement given (%s) and one of the candidates is not editable. Mixing editable and non-editable requirements unsupported.' % (str(reqs_in_conflict[0].name)))
+
+    def is_install_req_newer(self, install_req):
+        """Find the newer version of two editable packages"""
+        reqs_in_conflict = [install_req, self.rset.get_requirement(install_req.name)]
+        if self.all_candidates_editable(reqs_in_conflict):
+            # This is an expensive comparison, so let's cache results
+            competing_version_urls = [str(r.url) for r in reqs_in_conflict]
+            result = self.get_cached_comparison_result(*competing_version_urls)
+            if result is None:
+                cmp = GitVersionComparator(install_req.url)
+                result = cmp.compare_versions(*[GitVersionComparator.get_version_string_from_req(r) for r in reqs_in_conflict]) == cmp.GT
+                self.save_comparison_result(competing_version_urls[0], competing_version_urls[1], result)
+            else:
+                logger.notify("USING CACHED COMPARISONG: %s %s -> %s" % (competing_version_urls[0], competing_version_urls[1], result))
+            return result
+        else:
+            return reqs_in_conflict[0].req > reqs_in_conflict[1].req

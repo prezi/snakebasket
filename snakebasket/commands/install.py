@@ -13,13 +13,14 @@ import shutil
 from pip.backwardcompat import home_lib
 from pip.locations import virtualenv_no_global
 from pip.util import dist_in_usersite
-from ..versions import  is_install_req_newer
+from ..versions import  InstallReqChecker
 
 class RecursiveRequirementSet(RequirementSet):
 
     def __init__(self, *args, **kwargs):
         super(RecursiveRequirementSet, self).__init__(*args, **kwargs)
         self.options = None
+        self.install_req_checker = InstallReqChecker(self)
 
     def set_options(self, value):
         self.options = value
@@ -209,13 +210,13 @@ class RecursiveRequirementSet(RequirementSet):
             #url or path requirement w/o an egg fragment
             return self.unnamed_requirements.append(install_req)
         if self.has_requirement(name):
-            if is_install_req_newer(install_req, self):
+            if self.install_req_checker.is_install_req_newer(install_req):
                 if install_req.url:
                     logger.notify("Selecting {0} source to be {1}".format(install_req.name, install_req.url))
                 elif install_req.req and install_req.req.specs:
                     logger.notify("Selecting {0} version to be {1}".format(install_req.name, install_req.req.specs))
             else:
-                logger.debug("Newest version of {0} is still {1}".format(install_req.name, install_req.url))
+                logger.debug("Newest version of {0} remains unchanged".format(name))
                 return
         self.requirements[name] = install_req
         ## FIXME: what about other normalizations?  E.g., _ vs. -?
