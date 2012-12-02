@@ -140,9 +140,9 @@ class InstallReqChecker(object):
 
     # The order of the operands doesn't matter, so we search both dicts.
     def get_cached_comparison_result(self, a, b):
-        if self.comparison_cache[0].has_key(a) and self.comparison_cache[0][a].has_key[b]:
+        if self.comparison_cache[0].has_key(a) and self.comparison_cache[0].get(a).has_key(b):
             return self.comparison_cache[0][a][b]
-        if self.comparison_cache[1].has_key(a) and self.comparison_cache[1][a].has_key[b]:
+        if self.comparison_cache[1].has_key(a) and self.comparison_cache[1][a].has_key(b):
             return self.comparison_cache[1][a][b]
         return None
 
