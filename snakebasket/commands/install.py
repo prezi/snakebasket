@@ -20,7 +20,7 @@ class RecursiveRequirementSet(RequirementSet):
     def __init__(self, *args, **kwargs):
         super(RecursiveRequirementSet, self).__init__(*args, **kwargs)
         self.options = None
-        self.install_req_checker = InstallReqChecker(self)
+        self.install_req_checker = InstallReqChecker()
 
     def set_options(self, value):
         self.options = value
@@ -70,6 +70,11 @@ class RecursiveRequirementSet(RequirementSet):
                                       '(use --upgrade to upgrade): %s'
                                       % req_to_install)
             if req_to_install.editable:
+                # check if a verion of this requirement has already been downloaded
+                downloaded_versions = [r for r in self.successfully_downloaded if r.name == req_to_install.name]
+                if len(downloaded_versions) > 0 and (not self.install_req_checker.is_install_req_newer(req_to_install, downloaded_versions[0])):
+                    logger.notify("Skipping installation of {0} from {1} because a newer version has already been downloaded.".format(req_to_install.name, str(req_to_install.url)))
+                    continue
                 logger.notify('Obtaining %s' % req_to_install)
             elif install:
                 if req_to_install.url and req_to_install.url.lower().startswith('file:'):
@@ -210,7 +215,7 @@ class RecursiveRequirementSet(RequirementSet):
             #url or path requirement w/o an egg fragment
             return self.unnamed_requirements.append(install_req)
         if self.has_requirement(name):
-            if self.install_req_checker.is_install_req_newer(install_req):
+            if self.install_req_checker.is_install_req_newer(install_req, self.get_requirement(install_req.name)):
                 if install_req.url:
                     logger.notify("Selecting {0} source to be {1}".format(install_req.name, install_req.url))
                 elif install_req.req and install_req.req.specs:

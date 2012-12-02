@@ -134,8 +134,7 @@ class GitVersionComparator(object):
 
 class InstallReqChecker(object):
 
-    def __init__(self, rset):
-        self.rset = rset
+    def __init__(self):
         self.comparison_cache = ({}, {}) # two maps, one does a->b, the other one does b->a
 
     # The order of the operands doesn't matter, so we search both dicts.
@@ -154,9 +153,9 @@ class InstallReqChecker(object):
             self.comparison_cache[1][b] = {}
         self.comparison_cache[1][b][a] = result
 
-    def is_install_req_newer(self, install_req):
+    def is_install_req_newer(self, install_req, existing_req):
         """Find the newer version of two editable packages"""
-        reqs_in_conflict = [install_req, self.rset.get_requirement(install_req.name)]
+        reqs_in_conflict = [install_req, existing_req]
         editable_reqs = [req for req in reqs_in_conflict if req.editable == True]
         if len(editable_reqs) == 2:
             # This is an expensive comparison, so let's cache results
