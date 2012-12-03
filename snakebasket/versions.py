@@ -144,7 +144,7 @@ class InstallReqChecker(object):
 
     def get_checkout_dir(self, requirement_name):
         if self.git_checkout_folders.has_key(requirement_name):
-            return self.git_checkout_folders[0]
+            return self.git_checkout_folders[requirement_name][0]
         return None
 
     def checkout_dir_needs_update(self, requirement_name):
@@ -158,8 +158,8 @@ class InstallReqChecker(object):
         path = self.get_checkout_dir(install_req.name)
         if path is not None:
             url, rev = Git(install_req.url).get_url_rev()
-            new_url = 'git+file://' + url.split("://")[1] + '' if rev is None else '@%s' % rev
-            logger.notify("local checkout available, replacing url requirement url %s with %s" % (install_req.url, new_url))
+            new_url = "git+file://%s%s#egg=%s" % (path, '' if rev is None else '@%s' % rev, install_req.name)
+            logger.notify("Local checkout available, replacing requirement url %s with %s." % (install_req.url, new_url))
             install_req.url = new_url
 
     @staticmethod
@@ -175,7 +175,7 @@ class InstallReqChecker(object):
         if checkout_dir is None:
             checkout_parent = self.create_checkout_parent()
             # chop off revision and egg data from url
-            url, rev = Git(install_req.url).get_url_rev()
+            url = install_req.url.split("#")[0]
             repo_dir = GitVersionComparator.checkout_pkg_repo(url, checkout_parent)
             self.set_checkout_dir(install_req.name, repo_dir)
             self.cleanup_dirs.append(checkout_parent)
