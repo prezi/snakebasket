@@ -30,6 +30,7 @@ from pip.vcs import subversion, git, bazaar, mercurial
 from shutil import rmtree
 import pkg_resources
 from pip import FrozenRequirement
+from pip.vcs.git import Git
 
 class GitVersionComparator(object):
 
@@ -124,7 +125,7 @@ class GitVersionComparator(object):
 class InstallReqChecker(object):
 
     def __init__(self):
-        self.git_checkout_folders = {}
+        self.git_checkout_folders = {} # stores a (url, up_to_date) pair
         self.cleanup_dirs = []
         self.comparison_cache = ({}, {}) # two maps, one does a->b, the other one does b->a
         self.load_installed_distributions()
@@ -136,16 +137,30 @@ class InstallReqChecker(object):
                 frozen_req_for_dist = FrozenRequirement.from_dist(current_dist, [], find_tags=True)
                 if (not self.git_checkout_folders.has_key(dist_name)) and frozen_req_for_dist.editable and frozen_req_for_dist.req[0:4] == 'git+':
                     # add this editable package to the list of editables
-                    self.set_checkout_dir(dist_name, current_dist.location)
+                    self.set_checkout_dir(dist_name, current_dist.location, False)
 
-    def set_checkout_dir(self, requirement_name, location):
-        self.git_checkout_folders[requirement_name] = location
+    def set_checkout_dir(self, requirement_name, location, up_to_date=True):
+        self.git_checkout_folders[requirement_name] = (location, up_to_date)
 
     def get_checkout_dir(self, requirement_name):
-        return self.git_checkout_folders.get(requirement_name)
+        if self.git_checkout_folders.has_key(requirement_name):
+            return self.git_checkout_folders[0]
+        return None
+
+    def checkout_dir_needs_update(self, requirement_name):
+        return self.git_checkout_folders.has_key(requirement_name) and self.git_checkout_folders[requirement_name][1] == False
 
     def create_checkout_parent(self):
         return mkdtemp()
+
+    def replace_repo_url_with_local_if_possible(self, install_req):
+        # Windows is not a target platform
+        path = self.get_checkout_dir(install_req.name)
+        if path is not None:
+            url, rev = Git(install_req.url).get_url_rev()
+            new_url = 'git+file://' + url.split("://")[1] + '' if rev is None else '@%s' % rev
+            logger.notify("local checkout available, replacing url requirement url %s with %s" % (install_req.url, new_url))
+            install_req.url = new_url
 
     @staticmethod
     def delete_checkout_parent(dir):
@@ -156,12 +171,18 @@ class InstallReqChecker(object):
             logger.notify("Cleaned up comparison directories.")
 
     def checkout_if_necessary(self, install_req):
-        # TODO: perform git fetch if repo already check out before sb started?
-        if self.get_checkout_dir(install_req.name) is None:
+        checkout_dir = self.get_checkout_dir(install_req.name)
+        if checkout_dir is None:
             checkout_parent = self.create_checkout_parent()
-            repo_dir = GitVersionComparator.checkout_pkg_repo(install_req.url, checkout_parent)
+            # chop off revision and egg data from url
+            url, rev = Git(install_req.url).get_url_rev()
+            repo_dir = GitVersionComparator.checkout_pkg_repo(url, checkout_parent)
             self.set_checkout_dir(install_req.name, repo_dir)
             self.cleanup_dirs.append(checkout_parent)
+        elif self.checkout_dir_needs_update(install_req.name):
+            # Do a git fetch for repos which were not checked out recently.
+            Git(install_req.url).update(checkout_dir)
+            self.set_checkout_dir(install_req.name, checkout_dir, True)
         return self.get_checkout_dir(install_req.name)
 
     # Both directions are saved, but the outcome is the opposite, eg:
@@ -192,6 +213,7 @@ class InstallReqChecker(object):
             cmp_result = self.get_cached_comparison_result(*competing_version_urls)
             if cmp_result is None:
                 repo_dir = self.checkout_if_necessary(install_req)
+                self.set_checkout_dir(install_req.name, repo_dir)
                 cmp = GitVersionComparator(repo_dir)
                 cmp_result = cmp.compare_versions(*[GitVersionComparator.get_version_string_from_req(r) for r in reqs_in_conflict])
                 self.save_comparison_result(competing_version_urls[0], competing_version_urls[1], cmp_result)

@@ -76,6 +76,7 @@ class RecursiveRequirementSet(RequirementSet):
                     logger.notify("Skipping installation of {0} from {1} because a newer version has already been downloaded.".format(req_to_install.name, str(req_to_install.url)))
                     continue
                 logger.notify('Obtaining %s' % req_to_install)
+                self.install_req_checker.replace_repo_url_with_local_if_possible(req_to_install)
             elif install:
                 if req_to_install.url and req_to_install.url.lower().startswith('file:'):
                     logger.notify('Unpacking %s' % display_path(url_to_path(req_to_install.url)))
