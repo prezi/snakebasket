@@ -169,7 +169,7 @@ class InstallReqChecker(object):
                 result = cmp.compare_versions(*[GitVersionComparator.get_version_string_from_req(r) for r in reqs_in_conflict]) == cmp.GT
                 self.save_comparison_result(competing_version_urls[0], competing_version_urls[1], result)
             else:
-                logger.notify("USING CACHED COMPARISON: %s %s -> %s" % (competing_version_urls[0], competing_version_urls[1], result))
+                logger.debug("using cached comparison: %s %s -> %s" % (competing_version_urls[0], competing_version_urls[1], result))
             return result
         elif len(editable_reqs) == 0:
             return reqs_in_conflict[0].req > reqs_in_conflict[1].req
