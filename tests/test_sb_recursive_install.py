@@ -44,6 +44,33 @@ def test_install_requirements_with_env_processed():
     # requirements-local.txt references 0.1.1 of pip-test-package
     assert 'Adding pip-test-package 0.1.1' in result.stdout
 
+def test_install_requirements_recursive_env():
+    """
+    Test --env is propagated when installing requirements of requirements.
+    """
+    reset_env()
+    args = ['install', '--env', 'local', '-e', 'git+http://github.com/prezi/sb-test-package.git@recursive-env-test#egg=recursive-env-test']
+    result = run_pip(*args, **{"expect_error": True})
+    result.assert_installed('recursive-env-test', with_files=['.git'])
+    result.assert_installed('sb-test-package', with_files=['.git'])
+    result.assert_installed('pip-test-package', with_files=['.git'])
+    # recursive-env-test's requirements-local.txt references 0.1.1 of pip-test-package
+    assert 'Adding pip-test-package 0.1.1' in result.stdout
+
+def test_install_requirements_with_env_processed_recursive():
+    """
+    Test requirements-ENV.txt is installed from repository if ENV is set and exists.
+    """
+    reset_env()
+    args = ['install']
+    args.extend(['--env', 'local', '-e',
+                 '%s#egg=sb-test-package' %
+                 local_checkout('git+http://github.com/prezi/sb-test-package.git')])
+    result = run_pip(*args, **{"expect_error": True})
+    result.assert_installed('sb-test-package', with_files=['.git'])
+    # requirements-local.txt references 0.1.1 of pip-test-package
+    assert 'Adding pip-test-package 0.1.1' in result.stdout
+
 def test_git_with_editable_with_no_requirements_for_env():
     """
     Snakebasket should revert to using requirements.txt if --env is specified but
