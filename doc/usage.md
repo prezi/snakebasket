@@ -1,6 +1,6 @@
 Snakebasket
 ---
-Snakebasket is a backwards-compatible pip extension to pip. To install snakebasket, run:
+Snakebasket is a backwards-compatible extension to pip. To install snakebasket, run:
 `curl -ss -L http://href.prezi.com/snakebasket | bash -s`
 Once snakebasket is installed, replace `pip` with `sb` in commands. For example, to install a new requirement, run:
 `sb install X`
