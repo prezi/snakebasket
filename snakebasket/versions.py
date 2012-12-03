@@ -41,6 +41,9 @@ class GitVersionComparator(object):
         self.pkg_repo_url = pkg_repo_url
 
     def compare_versions(self, ver1, ver2):
+        # short-circuit the comparison in the trivial case
+        if ver1 == ver2:
+            return self.EQ
         response = None
         exc = None
         self.create_checkout_parent()
