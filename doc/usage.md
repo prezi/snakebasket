@@ -22,6 +22,6 @@ Snakebasket overrides the pip _install_ command, adding the following features:
   candidates.
 
 ## Implementation
-Snakebasket does change any files in the pip source distribution. Instead, the module for the `install` command is
+Snakebasket does not change any files in the pip source distribution. Instead, the module for the `install` command is
 patched to include the additional features. All standard pip unit tests pass with snakebasket. In addition tests have
 been written for the new features.
