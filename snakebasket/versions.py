@@ -28,6 +28,8 @@ from tempfile import mkdtemp
 import os
 from pip.vcs import subversion, git, bazaar, mercurial
 from shutil import rmtree
+import pkg_resources
+from pip import FrozenRequirement
 
 class GitVersionComparator(object):
 
@@ -37,31 +39,21 @@ class GitVersionComparator(object):
     version_re = re.compile(r'@([^/#@]*)#')
     commit_hash_re = re.compile("[a-z0-9]{5,40}")
 
-    def __init__(self, pkg_repo_url):
-        self.pkg_repo_url = pkg_repo_url
+    def __init__(self, pkg_repo_dir):
+        self.checkout_dir = pkg_repo_dir
 
     def compare_versions(self, ver1, ver2):
         # short-circuit the comparison in the trivial case
         if ver1 == ver2:
             return self.EQ
         response = None
-        exc = None
-        self.create_checkout_parent()
-        try:
-            self.checkout_pkg_repo()
-            commithashes =  [ver if self.is_valid_commit_hash(ver) else self.get_commit_hash_of_version_string(ver) for ver in [ver1, ver2]]
-            if commithashes[0] == commithashes[1]:
-                response = self.EQ
-            elif self.is_parent_of(commithashes[0], commithashes[1]):
-                response = self.LT
-            elif self.is_parent_of(commithashes[1], commithashes[0]):
-                response = self.GT
-        except Exception, e:
-            exc = e
-        finally:
-            self.remove_checkout_parent()
-        if exc is not None:
-            raise exc
+        commithashes =  [ver if self.is_valid_commit_hash(ver) else self.get_commit_hash_of_version_string(ver) for ver in [ver1, ver2]]
+        if commithashes[0] == commithashes[1]:
+            response = self.EQ
+        elif self.is_parent_of(commithashes[0], commithashes[1]):
+            response = self.LT
+        elif self.is_parent_of(commithashes[1], commithashes[0]):
+            response = self.GT
         if response is None:
             raise InstallationError("Versions specified (%s and %s) point to commits which are not on the same line (%s and %s)." % (ver1, ver2, commithashes[0], commithashes[1]))
         return response
@@ -79,14 +71,14 @@ class GitVersionComparator(object):
             return False
 
     # copied from tests/local_repos.py
-    def checkout_pkg_repo(self):
-        remote_repository = self.pkg_repo_url
+    @staticmethod
+    def checkout_pkg_repo(remote_repository, checkout_parent_dir):
         vcs_classes = {'svn': subversion.Subversion,
                        'git': git.Git,
                        'bzr': bazaar.Bazaar,
                        'hg': mercurial.Mercurial}
         default_vcs = 'svn'
-        if '+' not in self.pkg_repo_url:
+        if '+' not in remote_repository:
             remote_repository = '%s+%s' % (default_vcs, remote_repository)
         vcs, repository_path = remote_repository.split('+', 1)
         vcs_class = vcs_classes[vcs]
@@ -97,13 +89,13 @@ class GitVersionComparator(object):
         else:
             repository_name = os.path.basename(remote_repository)
 
-        destination_path = os.path.join(self.checkout_parent_dir, repository_name)
+        destination_path = os.path.join(checkout_parent_dir, repository_name)
         if not os.path.exists(destination_path):
             vcs_class(remote_repository).obtain(destination_path)
-        self.checkout_dir = destination_path
+        return destination_path
 
-    @classmethod
-    def get_version_string_from_req(cls, req):
+    @staticmethod
+    def get_version_string_from_req(req):
         """Extract editable requirement version from it's URL. A version is a git object (commit hash, tag or branch). """
         req_url = None
         try:
@@ -119,12 +111,6 @@ class GitVersionComparator(object):
         # If there is no version information, the version they want is HEAD.
         return 'HEAD'
 
-    def create_checkout_parent(self):
-        self.checkout_parent_dir = mkdtemp()
-
-    def remove_checkout_parent(self):
-        rmtree(self.checkout_parent_dir)
-
     def get_commit_hash_of_version_string(self, version_string):
         ret = call_subprocess(['git', 'show-ref', '--dereference', version_string],
             show_stdout=False, cwd=self.checkout_dir)
@@ -138,9 +124,49 @@ class GitVersionComparator(object):
 class InstallReqChecker(object):
 
     def __init__(self):
+        self.git_checkout_folders = {}
+        self.cleanup_dirs = []
         self.comparison_cache = ({}, {}) # two maps, one does a->b, the other one does b->a
+        self.load_installed_distributions()
 
-    # The order of the operands doesn't matter, so we search both dicts.
+    def load_installed_distributions(self):
+        installed_dists = pkg_resources.AvailableDistributions()
+        for dist_name in installed_dists:
+            for current_dist in installed_dists[dist_name]:
+                frozen_req_for_dist = FrozenRequirement.from_dist(current_dist, [], find_tags=True)
+                if (not self.git_checkout_folders.has_key(dist_name)) and frozen_req_for_dist.editable and frozen_req_for_dist.req[0:4] == 'git+':
+                    # add this editable package to the list of editables
+                    self.set_checkout_dir(dist_name, current_dist.location)
+
+    def set_checkout_dir(self, requirement_name, location):
+        self.git_checkout_folders[requirement_name] = location
+
+    def get_checkout_dir(self, requirement_name):
+        return self.git_checkout_folders.get(requirement_name)
+
+    def create_checkout_parent(self):
+        return mkdtemp()
+
+    @staticmethod
+    def delete_checkout_parent(dir):
+        rmtree(dir)
+
+    def cleanup(self):
+        if len([InstallReqChecker.delete_checkout_parent(d) for d in self.cleanup_dirs]) > 0:
+            logger.notify("Cleaned up comparison directories.")
+
+    def checkout_if_necessary(self, install_req):
+        # TODO: perform git fetch if repo already check out before sb started?
+        if self.get_checkout_dir(install_req.name) is None:
+            checkout_parent = self.create_checkout_parent()
+            repo_dir = GitVersionComparator.checkout_pkg_repo(install_req.url, checkout_parent)
+            self.set_checkout_dir(install_req.name, repo_dir)
+            self.cleanup_dirs.append(checkout_parent)
+        return self.get_checkout_dir(install_req.name)
+
+    # Both directions are saved, but the outcome is the opposite, eg:
+    # 0.1.2 vs 0.1.1 -> GT
+    # 0.1.1 vs 0.1.2 -> LT
     def get_cached_comparison_result(self, a, b):
         if self.comparison_cache[0].has_key(a) and self.comparison_cache[0].get(a).has_key(b):
             return self.comparison_cache[0][a][b]
@@ -154,7 +180,7 @@ class InstallReqChecker(object):
         self.comparison_cache[0][a][b] = result
         if not self.comparison_cache[1].has_key(b):
             self.comparison_cache[1][b] = {}
-        self.comparison_cache[1][b][a] = result
+        self.comparison_cache[1][b][a] = result * -1
 
     def is_install_req_newer(self, install_req, existing_req):
         """Find the newer version of two editable packages"""
@@ -163,14 +189,15 @@ class InstallReqChecker(object):
         if len(editable_reqs) == 2:
             # This is an expensive comparison, so let's cache results
             competing_version_urls = [str(r.url) for r in reqs_in_conflict]
-            result = self.get_cached_comparison_result(*competing_version_urls)
-            if result is None:
-                cmp = GitVersionComparator(install_req.url)
-                result = cmp.compare_versions(*[GitVersionComparator.get_version_string_from_req(r) for r in reqs_in_conflict]) == cmp.GT
-                self.save_comparison_result(competing_version_urls[0], competing_version_urls[1], result)
+            cmp_result = self.get_cached_comparison_result(*competing_version_urls)
+            if cmp_result is None:
+                repo_dir = self.checkout_if_necessary(install_req)
+                cmp = GitVersionComparator(repo_dir)
+                cmp_result = cmp.compare_versions(*[GitVersionComparator.get_version_string_from_req(r) for r in reqs_in_conflict])
+                self.save_comparison_result(competing_version_urls[0], competing_version_urls[1], cmp_result)
             else:
-                logger.debug("using cached comparison: %s %s -> %s" % (competing_version_urls[0], competing_version_urls[1], result))
-            return result
+                logger.debug("using cached comparison: %s %s -> %s" % (competing_version_urls[0], competing_version_urls[1], cmp_result))
+            return cmp_result == GitVersionComparator.GT
         elif len(editable_reqs) == 0:
             return reqs_in_conflict[0].req > reqs_in_conflict[1].req
         else: # mixed bag

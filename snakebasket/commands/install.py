@@ -205,7 +205,7 @@ class RecursiveRequirementSet(RequirementSet):
                         self.copy_to_build_dir(req_to_install)
             finally:
                 logger.indent -= 2
-
+        self.install_req_checker.cleanup()
 
     def add_requirement(self, install_req):
         name = install_req.name
