@@ -32,6 +32,7 @@ import pkg_resources
 from pip import FrozenRequirement
 from pip.vcs.git import Git
 from distutils.version import LooseVersion
+import itertools
 
 class SeparateBranchException(Exception):
     def __init__(self, *args, **kwargs):
@@ -184,16 +185,29 @@ class InstallReqChecker(object):
             self.comparison_cache[1][b] = {}
         self.comparison_cache[1][b][a] = result * -1
 
+    def get_all_aliases(self, name):
+        return [
+            name,
+            name.lower(),
+            name.upper(),
+            name.replace("-", "_"),
+            name.replace("_", "-"),
+            name[0].upper() + name[1:]]
+
+    def filter_for_aliases(self, name, req_list):
+        return list(itertools.chain(*[
+            [r for r in req_list if r.name == alias] for alias in self.get_all_aliases(name)]))
+
     def req_installed_version(self, install_req):
         if not hasattr(install_req, 'name') or install_req.name is None:
             return None
-        dist_list = self.available_distributions[install_req.name]
+        dist_list = list(itertools.chain(*[self.available_distributions[name] for name in self.get_all_aliases(install_req.name)]))
         if len(dist_list) == 0:
             return None
-        if install_req.req and self.is_install_req_newer(dist_list[0], install_req):
-            return dist_list[0]
+        for already_installed_req in dist_list:
+            if self.is_install_req_newer(already_installed_req, install_req):
+                return already_installed_req
         return None
-
 
     @classmethod
     def req_greater_than(cls, install_req1, install_req2):

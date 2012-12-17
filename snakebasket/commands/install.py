@@ -70,13 +70,19 @@ class RecursiveRequirementSet(RequirementSet):
                                       '(use --upgrade to upgrade): %s'
                                       % req_to_install)
             # check if a verion of this requirement has already been downloaded
-            downloaded_versions = [r for r in self.successfully_downloaded if r.name == req_to_install.name]
-            if len(downloaded_versions) > 0 and (not self.install_req_checker.is_install_req_newer(req_to_install, downloaded_versions[0])):
-                if req_to_install.url:
-                    logger.notify("Skipping installation of {0} from {1} because a newer version has already been downloaded.".format(req_to_install.name, str(req_to_install.url)))
-                else:
-                    logger.notify("Skipping installation of {0} because a newer version has already been downloaded.".format(req_to_install.name))
-                continue
+            if not self.upgrade:
+                if req_to_install.name is not None:
+                    downloaded_versions = self.install_req_checker.filter_for_aliases(req_to_install.name, self.successfully_downloaded)
+                    # TODO: downloaded_versions[0] is not necessarily the best candidate
+                    if len(downloaded_versions) > 0 and (not self.install_req_checker.is_install_req_newer(req_to_install, downloaded_versions[0])):
+                        if req_to_install.url:
+                            logger.notify("Skipping installation of {0} from {1} because a newer version has already been downloaded.".format(req_to_install.name, str(req_to_install.url)))
+                        else:
+                            logger.notify("Skipping installation of {0} because a newer version has already been downloaded.".format(req_to_install.name))
+                        continue
+                elif req_to_install.url is not None and len([r for r in self.successfully_downloaded if r.url == req_to_install.url]) > 0:
+                    logger.notify("Skipping duplicate download of {0}.".format(req_to_install.url))
+                    continue
             if req_to_install.editable:
                 logger.notify('Obtaining %s' % req_to_install)
             elif install:
@@ -259,6 +265,13 @@ class RInstallCommand(InstallCommand):
             default=None,
             metavar='ENVIRONMENT',
             help='Specifies an environment (eg, production). This means requirements-ENV.txt will be evaluated by snakebasket.')
+        self.parser.add_option(
+            '--prefer-pinned-revision',
+            dest='prefer_pinned_revision',
+            action='store_true',
+            default=False,
+            help='When comparing editables with explicitly given version with the default (no-version data in URL), use the pinned version.')
+
 
     def run(self, options, args):
         if options.download_dir:

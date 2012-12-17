@@ -51,3 +51,11 @@ def test_requirement_set_will_include_correct_version():
     v021 = 'c55fc812d322dad26ffcc78263df1ba8e3c6134e'
     assert not (v020 in result.stdout)
     assert v021 in result.stdout
+
+def test_editable_reqs_override_pypi_packages():
+    """ Not Implemented: If a conflicing editable and pypi package are given, the editable will be installed. """
+    pass
+
+def test_requirement_aliases():
+    """ Not Implemented: If two packages have names which are aliases of each other, they will be detected as version of the same package. """
+    pass
