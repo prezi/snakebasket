@@ -69,14 +69,21 @@ class RecursiveRequirementSet(RequirementSet):
                         logger.notify('Requirement already satisfied '
                                       '(use --upgrade to upgrade): %s'
                                       % req_to_install)
-            if req_to_install.editable:
-                # check if a verion of this requirement has already been downloaded
-                downloaded_versions = [r for r in self.successfully_downloaded if r.name == req_to_install.name]
-                if len(downloaded_versions) > 0 and (not self.install_req_checker.is_install_req_newer(req_to_install, downloaded_versions[0])):
+            # check if a verion of this requirement has already been downloaded
+            downloaded_versions = [r for r in self.successfully_downloaded if r.name == req_to_install.name]
+            if len(downloaded_versions) > 0 and (not self.install_req_checker.is_install_req_newer(req_to_install, downloaded_versions[0])):
+                if req_to_install.url:
                     logger.notify("Skipping installation of {0} from {1} because a newer version has already been downloaded.".format(req_to_install.name, str(req_to_install.url)))
-                    continue
+                else:
+                    logger.notify("Skipping installation of {0} because a newer version has already been downloaded.".format(req_to_install.name))
+                continue
+            if req_to_install.editable:
                 logger.notify('Obtaining %s' % req_to_install)
             elif install:
+                # check if a version of this requirement has already been installed
+                installed_version = self.install_req_checker.req_installed_version(req_to_install)
+                if not self.upgrade and installed_version is not None:
+                    logger.notify("Skipping download of {0} because a compatible version {1} is already installed.".format(req_to_install.name, installed_version.req.__str__()))
                 if req_to_install.url and req_to_install.url.lower().startswith('file:'):
                     logger.notify('Unpacking %s' % display_path(url_to_path(req_to_install.url)))
                 else:

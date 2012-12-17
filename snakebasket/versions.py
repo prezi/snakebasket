@@ -31,6 +31,11 @@ from shutil import rmtree
 import pkg_resources
 from pip import FrozenRequirement
 from pip.vcs.git import Git
+from distutils.version import LooseVersion
+
+class SeparateBranchException(Exception):
+    def __init__(self, *args, **kwargs):
+        self.candidates = args
 
 class GitVersionComparator(object):
 
@@ -56,7 +61,7 @@ class GitVersionComparator(object):
         elif self.is_parent_of(commithashes[1], commithashes[0]):
             response = self.GT
         if response is None:
-            raise InstallationError("Versions specified (%s and %s) point to commits which are not on the same line (%s and %s)." % (ver1, ver2, commithashes[0], commithashes[1]))
+            raise SeparateBranchException((ver1, commithashes[0]),(ver2, commithashes[1]))
         return response
 
     def is_valid_commit_hash(self, hash_candidate):
@@ -126,16 +131,18 @@ class InstallReqChecker(object):
         self.src_dir = src_dir
         self.git_checkout_folders = {} # stores a (url, up_to_date) pair
         self.comparison_cache = ({}, {}) # two maps, one does a->b, the other one does b->a
+        self.available_distributions = pkg_resources.AvailableDistributions()
         self.load_installed_distributions()
 
+
     def load_installed_distributions(self):
-        installed_dists = pkg_resources.AvailableDistributions()
-        for dist_name in installed_dists:
-            for current_dist in installed_dists[dist_name]:
-                frozen_req_for_dist = FrozenRequirement.from_dist(current_dist, [], find_tags=True)
-                if (not self.git_checkout_folders.has_key(dist_name)) and frozen_req_for_dist.editable and frozen_req_for_dist.req[0:4] == 'git+':
-                    # add this editable package to the list of editables
-                    self.set_checkout_dir(dist_name, current_dist.location, False)
+            for dist_name in self.available_distributions:
+                for current_dist in self.available_distributions[dist_name]:
+                    frozen_req_for_dist = FrozenRequirement.from_dist(current_dist, [], find_tags=True)
+                    if (not self.git_checkout_folders.has_key(dist_name)) and frozen_req_for_dist.editable and frozen_req_for_dist.req[0:4] == 'git+':
+                        # add this editable package to the list of editables
+                        self.set_checkout_dir(dist_name, current_dist.location, False)
+
 
     def set_checkout_dir(self, requirement_name, location, up_to_date=True):
         self.git_checkout_folders[requirement_name] = (location, up_to_date)
@@ -177,6 +184,21 @@ class InstallReqChecker(object):
             self.comparison_cache[1][b] = {}
         self.comparison_cache[1][b][a] = result * -1
 
+    def req_installed_version(self, install_req):
+        if not hasattr(install_req, 'name') or install_req.name is None:
+            return None
+        dist_list = self.available_distributions[install_req.name]
+        if len(dist_list) == 0:
+            return None
+        if install_req.req and self.is_install_req_newer(dist_list[0], install_req):
+            return dist_list[0]
+        return None
+
+
+    @classmethod
+    def req_greater_than(cls, install_req1, install_req2):
+        return LooseVersion(install_req1.req.__str__()) > LooseVersion(install_req2.req.__str__())
+
     def is_install_req_newer(self, install_req, existing_req):
         """Find the newer version of two editable packages"""
         reqs_in_conflict = [install_req, existing_req]
@@ -192,13 +214,23 @@ class InstallReqChecker(object):
                 # will use the correct version anyway.
                 repo_dir = self.checkout_if_necessary(install_req)
                 cmp = GitVersionComparator(repo_dir)
-                cmp_result = cmp.compare_versions(*[GitVersionComparator.get_version_string_from_req(r) for r in reqs_in_conflict])
-                self.save_comparison_result(competing_version_urls[0], competing_version_urls[1], cmp_result)
+                try:
+                    cmp_result = cmp.compare_versions(*[GitVersionComparator.get_version_string_from_req(r) for r in reqs_in_conflict])
+                    self.save_comparison_result(competing_version_urls[0], competing_version_urls[1], cmp_result)
+                except SeparateBranchException, exc:
+                    raise InstallationError("%s: Conflicting versions cannot be compared as they are not direct descendants according to git.\n%s version %s (commit id %s)\n%s version %s (commit id %s)." % (
+                        install_req.name,
+                        reqs_in_conflict[0].url,
+                        exc.args[0][0],
+                        exc.args[0][1],
+                        reqs_in_conflict[1].url,
+                        exc.args[1][0],
+                        exc.args[1][1]))
             else:
                 logger.debug("using cached comparison: %s %s -> %s" % (competing_version_urls[0], competing_version_urls[1], cmp_result))
             return cmp_result == GitVersionComparator.GT
         elif len(editable_reqs) == 0:
-            return reqs_in_conflict[0].req > reqs_in_conflict[1].req
-        else: # mixed bag
+            return self.req_greater_than(*reqs_in_conflict)
+        else: # mixed case
             logger.notify("Conflicting requirements for %s, using editable version" % install_req.name)
             return editable_reqs[0] == install_req
