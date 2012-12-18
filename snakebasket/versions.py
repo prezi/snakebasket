@@ -46,15 +46,23 @@ class GitVersionComparator(object):
     version_re = re.compile(r'@([^/#@]*)#')
     commit_hash_re = re.compile("[a-z0-9]{5,40}")
 
-    def __init__(self, pkg_repo_dir):
+    def __init__(self, pkg_repo_dir, prefer_pinned_revision=False):
         self.checkout_dir = pkg_repo_dir
+        self.prefer_pinned_revision = prefer_pinned_revision
 
     def compare_versions(self, ver1, ver2):
         # short-circuit the comparison in the trivial case
         if ver1 == ver2:
             return self.EQ
         response = None
-        commithashes =  [ver if self.is_valid_commit_hash(ver) else self.get_commit_hash_of_version_string(ver) for ver in [ver1, ver2]]
+        versions = [ver1, ver2]
+        # Both versions can't be None, because would would have already returned self.EQ then.
+        if self.prefer_pinned_revision:
+            pinned_version = [v for v in versions if v is not None][0]
+            versions = [pinned_version, pinned_version]
+        else:
+            versions = ["HEAD" if v is None else v for v in versions]
+        commithashes =  [ver if self.is_valid_commit_hash(ver) else self.get_commit_hash_of_version_string(ver) for ver in versions]
         if commithashes[0] == commithashes[1]:
             response = self.EQ
         elif self.is_parent_of(commithashes[0], commithashes[1]):
@@ -99,8 +107,8 @@ class GitVersionComparator(object):
         vcs_class(remote_repository).obtain(checkout_dir)
         return checkout_dir
 
-    @staticmethod
-    def get_version_string_from_req(req):
+    @classmethod
+    def get_version_string_from_req(cls, req):
         """Extract editable requirement version from it's URL. A version is a git object (commit hash, tag or branch). """
         req_url = None
         try:
@@ -110,11 +118,10 @@ class GitVersionComparator(object):
         if req_url is None:
             raise InstallationError(
                 'No URL associated with editable requirement in version conflict. Cannot resolve (%s)' % req.name)
-        version = GitVersionComparator.version_re.search(req_url)
+        version = cls.version_re.search(req_url)
         if version is not None and len(version.groups()) == 1:
             return version.groups()[0]
-        # If there is no version information, the version they want is HEAD.
-        return 'HEAD'
+        return None
 
     def get_commit_hash_of_version_string(self, version_string):
         ret = call_subprocess(['git', 'show-ref', '--dereference', version_string],
@@ -134,6 +141,7 @@ class InstallReqChecker(object):
         self.comparison_cache = ({}, {}) # two maps, one does a->b, the other one does b->a
         self.available_distributions = pkg_resources.AvailableDistributions()
         self.load_installed_distributions()
+        self.prefer_pinned_revision = False
 
 
     def load_installed_distributions(self):
@@ -227,7 +235,7 @@ class InstallReqChecker(object):
                 # So let's check out the repo into the src directory. Later (when we have the version) update_editable
                 # will use the correct version anyway.
                 repo_dir = self.checkout_if_necessary(install_req)
-                cmp = GitVersionComparator(repo_dir)
+                cmp = GitVersionComparator(repo_dir, self.prefer_pinned_revision)
                 try:
                     cmp_result = cmp.compare_versions(*[GitVersionComparator.get_version_string_from_req(r) for r in reqs_in_conflict])
                     self.save_comparison_result(competing_version_urls[0], competing_version_urls[1], cmp_result)

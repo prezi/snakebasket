@@ -24,6 +24,7 @@ class RecursiveRequirementSet(RequirementSet):
 
     def set_options(self, value):
         self.options = value
+        self.install_req_checker.prefer_pinned_revision = value.prefer_pinned_revision
 
     def prepare_files(self, finder, force_root_egg_info=False, bundle=False):
         """Prepare process. Create temp directories, download and/or unpack files."""

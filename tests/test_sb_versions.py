@@ -59,3 +59,7 @@ def test_editable_reqs_override_pypi_packages():
 def test_requirement_aliases():
     """ Not Implemented: If two packages have names which are aliases of each other, they will be detected as version of the same package. """
     pass
+
+def test_prefer_pinned_revision():
+    """ Not Implemented: If --prefer_pinned_revision is given, than an explicitly specified version of a package is chosen over an implicit master/HEAD. """
+    pass
