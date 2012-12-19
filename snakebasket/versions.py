@@ -140,7 +140,10 @@ class InstallReqChecker(object):
         self.git_checkout_folders = {} # stores a (url, up_to_date) pair
         self.comparison_cache = ({}, {}) # two maps, one does a->b, the other one does b->a
         self.available_distributions = pkg_resources.AvailableDistributions()
-        self.load_installed_distributions()
+        try:
+            self.load_installed_distributions()
+        except Exception, e:
+            logger.notify("Exception loading installed distributions" + str(e))
         self.prefer_pinned_revision = False
 
 
