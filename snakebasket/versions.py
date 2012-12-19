@@ -224,7 +224,7 @@ class InstallReqChecker(object):
     def is_install_req_newer(self, install_req, existing_req):
         """Find the newer version of two editable packages"""
         reqs_in_conflict = [install_req, existing_req]
-        editable_reqs = [req for req in reqs_in_conflict if req.editable == True]
+        editable_reqs = [req for req in reqs_in_conflict if hasattr(req, 'editable') and req.editable == True]
         if len(editable_reqs) == 2:
             # This is an expensive comparison, so let's cache results
             competing_version_urls = [str(r.url) for r in reqs_in_conflict]
