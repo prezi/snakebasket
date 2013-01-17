@@ -1,6 +1,6 @@
 import sys
 import os
-from pip.req import InstallRequirement, InstallationError, _make_build_dir, parse_requirements, display_path, url_to_path
+from pip.req import InstallRequirement, InstallationError, _make_build_dir, parse_requirements, Requirements
 from pip.commands.install import InstallCommand, RequirementSet
 from pip.exceptions import BestVersionAlreadyInstalled, CommandError, DistributionNotFound
 from pip.vcs import vcs
@@ -13,14 +13,27 @@ import shutil
 from pip.backwardcompat import home_lib
 from pip.locations import virtualenv_no_global
 from pip.util import dist_in_usersite
-from ..versions import  InstallReqChecker
+from ..versions import  InstallReqChecker, PackageData
+
+class ExtendedRequirements(Requirements):
+    def __init__(self, *args, **kwargs):
+        super(ExtendedRequirements, self).__init__(*args, **kwargs)
+
+    def __delitem__(self, key, value):
+        if key in self._keys:
+            self._keys = [k for k in self._keys if k != key]
+        del self._dict[key]
 
 class RecursiveRequirementSet(RequirementSet):
 
     def __init__(self, *args, **kwargs):
         super(RecursiveRequirementSet, self).__init__(*args, **kwargs)
         self.options = None
-        self.install_req_checker = InstallReqChecker(self.src_dir)
+        self.requirements = ExtendedRequirements()
+        self.install_req_checker = InstallReqChecker(
+            self.src_dir,
+            self.requirements,
+            self.successfully_downloaded)
 
     def set_options(self, value):
         self.options = value
@@ -70,31 +83,10 @@ class RecursiveRequirementSet(RequirementSet):
                         logger.notify('Requirement already satisfied '
                                       '(use --upgrade to upgrade): %s'
                                       % req_to_install)
-            # check if a verion of this requirement has already been downloaded
-            if not self.upgrade:
-                if req_to_install.name is not None:
-                    downloaded_versions = self.install_req_checker.filter_for_aliases(req_to_install.name, self.successfully_downloaded)
-                    # TODO: downloaded_versions[0] is not necessarily the best candidate
-                    if len(downloaded_versions) > 0 and (not self.install_req_checker.is_install_req_newer(req_to_install, downloaded_versions[0])):
-                        if req_to_install.url:
-                            logger.notify("Skipping installation of {0} from {1} because a newer version has already been downloaded.".format(req_to_install.name, str(req_to_install.url)))
-                        else:
-                            logger.notify("Skipping installation of {0} because a newer version has already been downloaded.".format(req_to_install.name))
-                        continue
-                elif req_to_install.url is not None and len([r for r in self.successfully_downloaded if r.url == req_to_install.url]) > 0:
-                    logger.notify("Skipping duplicate download of {0}.".format(req_to_install.url))
-                    continue
             if req_to_install.editable:
                 logger.notify('Obtaining %s' % req_to_install)
             elif install:
-                # check if a version of this requirement has already been installed
-                installed_version = self.install_req_checker.req_installed_version(req_to_install)
-                if not self.upgrade and installed_version is not None:
-                    logger.notify("Skipping download of {0} because a compatible version {1} is already installed.".format(req_to_install.name, installed_version.req.__str__()))
-                if req_to_install.url and req_to_install.url.lower().startswith('file:'):
-                    logger.notify('Unpacking %s' % display_path(url_to_path(req_to_install.url)))
-                else:
-                    logger.notify('Downloading/unpacking %s' % req_to_install)
+                logger.notify('Downloading/unpacking %s' % req_to_install)
             logger.indent += 2
             try:
                 is_bundle = False
@@ -203,8 +195,9 @@ class RecursiveRequirementSet(RequirementSet):
                             self.add_requirement(subreq)
                         if req_to_install.editable and req_to_install.source_dir:
                             for subreq in self.install_requirements_txt(req_to_install):
-                                reqs.append(subreq)
-                                self.add_requirement(subreq)
+                                if self.add_requirement(subreq):
+                                    # TODO: what if subreq is unnamed?
+                                    reqs.append(subreq)
                     if not self.has_requirement(req_to_install.name):
                         #'unnamed' requirements will get added here
                         self.add_requirement(req_to_install)
@@ -220,26 +213,25 @@ class RecursiveRequirementSet(RequirementSet):
             finally:
                 logger.indent -= 2
 
+
     def add_requirement(self, install_req):
         name = install_req.name
         install_req.as_egg = self.as_egg
         install_req.use_user_site = self.use_user_site
         if not name:
             #url or path requirement w/o an egg fragment
-            return self.unnamed_requirements.append(install_req)
-        if self.has_requirement(name):
-            if self.install_req_checker.is_install_req_newer(install_req, self.get_requirement(install_req.name)):
-                if install_req.url:
-                    logger.notify("Selecting {0} source to be {1}".format(install_req.name, install_req.url))
-                elif install_req.req and install_req.req.specs:
-                    logger.notify("Selecting {0} version to be {1}".format(install_req.name, install_req.req.specs))
-            else:
-                logger.debug("Newest version of {0} remains unchanged".format(name))
-                return
-        self.requirements[name] = install_req
-        ## FIXME: what about other normalizations?  E.g., _ vs. -?
-        if name.lower() != name:
-            self.requirement_aliases[name.lower()] = name
+            # make sure no list item has this same url:
+            if install_req.url is None or len([i for i in self.unnamed_requirements if i.url == install_req.url]) == 0:
+                self.unnamed_requirements.append(install_req)
+            return True
+        satisfied_by = self.install_req_checker.get_available_substitute(install_req)
+        if satisfied_by is not None:
+            logger.notify("Package %s already satisfied by %s" % (name, satisfied_by.__repr__()))
+        else:
+            self.requirements[name] = install_req
+        for n in self.install_req_checker.get_all_aliases(name):
+            self.requirement_aliases[n] = name
+        return satisfied_by is None
 
     def install_requirements_txt(self, req_to_install):
         """If ENV is set, try to parse requirements-ENV.txt, falling back to requirements.txt if it exists."""

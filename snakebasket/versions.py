@@ -31,7 +31,7 @@ from shutil import rmtree
 import pkg_resources
 from pip import FrozenRequirement
 from pip.vcs.git import Git
-from distutils.version import LooseVersion
+from distutils.version import StrictVersion, LooseVersion
 import itertools
 
 class SeparateBranchException(Exception):
@@ -85,6 +85,11 @@ class GitVersionComparator(object):
             # In this case it just means the given commit is not in the git repo.
             return False
 
+
+    @staticmethod
+    def do_fetch(repodir):
+        call_subprocess(['git', 'fetch', '-q'], cwd=repodir)
+
     # copied from tests/local_repos.py
     @staticmethod
     def checkout_pkg_repo(remote_repository, checkout_dir):
@@ -108,19 +113,13 @@ class GitVersionComparator(object):
         return checkout_dir
 
     @classmethod
-    def get_version_string_from_req(cls, req):
+    def get_version_string_from_url(cls, req_url):
         """Extract editable requirement version from it's URL. A version is a git object (commit hash, tag or branch). """
-        req_url = None
-        try:
-            req_url = req.url
-        except AttributeError:
-            pass
-        if req_url is None:
-            raise InstallationError(
-                'No URL associated with editable requirement in version conflict. Cannot resolve (%s)' % req.name)
         version = cls.version_re.search(req_url)
         if version is not None and len(version.groups()) == 1:
-            return version.groups()[0]
+            version_string = version.groups()[0]
+            if len(version_string) > 0:
+                return version_string
         return None
 
     def get_commit_hash_of_version_string(self, version_string):
@@ -133,50 +132,134 @@ class GitVersionComparator(object):
             show_stdout=False, cwd=self.checkout_dir)
         return ret.rstrip() == parent
 
+class PackageData(object):
+
+    # states
+    UNKNOWN = 0
+    PREINSTALLED = 1
+    SELECTED = 2
+    OBTAINED = 3
+
+    def __init__(self, name, url=None, editable=False, location=None, version=None, comes_from=None, requirement=None):
+        self.name = name
+        self.url = url
+        self.editable = editable
+        self.location = location
+        self.version = version
+        self.comes_from = comes_from
+        self.state = PackageData.UNKNOWN
+        # The original InstallRequirement for FrozenRequirement from which this data was extracted
+        self.requirement = requirement
+
+    def __repr__(self):
+        str = "%s %s" % (
+            "(unnamed package)" if self.name is None else self.name,
+            "(no version)" if self.version is None else "(version %s)" % self.version
+        )
+        if self.url is not None:
+            str = str + " from %s" % self.url
+        if self.editable:
+            str = str + " [Editable]"
+        return str
+
+    def __cmp__(self, other):
+        if self.version is None or other.version is None:
+            # cannot compare None version
+            raise Exception("Unable to compare None versions")
+        try:
+            sv = StrictVersion()
+            sv.parse(self.version)
+            return sv.__cmp__(other.version)
+        except Exception, e:
+            return LooseVersion(self.version).__cmp__(LooseVersion(other.version))
+
+    def clone_dir(self, src_dir):
+        # This method should only be run on editable InstallRequirement objects.
+        if self.requirement is not None and hasattr(self.requirement, "build_location"):
+            return self.requirement.build_location(src_dir)
+        raise Exception("Cant't find build_location")
+
+    @classmethod
+    def from_dist(cls, dist, pre_installed=False):
+        # dist is either an InstallRequirement or a FrozenRequirement.
+        # We have to deal with installs from a URL (no name), pypi installs (with and without explicit versions)
+        # and editable installs from git.
+        name = None if not hasattr(dist, 'name') else dist.name
+        editable = False if not hasattr(dist, 'editable') else dist.editable
+        comes_from = None if not hasattr(dist, 'comes_from') else dist.comes_from
+        url = None
+        location = None
+        version = None
+
+        if comes_from is None and pre_installed:
+            comes_from = "[already available]"
+        if hasattr(dist, 'req'):
+            if type(dist.req) == str:
+                url = dist.req
+                version = GitVersionComparator.get_version_string_from_url(url)
+            elif hasattr(dist.req, 'specs') and len(dist.req.specs) == 1 and len(dist.req.specs[0]) == 2 and dist.req.specs[0][0] == '==':
+                version = dist.req.specs[0][1]
+        if url is None and hasattr(dist, 'url'):
+            url = dist.url
+        if hasattr(dist, 'location'):
+            location = dist.location
+        elif name is not None and url is not None and editable:
+            # TODO: use non-virtualenv basedir instead of '/' if not in virtualenv
+            location_candidate = os.path.join(os.environ.get('VIRTUAL_ENV', '/'), 'src', dist.name, '.git')
+            if os.path.exists(location_candidate):
+                location = location_candidate
+                if version is None:
+                    ret = call_subprocess(['git', 'log', '-n', '1', '--pretty=oneline'], show_stdout=False, cwd=location)
+                    version = ret.split(" ")[0]
+        pd = cls(
+            name=name,
+            url=url,
+            location=location,
+            editable=editable,
+            version=version,
+            comes_from=comes_from,
+            requirement=dist)
+        if pre_installed:
+            pd.state = PackageData.PREINSTALLED
+        return pd
+
 class InstallReqChecker(object):
 
-    def __init__(self, src_dir):
+    def __init__(self, src_dir, requirements, successfully_downloaded):
         self.src_dir = src_dir
-        self.git_checkout_folders = {} # stores a (url, up_to_date) pair
         self.comparison_cache = ({}, {}) # two maps, one does a->b, the other one does b->a
-        self.available_distributions = pkg_resources.AvailableDistributions()
+        self.pre_installed = {} # maps name -> PackageData
+        self.repo_up_to_date = {} # maps local git clone path -> boolean
+        self.requirements = requirements
+        self.successfully_downloaded = successfully_downloaded
         try:
             self.load_installed_distributions()
         except Exception, e:
-            logger.notify("Exception loading installed distributions" + str(e))
+            logger.notify("Exception loading installed distributions " + str(e))
+            raise
+            #import pdb;pdb.set_trace()
         self.prefer_pinned_revision = False
 
 
     def load_installed_distributions(self):
-            for dist_name in self.available_distributions:
-                for current_dist in self.available_distributions[dist_name]:
-                    frozen_req_for_dist = FrozenRequirement.from_dist(current_dist, [], find_tags=True)
-                    if (not self.git_checkout_folders.has_key(dist_name)) and frozen_req_for_dist.editable and frozen_req_for_dist.req[0:4] == 'git+':
-                        # add this editable package to the list of editables
-                        self.set_checkout_dir(dist_name, current_dist.location, False)
+        import pip
+        from pip.util import get_installed_distributions
+        for dist in get_installed_distributions(local_only=True):
+            pd = PackageData.from_dist(pip.FrozenRequirement.from_dist(dist, [], find_tags=True), pre_installed=True)
+            if pd.editable and pd.location is not None:
+                self.repo_up_to_date[pd.location] = False
+            self.pre_installed[pd.name] = pd
 
 
-    def set_checkout_dir(self, requirement_name, location, up_to_date=True):
-        self.git_checkout_folders[requirement_name] = (location, up_to_date)
-
-    def get_checkout_dir(self, requirement_name):
-        if self.git_checkout_folders.has_key(requirement_name):
-            return self.git_checkout_folders[requirement_name][0]
-        return None
-
-    def checkout_dir_needs_update(self, requirement_name):
-        return self.git_checkout_folders.has_key(requirement_name) and self.git_checkout_folders[requirement_name][1] == False
-
-    def checkout_if_necessary(self, install_req):
-        checkout_dir = self.get_checkout_dir(install_req.name)
-        if checkout_dir is None:
-            repo_dir = GitVersionComparator.checkout_pkg_repo(install_req.url, install_req.build_location(self.src_dir))
-            self.set_checkout_dir(install_req.name, repo_dir)
-        elif self.checkout_dir_needs_update(install_req.name):
+    def checkout_if_necessary(self, pd):
+        if pd.location is None:
+            pd.location = GitVersionComparator.checkout_pkg_repo(pd.url, pd.clone_dir(self.src_dir))
+            self.repo_up_to_date[pd.location] = True
+        elif self.repo_up_to_date.get(pd.location, True) == False:
             # Do a git fetch for repos which were not checked out recently.
-            Git(install_req.url).update(checkout_dir, ['origin/master'])
-            self.set_checkout_dir(install_req.name, checkout_dir, True)
-        return self.get_checkout_dir(install_req.name)
+            GitVersionComparator.do_fetch(pd.location)
+            self.repo_up_to_date[pd.location] = True
+        return pd.location
 
     # Both directions are saved, but the outcome is the opposite, eg:
     # 0.1.2 vs 0.1.1 -> GT
@@ -206,56 +289,78 @@ class InstallReqChecker(object):
             name[0].upper() + name[1:]]
 
     def filter_for_aliases(self, name, req_list):
-        return list(itertools.chain(*[
-            [r for r in req_list if r.name == alias] for alias in self.get_all_aliases(name)]))
+        return
 
-    def req_installed_version(self, install_req):
-        if not hasattr(install_req, 'name') or install_req.name is None:
-            return None
-        dist_list = list(itertools.chain(*[self.available_distributions[name] for name in self.get_all_aliases(install_req.name)]))
-        if len(dist_list) == 0:
-            return None
-        for already_installed_req in dist_list:
-            if self.is_install_req_newer(already_installed_req, install_req):
-                return already_installed_req
-        return None
+    def find_potential_substitutes(self, name):
+        """
+        Returns other versions of the given package in requirement/downloaded/installed states without examining their
+        version.
+        """
+        aliases = self.get_all_aliases(name)
+        for package_name in aliases:
+            if package_name in self.requirements:
+                return self.requirements[package_name]
+        downloaded = list(itertools.chain(*[
+            [r for r in self.successfully_downloaded if r.name == pkg_resources] for package_name in aliases]))
+        if downloaded:
+            return downloaded[0]
+        for package_name in aliases:
+            if self.pre_installed.has_key(package_name):
+                return self.pre_installed[package_name]
 
-    @classmethod
-    def req_greater_than(cls, install_req1, install_req2):
-        return LooseVersion(install_req1.req.__str__()) > LooseVersion(install_req2.req.__str__())
-
-    def is_install_req_newer(self, install_req, existing_req):
-        """Find the newer version of two editable packages"""
-        reqs_in_conflict = [install_req, existing_req]
-        editable_reqs = [req for req in reqs_in_conflict if hasattr(req, 'editable') and req.editable == True]
-        if len(editable_reqs) == 2:
+    def get_available_substitute(self, install_req):
+        """Find an available substitute for the given package.
+           Returns a PackageData object.
+        """
+        pd = PackageData.from_dist(install_req)
+        if pd.name is None:
+            # cannot find alternative versions without a name.
+            return pd
+        existing_req = self.find_potential_substitutes(pd.name)
+        if existing_req is None:
+            return pd
+        packages_in_conflict = [pd, existing_req]
+        editables = [p for p in packages_in_conflict if p.editable]
+        if len(editables) == 2:
             # This is an expensive comparison, so let's cache results
-            competing_version_urls = [str(r.url) for r in reqs_in_conflict]
+            competing_version_urls = [str(r.url) for r in packages_in_conflict]
             cmp_result = self.get_cached_comparison_result(*competing_version_urls)
             if cmp_result is None:
                 # We're comparing two versions of an editable because we know we're going to use the software in
                 # the given repo (its just the version that's not decided yet).
                 # So let's check out the repo into the src directory. Later (when we have the version) update_editable
                 # will use the correct version anyway.
-                repo_dir = self.checkout_if_necessary(install_req)
+                repo_dir = self.checkout_if_necessary(packages_in_conflict[0])
                 cmp = GitVersionComparator(repo_dir, self.prefer_pinned_revision)
                 try:
-                    cmp_result = cmp.compare_versions(*[GitVersionComparator.get_version_string_from_req(r) for r in reqs_in_conflict])
+                    versions = [GitVersionComparator.get_version_string_from_url(r.url) for r in packages_in_conflict]
+                    if len([v for v in versions if v == None]) > 0:
+                        # if either the existing requirement or the new candidate has no version info and is editable,
+                        # we better update our clone and re-run setup.
+                        return None
+                    cmp_result = cmp.compare_versions(*versions)
                     self.save_comparison_result(competing_version_urls[0], competing_version_urls[1], cmp_result)
                 except SeparateBranchException, exc:
-                    raise InstallationError("%s: Conflicting versions cannot be compared as they are not direct descendants according to git.\n%s version %s (commit id %s)\n%s version %s (commit id %s)." % (
-                        install_req.name,
-                        reqs_in_conflict[0].url,
-                        exc.args[0][0],
-                        exc.args[0][1],
-                        reqs_in_conflict[1].url,
-                        exc.args[1][0],
-                        exc.args[1][1]))
+                    raise InstallationError(
+                        "%s: Conflicting versions cannot be compared as they are not direct descendants according to git. Exception: %s, Package data: %s." % (
+                        packages_in_conflict[0].name,
+                        str([p.__dict__ for p in packages_in_conflict]),
+                        str(exc.args)))
             else:
                 logger.debug("using cached comparison: %s %s -> %s" % (competing_version_urls[0], competing_version_urls[1], cmp_result))
-            return cmp_result == GitVersionComparator.GT
-        elif len(editable_reqs) == 0:
-            return self.req_greater_than(*reqs_in_conflict)
+            return packages_in_conflict[0] if cmp_result == GitVersionComparator.GT else packages_in_conflict[1]
+        elif len(editables) == 0:
+            versioned_packages = [p for p in packages_in_conflict if p.version is not None]
+            if len(versioned_packages) == 0:
+                if packages_in_conflict[0].url == packages_in_conflict[1].url:
+                    # It doesn't matter which InstallationRequirement object we use, they represent the same dependency.
+                    return packages_in_conflict[1]
+                else:
+                    raise InstallationError("%s: Package installed with no version information from different urls: %s and %s" % (packages_in_conflict[0].name, packages_in_conflict[0].url, packages_in_conflict[1].url))
+            if len(versioned_packages) == 1:
+                # Return the object which includes version information
+                return versioned_packages[0]
+            return packages_in_conflict[0] if packages_in_conflict[0] > packages_in_conflict[1] else packages_in_conflict[1]
         else: # mixed case
             logger.notify("Conflicting requirements for %s, using editable version" % install_req.name)
-            return editable_reqs[0] == install_req
+            return editables[0]
