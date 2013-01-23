@@ -24,19 +24,17 @@ from pip.exceptions import InstallationError
 import re
 from pip.util import call_subprocess
 from pip.log import logger
-from tempfile import mkdtemp
 import os
 from pip.vcs import subversion, git, bazaar, mercurial
-from shutil import rmtree
 import pkg_resources
-from pip import FrozenRequirement
-from pip.vcs.git import Git
 from distutils.version import StrictVersion, LooseVersion
 import itertools
+
 
 class SeparateBranchException(Exception):
     def __init__(self, *args, **kwargs):
         self.candidates = args
+
 
 class GitVersionComparator(object):
 
@@ -57,12 +55,12 @@ class GitVersionComparator(object):
         response = None
         versions = [ver1, ver2]
         # Both versions can't be None, because would would have already returned self.EQ then.
-        if self.prefer_pinned_revision:
-            pinned_version = [v for v in versions if v is not None][0]
-            versions = [pinned_version, pinned_version]
+        pinned_versions = [v for v in versions if v is not None]
+        if len(pinned_versions) == 1 and self.prefer_pinned_revision:
+            versions = [pinned_versions[0], pinned_versions[0]]
         else:
             versions = ["HEAD" if v is None else v for v in versions]
-        commithashes =  [ver if self.is_valid_commit_hash(ver) else self.get_commit_hash_of_version_string(ver) for ver in versions]
+        commithashes = [ver if self.is_valid_commit_hash(ver) else self.get_commit_hash_of_version_string(ver) for ver in versions]
         if commithashes[0] == commithashes[1]:
             response = self.EQ
         elif self.is_parent_of(commithashes[0], commithashes[1]):
@@ -70,7 +68,7 @@ class GitVersionComparator(object):
         elif self.is_parent_of(commithashes[1], commithashes[0]):
             response = self.GT
         if response is None:
-            raise SeparateBranchException((ver1, commithashes[0]),(ver2, commithashes[1]))
+            raise SeparateBranchException((ver1, commithashes[0]), (ver2, commithashes[1]))
         return response
 
     def is_valid_commit_hash(self, hash_candidate):
@@ -84,7 +82,6 @@ class GitVersionComparator(object):
             # call_subprocess returns raises an InstallationError when the return value of a command is not 0.
             # In this case it just means the given commit is not in the git repo.
             return False
-
 
     @staticmethod
     def do_fetch(repodir):
@@ -105,7 +102,7 @@ class GitVersionComparator(object):
         branch = ''
         if vcs == 'svn':
             branch = os.path.basename(remote_repository)
-            repository_name = os.path.basename(remote_repository[:-len(branch)-1]) # remove the slash
+            repository_name = os.path.basename(remote_repository[:-len(branch) - 1])  # remove the slash
         else:
             repository_name = os.path.basename(remote_repository)
 
@@ -131,6 +128,7 @@ class GitVersionComparator(object):
         ret = call_subprocess(['git', 'merge-base', parent, child],
             show_stdout=False, cwd=self.checkout_dir)
         return ret.rstrip() == parent
+
 
 class PackageData(object):
 
@@ -170,7 +168,7 @@ class PackageData(object):
             sv = StrictVersion()
             sv.parse(self.version)
             return sv.__cmp__(other.version)
-        except Exception, e:
+        except Exception:
             return LooseVersion(self.version).__cmp__(LooseVersion(other.version))
 
     def clone_dir(self, src_dir):
@@ -193,6 +191,7 @@ class PackageData(object):
 
         if comes_from is None and pre_installed:
             comes_from = "[already available]"
+
         if hasattr(dist, 'req'):
             if type(dist.req) == str:
                 url = dist.req
@@ -208,6 +207,8 @@ class PackageData(object):
             location_candidate = os.path.join(os.environ.get('VIRTUAL_ENV', '/'), 'src', dist.name, '.git')
             if os.path.exists(location_candidate):
                 location = location_candidate
+                if hasattr(dist, 'url') and dist.url:
+                    version = GitVersionComparator.get_version_string_from_url(dist.url)
                 if version is None:
                     ret = call_subprocess(['git', 'log', '-n', '1', '--pretty=oneline'], show_stdout=False, cwd=location)
                     version = ret.split(" ")[0]
@@ -223,13 +224,14 @@ class PackageData(object):
             pd.state = PackageData.PREINSTALLED
         return pd
 
+
 class InstallReqChecker(object):
 
     def __init__(self, src_dir, requirements, successfully_downloaded):
         self.src_dir = src_dir
-        self.comparison_cache = ({}, {}) # two maps, one does a->b, the other one does b->a
-        self.pre_installed = {} # maps name -> PackageData
-        self.repo_up_to_date = {} # maps local git clone path -> boolean
+        self.comparison_cache = ({}, {})  # two maps, one does a->b, the other one does b->a
+        self.pre_installed = {}  # maps name -> PackageData
+        self.repo_up_to_date = {}  # maps local git clone path -> boolean
         self.requirements = requirements
         self.successfully_downloaded = successfully_downloaded
         try:
@@ -237,9 +239,7 @@ class InstallReqChecker(object):
         except Exception, e:
             logger.notify("Exception loading installed distributions " + str(e))
             raise
-            #import pdb;pdb.set_trace()
         self.prefer_pinned_revision = False
-
 
     def load_installed_distributions(self):
         import pip
@@ -249,7 +249,6 @@ class InstallReqChecker(object):
             if pd.editable and pd.location is not None:
                 self.repo_up_to_date[pd.location] = False
             self.pre_installed[pd.name] = pd
-
 
     def checkout_if_necessary(self, pd):
         if pd.location is None:
@@ -299,14 +298,14 @@ class InstallReqChecker(object):
         aliases = self.get_all_aliases(name)
         for package_name in aliases:
             if package_name in self.requirements:
-                return self.requirements[package_name]
+                return PackageData.from_dist(self.requirements[package_name])
         downloaded = list(itertools.chain(*[
             [r for r in self.successfully_downloaded if r.name == pkg_resources] for package_name in aliases]))
         if downloaded:
-            return downloaded[0]
+            return PackageData.from_dist(downloaded[0])
         for package_name in aliases:
             if self.pre_installed.has_key(package_name):
-                return self.pre_installed[package_name]
+                return PackageData.from_dist(self.pre_installed[package_name])
 
     def get_available_substitute(self, install_req):
         """Find an available substitute for the given package.
@@ -315,10 +314,12 @@ class InstallReqChecker(object):
         pd = PackageData.from_dist(install_req)
         if pd.name is None:
             # cannot find alternative versions without a name.
-            return pd
+            return None
+
         existing_req = self.find_potential_substitutes(pd.name)
         if existing_req is None:
-            return pd
+            return None
+
         packages_in_conflict = [pd, existing_req]
         editables = [p for p in packages_in_conflict if p.editable]
         if len(editables) == 2:
@@ -334,11 +335,12 @@ class InstallReqChecker(object):
                 cmp = GitVersionComparator(repo_dir, self.prefer_pinned_revision)
                 try:
                     versions = [GitVersionComparator.get_version_string_from_url(r.url) for r in packages_in_conflict]
-                    if len([v for v in versions if v == None]) > 0:
+                    if len([v for v in versions if v == None]) == 2:
                         # if either the existing requirement or the new candidate has no version info and is editable,
                         # we better update our clone and re-run setup.
-                        return None
+                        return None  # OPTIMIZE return with the installed version
                     cmp_result = cmp.compare_versions(*versions)
+
                     self.save_comparison_result(competing_version_urls[0], competing_version_urls[1], cmp_result)
                 except SeparateBranchException, exc:
                     raise InstallationError(
@@ -348,7 +350,7 @@ class InstallReqChecker(object):
                         str(exc.args)))
             else:
                 logger.debug("using cached comparison: %s %s -> %s" % (competing_version_urls[0], competing_version_urls[1], cmp_result))
-            return packages_in_conflict[0] if cmp_result == GitVersionComparator.GT else packages_in_conflict[1]
+            return None if cmp_result == GitVersionComparator.GT else packages_in_conflict[1]
         elif len(editables) == 0:
             versioned_packages = [p for p in packages_in_conflict if p.version is not None]
             if len(versioned_packages) == 0:
@@ -361,6 +363,6 @@ class InstallReqChecker(object):
                 # Return the object which includes version information
                 return versioned_packages[0]
             return packages_in_conflict[0] if packages_in_conflict[0] > packages_in_conflict[1] else packages_in_conflict[1]
-        else: # mixed case
+        else:  # mixed case
             logger.notify("Conflicting requirements for %s, using editable version" % install_req.name)
             return editables[0]
