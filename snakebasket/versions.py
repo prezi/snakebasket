@@ -87,6 +87,10 @@ class GitVersionComparator(object):
     def do_fetch(repodir):
         call_subprocess(['git', 'fetch', '-q'], cwd=repodir)
 
+    @staticmethod
+    def do_pull(repodir):
+        call_subprocess(['git', 'pull', '-q'], cwd=repodir)
+
     # copied from tests/local_repos.py
     @staticmethod
     def checkout_pkg_repo(remote_repository, checkout_dir):
@@ -253,11 +257,13 @@ class InstallReqChecker(object):
     def checkout_if_necessary(self, pd):
         if pd.location is None:
             pd.location = GitVersionComparator.checkout_pkg_repo(pd.url, pd.clone_dir(self.src_dir))
-            self.repo_up_to_date[pd.location] = True
-        elif self.repo_up_to_date.get(pd.location, True) == False:
+        elif pd.location not in self.repo_up_to_date:
+            # Do a git pull for repos which were not checked out recently.
+            GitVersionComparator.do_pull(pd.location)
+        elif self.repo_up_to_date[pd.location] == False:
             # Do a git fetch for repos which were not checked out recently.
             GitVersionComparator.do_fetch(pd.location)
-            self.repo_up_to_date[pd.location] = True
+        self.repo_up_to_date[pd.location] = True
         return pd.location
 
     # Both directions are saved, but the outcome is the opposite, eg:
