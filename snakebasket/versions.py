@@ -3,22 +3,21 @@ This file defines how versions of packages are compared.
 Currently supported:
 - comparing versions of editable (VCS) packages (if they're stored in git).
 - comparing versions of non-editable packages.
-Mixing the two is not currently supported
+Mixing the two results in the editable package always winning.
 
 pip maintains a requirement set when processing a list of requirements to install.
 When pip encounters a new requirement (by finding another requirements.txt for example),
 that requirement is added to the requirement set. One by one, pip takes an element off the
 requirement_set and installs it, adding any new dependencies to the requirement set if necessary.
 
-As pip moves through the requirement set, packages can be:
-1. already installed before pip even started
-2. installed in this pip session
-3. not installed yet, waiting in the requirement set.
+The installation process is split into two steps. First, all packages and their dependencies are
+downloaded. In the second step, the downloaded packages are all installed.
 
-Currently, this file only deals with the scenario where the package versions in conflict are both in state 3.
-This may need to change in the future (in this case, we'd also have to deal with an existing checkout).
-In these cases there is no existing checkout of the git repo containing the project, so a temporary checkout
-must be made to determine the relationship between the two commits.
+As pip moves through the process, packages can be:
+* already installed before pip even started
+* queued to be downloaded (in the requirement_set in pip lingo)
+* already downloaded, but not yet installed
+* just installed in this pip session
 """
 from pip.exceptions import InstallationError
 import re
@@ -254,8 +253,11 @@ class InstallReqChecker(object):
         if pd.location is None:
             pd.location = GitVersionComparator.checkout_pkg_repo(pd.url, pd.clone_dir(self.src_dir))
             self.repo_up_to_date[pd.location] = True
+        # self.repo_up_to_date[pd.location] is False if the git repo existed before this
+        # snakebasket run, and has not yet been fetched (therefore may contain old data).
         elif self.repo_up_to_date.get(pd.location, True) == False:
             # Do a git fetch for repos which were not checked out recently.
+            logger.notify("Performing git fetch in pre-existing directory %s" % pd.location)
             GitVersionComparator.do_fetch(pd.location)
             self.repo_up_to_date[pd.location] = True
         return pd.location
