@@ -258,7 +258,7 @@ class InstallReqChecker(object):
         if pd.location is None:
             pd.location = GitVersionComparator.checkout_pkg_repo(pd.url, pd.clone_dir(self.src_dir))
         elif pd.location not in self.repo_up_to_date:
-            # Do a git pull for repos which were not checked out recently.
+            # Do a git pull for repos in unknown state.
             GitVersionComparator.do_pull(pd.location)
         elif self.repo_up_to_date[pd.location] == False:
             # Do a git fetch for repos which were not checked out recently.
