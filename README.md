@@ -20,6 +20,13 @@ The old and untested version of snakebasket can be installed via pip from:
 
 Development
 ---
+Because snakebasket includes [pip](http://pypi.python.org/pypi/pip) as a sub-repo, use
+```bash
+git clone --recursive git@github.com:prezi/snakebasket.git 
+```
+to clone the repository completely.
+
+
 To run snakebasket tests, you must first create a virtualenv
 and add the necessary testing packages:
 ```
