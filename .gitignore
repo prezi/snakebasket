@@ -21,5 +21,6 @@ pip-log.txt
 virtualenv
 sb-venv
 tests/tests_cache
+tests/nosetests.xml
 etc/overrides.cfg
 .idea

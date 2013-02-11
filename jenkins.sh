@@ -1,12 +1,6 @@
 #!/bin/bash
-
-# Do git pull
-cd $WORKSPACE
-commit=$(git log --pretty=format:'%H' -n 1)
-name=$(git log --pretty=format:'%an' -n 1)
-git checkout $commit
-git log --pretty=format:'description <a href="https://github.com/prezi/snakebasket/commit/%H">%h %an</a> eof-description' -n 1
-
+# clean test artifacts.
+./clean.sh
 # create virtualenv if no virtualenv
 VIRTUALENV=$WORKSPACE/sb-venv
 cd $WORKSPACE
