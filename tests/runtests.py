@@ -1,3 +1,4 @@
+import email
 import os
 import sys
 import xmlrpclib
@@ -7,7 +8,6 @@ import nose.tools
 def add_dir_to_pythonpath(d):
     sys.path.insert(0, d)
 
-#add_dir_to_pythonpath(os.path.join(os.path.dirname(__file__), 'pip'))
 # remove site-packages pip from python path and sys.modules
 import re
 mre = re.compile(".*pip.*")
@@ -19,7 +19,6 @@ import nose.selector
 def patched_getpackage(filename):
     return os.path.splitext(os.path.basename(filename))[0]
 sys.modules['nose.selector'].getpackage = patched_getpackage
-
 if __name__ == '__main__':
     sys.exit(
         load_entry_point('nose==1.2.1', 'console_scripts', 'nosetests')()
