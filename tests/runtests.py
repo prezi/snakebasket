@@ -3,7 +3,6 @@ import sys
 import xmlrpclib
 from pkg_resources import load_entry_point
 import nose.tools
-import unittest.case
 
 def add_dir_to_pythonpath(d):
     sys.path.insert(0, d)

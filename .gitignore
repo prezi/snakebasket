@@ -19,6 +19,7 @@ pip-log.txt
 .coverage
 .tox
 virtualenv
+sb-venv
 tests/tests_cache
 etc/overrides.cfg
 .idea
