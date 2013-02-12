@@ -27,6 +27,8 @@ if __name__ == '__main__':
         '-e', 'test_cleanup_after_install_editable_from_hg',
         '-e', 'test_freeze_mercurial_clone',
         '-e', 'test_install_dev_version_from_pypi',
+        '-e', 'test_obtain_should_recognize_auth_info_in_url',
+        '-e', 'test_export_should_recognize_auth_info_in_url',
         # Temporarily excluded to get Jenkins job to pass (errors) 
         '-e', 'test_vcs_url_final_slash_normalization',
         '-e', 'test_install_global_option_using_editable',
