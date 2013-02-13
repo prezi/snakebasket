@@ -30,11 +30,8 @@ if __name__ == '__main__':
         '-e', 'test_obtain_should_recognize_auth_info_in_url',
         '-e', 'test_export_should_recognize_auth_info_in_url',
         '-e', 'test_install_subversion_usersite_editable_with_setuptools_fails',
-        # Temporarily excluded to get Jenkins job to pass (errors) 
         '-e', 'test_vcs_url_final_slash_normalization',
         '-e', 'test_install_global_option_using_editable',
-        '-e', 'test_comparison',
-        # Temporarily excluded to get Jenkins job to pass (failed) 
         '-e', 'test_install_editable_from_svn',
         '-e', 'test_download_editable_to_custom_path',
         '-e', 'test_editable_no_install_followed_by_no_download',
@@ -42,9 +39,13 @@ if __name__ == '__main__':
         '-e', 'test_cleanup_after_create_bundle',
         '-e', 'test_freeze_svn',
         '-e', 'test_multiple_requirements_files',
-        '-e', 'test_requirement_set_will_include_correct_version',
         '-e', 'test_uninstall_editable_from_svn',
         '-e', 'test_uninstall_from_reqs_file',
+        '-e', 'test_install_subversion_usersite_editable_with_distribute',
+        # Temporarily excluded to get Jenkins job to pass (errors) 
+        '-e', 'test_comparison',
+        # Temporarily excluded to get Jenkins job to pass (failed) 
+        '-e', 'test_requirement_set_will_include_correct_version',
         '-e', 'test_upgrade_to_specific_version',
         '-e', 'test_upgrade_if_requested',
         '-e', 'test_upgrade_with_newest_already_installed',
@@ -55,11 +56,9 @@ if __name__ == '__main__':
         '-e', 'test_install_with_ignoreinstalled_requested',
         '-e', 'test_upgrade_vcs_req_with_no_dists_found',
         '-e', 'test_upgrade_vcs_req_with_dist_found',
-        '-e', 'test_install_subversion_usersite_editable_with_distribute',
         '-e', 'test_install_user_conflict_in_globalsite',
         '-e', 'test_install_user_conflict_in_globalsite_and_usersite',
         '-e', 'test_install_user_conflict_in_usersite',
-        '-e', 'test_install_user_conflict_in_usersiteest_install_user_conflict_in_usersite',
         '-e', 'test_upgrade_user_conflict_in_globalsite',
         '-e', 'test_install_user_in_global_virtualenv_with_conflict_fails'
         # Pip tests excluded because of different functionality in snakebasket  
