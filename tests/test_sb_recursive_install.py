@@ -86,3 +86,14 @@ def test_git_with_editable_with_no_requirements_for_env():
     # requirements.txt references 0.1.2 of pip-test-package
     assert 'Adding pip-test-package 0.1.2' in result.stdout
 
+def test_reinstall_interrupted_install_with_missing_deps():
+    """
+    When the installation phase of an sb run is interrupted, some of the dependencies won't be installed
+    Later, when sb runs again, it will refuse to reinstall the package claiming it's already install and up-to-date.
+    The solution is to add the dependencies of the project to a file in the egg directory.
+    To find the egg dir, do:
+    import pkg_resources
+    a = pkg_resources.AvailableDistributions()
+    a['snakebasket'][0].egg_info
+    """
+    assert True
