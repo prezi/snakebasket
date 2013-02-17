@@ -1,6 +1,7 @@
 from snakebasket import versions
 from nose.tools import assert_equal, assert_raises
 from pip.exceptions import InstallationError
+from pip.req import Requirements, InstallRequirement
 from tests.test_pip import (here, reset_env, run_pip, pyversion, mkdir,
                             src_folder, write_file)
 from tests.local_repos import local_checkout
@@ -16,7 +17,16 @@ def test_comparison():
         req.editable = True
         return req
     reset_env()
-    checker = versions.InstallReqChecker()
+
+    old_req = make_req('0.1.1')
+    new_req = make_req('0.1.2')
+
+    requirements = Requirements()
+    requirements[old_req.name] = InstallRequirement(old_req.name, None, url = old_req.url)
+
+    checker = versions.InstallReqChecker('', requirements, False)
+    print checker.get_available_substitute(InstallRequirement(new_req.name, None, url = new_req.url))
+
     # commit hashes are compared as they should be:
     assert_equal(checker.is_install_req_newer(make_req('0.1.1'), make_req('0.1.2')), False)
     assert_equal(checker.is_install_req_newer(make_req('0.1.2'), make_req('0.1.1')), True)
