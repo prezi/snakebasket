@@ -23,9 +23,9 @@ def test_comparison():
     new_req_mock = make_req('0.1.2')
 
     requirements = Requirements()
-    requirements[old_req_mock.name] = InstallRequirement(old_req_mock, None, url = old_req_mock.url)
+    requirements[old_req_mock.project_name] = InstallRequirement(old_req_mock, None, url = old_req_mock.url)
 
-    checker = versions.InstallReqChecker('', requirements, False)
+    checker = versions.InstallReqChecker('', requirements, [])
     print checker.get_available_substitute(InstallRequirement(new_req_mock, None, url = new_req_mock.url))
 
     # commit hashes are compared as they should be:
