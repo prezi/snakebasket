@@ -12,20 +12,20 @@ def test_comparison():
     url_template = "git+http://github.com/prezi/sb-test-package.git@%s#egg=sb-test-package"
     def make_req(ver):
         req = Mock()
-        req.name = "sb-test-packag"
+        req.name = "sb-test-package"
         req.url = url_template % ver
         req.editable = True
         return req
     reset_env()
 
-    old_req = make_req('0.1.1')
-    new_req = make_req('0.1.2')
+    old_req_mock = make_req('0.1.1')
+    new_req_mock = make_req('0.1.2')
 
     requirements = Requirements()
-    requirements[old_req.name] = InstallRequirement(old_req.name, None, url = old_req.url)
+    requirements[old_req_mock.name] = InstallRequirement(old_req_mock, None, url = old_req_mock.url)
 
     checker = versions.InstallReqChecker('', requirements, False)
-    print checker.get_available_substitute(InstallRequirement(new_req.name, None, url = new_req.url))
+    print checker.get_available_substitute(InstallRequirement(new_req_mock, None, url = new_req_mock.url))
 
     # commit hashes are compared as they should be:
     assert_equal(checker.is_install_req_newer(make_req('0.1.1'), make_req('0.1.2')), False)
