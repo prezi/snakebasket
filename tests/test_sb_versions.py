@@ -12,7 +12,7 @@ def test_comparison():
     url_template = "git+http://github.com/prezi/sb-test-package.git@%s#egg=sb-test-package"
     def make_req(ver):
         req = Mock()
-        req.name = "sb-test-package"
+        req.project_name = "sb-test-package"
         req.url = url_template % ver
         req.specs = [('==', ver)] 
         req.editable = True
@@ -24,7 +24,6 @@ def test_comparison():
 
     requirements = Requirements()
     requirements[old_req_mock.name] = InstallRequirement(old_req_mock, None, url = old_req_mock.url)
-    print type(requirements[old_req_mock.name].req.name)
 
     checker = versions.InstallReqChecker('', requirements, False)
     print checker.get_available_substitute(InstallRequirement(new_req_mock, None, url = new_req_mock.url))
