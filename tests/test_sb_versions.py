@@ -114,10 +114,9 @@ def test_requirement_set_will_include_correct_version():
         '-e', '%s@0.2.1#egg=sb-test-package' % local_url]
     result = run_pip(*args, **{"expect_error": True})
     result.assert_installed('sb-test-package')
-    assert "Cleaned up comparison directories." in result.stdout
-    result = run_pip('freeze', **{"expect_error": True})
-    v020 = '431bb08e4569bf22939d82591edb15e4074c4986'
-    v021 = 'c55fc812d322dad26ffcc78263df1ba8e3c6134e'
+    # import sys ; sys.exit(result.stdout)
+    v020 = 'sb-test-package 0.2.0'
+    v021 = 'sb-test-package 0.2.1'
     assert not (v020 in result.stdout)
     assert v021 in result.stdout
 
