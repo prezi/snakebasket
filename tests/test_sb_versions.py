@@ -1,5 +1,5 @@
 from snakebasket import versions
-from nose.tools import assert_equal, assert_raises
+from nose.tools import assert_equal, assert_is_none, assert_raises
 from pip.exceptions import InstallationError
 from pip.req import Requirements, InstallRequirement
 from tests.test_pip import (here, reset_env, run_pip, pyversion, mkdir,
@@ -41,39 +41,39 @@ def test_comparison():
         checker = versions.InstallReqChecker('../sb-venv/source/%s' % test_project_name, requirements, [])
         return checker
 
-    # # version tags are compared as they should be:
-    # older_req = make_install_req(older_ver)
-    # current_req = make_install_req(current_ver)
-    # newer_req = make_install_req(newer_ver)
+    # version tags are compared as they should be:
+    older_req = make_install_req(older_ver)
+    current_req = make_install_req(current_ver)
+    newer_req = make_install_req(newer_ver)
 
-    # checker = new_req_checker(current_req)
+    checker = new_req_checker(current_req)
 
-    #     # looking for an older version returns the current version
-    # assert_equal(
-    #     current_ver,
-    #     checker.get_available_substitute(older_req).version
-    # )
-    #     # looking for a newer version returns the newer version
-    # assert_is_none(
-    #     checker.get_available_substitute(newer_req)
-    # )
+        # looking for an older version returns the current version
+    assert_equal(
+        current_ver,
+        checker.get_available_substitute(older_req).version
+    )
+        # looking for a newer version returns the newer version
+    assert_is_none(
+        checker.get_available_substitute(newer_req)
+    )
 
-    # # commit hashes are compared has they should be:
-    # older_req = make_install_req(older_commit)
-    # current_req = make_install_req(current_commit)
-    # newer_req = make_install_req(newer_commit)
+    # commit hashes are compared has they should be:
+    older_req = make_install_req(older_commit)
+    current_req = make_install_req(current_commit)
+    newer_req = make_install_req(newer_commit)
 
-    # checker = new_req_checker(current_req)
+    checker = new_req_checker(current_req)
 
-    #     # there should be an available substitute (current_req) for an older version
-    # assert_equal(
-    #     current_commit,
-    #     checker.get_available_substitute(older_req).version
-    # )
-    #     # there souldn't be a substitute for a newer version 
-    # assert_is_none(
-    #     checker.get_available_substitute(newer_req)
-    # )
+        # there should be an available substitute (current_req) for an older version
+    assert_equal(
+        current_commit,
+        checker.get_available_substitute(older_req).version
+    )
+        # there souldn't be a substitute for a newer version 
+    assert_is_none(
+        checker.get_available_substitute(newer_req)
+    )
 
     # different aliases of the same commit id appear to be equal:
     head_req = make_install_req(head_alias)
