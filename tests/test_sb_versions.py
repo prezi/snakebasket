@@ -10,53 +10,96 @@ from mock import Mock
 def test_comparison():
     """ Comparison of version strings works for editable git repos """
     url_template = "git+http://github.com/prezi/sb-test-package.git@%s#egg=sb-test-package"
-    def make_req(ver):
+    test_project_name = "sb-test-package" 
+
+    def make_install_req(ver):
         req = Mock()
-        req.project_name = "sb-test-package"
+        req.project_name = test_project_name
         req.url = url_template % ver
         req.specs = [('==', ver)] 
-        req.editable = True
-        return req
+
+        install_requirement = InstallRequirement(req, None, editable = True, url = req.url)
+
+        return install_requirement
     reset_env()
 
-    older_ver = '0.1.0'
-    older_req = InstallRequirement(make_req(older_ver), None)
+    older_ver = '0.1'
+    older_commit = '6e513083955aded92f1833ff460dc233062a7292'
 
     current_ver = '0.1.1'
-    current_req = InstallRequirement(make_req(current_ver), None)
+    current_commit = 'bd814b468924af1d41e9651f6b0d4fe0dc484a1e'
 
     newer_ver = '0.1.2'
-    newer_req = InstallRequirement(make_req(newer_ver), None)
+    newer_commit = '2204077f795580d2f8d6df82caee34126aaf87eb'
 
-    requirements = Requirements()
-    requirements[current_req.name] = current_req
+    head_alias = 'HEAD'
+    master_alias = 'master'
 
-    checker = versions.InstallReqChecker('', requirements, [])
+    def new_req_checker(default_requirment):
+        requirements = Requirements()
+        requirements[default_requirment.name] = default_requirment
+        checker = versions.InstallReqChecker('../sb-venv/source/%s' % test_project_name, requirements, [])
+        return checker
 
-    # commit hashes are compared as they should be:
-        # looking for an older version returns the current version
+    # # version tags are compared as they should be:
+    # older_req = make_install_req(older_ver)
+    # current_req = make_install_req(current_ver)
+    # newer_req = make_install_req(newer_ver)
+
+    # checker = new_req_checker(current_req)
+
+    #     # looking for an older version returns the current version
+    # assert_equal(
+    #     current_ver,
+    #     checker.get_available_substitute(older_req).version
+    # )
+    #     # looking for a newer version returns the newer version
+    # assert_is_none(
+    #     checker.get_available_substitute(newer_req)
+    # )
+
+    # # commit hashes are compared has they should be:
+    # older_req = make_install_req(older_commit)
+    # current_req = make_install_req(current_commit)
+    # newer_req = make_install_req(newer_commit)
+
+    # checker = new_req_checker(current_req)
+
+    #     # there should be an available substitute (current_req) for an older version
+    # assert_equal(
+    #     current_commit,
+    #     checker.get_available_substitute(older_req).version
+    # )
+    #     # there souldn't be a substitute for a newer version 
+    # assert_is_none(
+    #     checker.get_available_substitute(newer_req)
+    # )
+
+    # different aliases of the same commit id appear to be equal:
+    head_req = make_install_req(head_alias)
+    master_req = make_install_req(master_alias)
+
+    checker = new_req_checker(head_req)
     assert_equal(
-        current_ver,
-        checker.get_available_substitute(older_req).version
+        head_alias,
+        checker.get_available_substitute(master_req).version
     )
-        # looking for a newer version returns the newer version
+
+    checker = new_req_checker(master_req)
     assert_equal(
-        newer_ver,
-        checker.get_available_substitute(newer_req).version
+        master_alias,
+        checker.get_available_substitute(head_req).version
     )
 
-    # tags are compared has they should be:
-    # assert_equal(checker.is_install_req_newer(make_req('6e513083955aded92f1833ff460dc233062a7292'), make_req('bd814b468924af1d41e9651f6b0d4fe0dc484a1e')), False)
-    # assert_equal(checker.is_install_req_newer(make_req('bd814b468924af1d41e9651f6b0d4fe0dc484a1e'), make_req('6e513083955aded92f1833ff460dc233062a7292')), True)
+    # Divergent branches should not be able to be compared
+    def compare_two_different_branches():
+        branch_a_req = make_install_req('test_branch_a')
+        branch_b_req = make_install_req('test_branch_b')
 
-    # # different aliases of the same commit id compare to be equal:
-    # assert_equal(checker.is_install_req_newer(make_req('master'), make_req('HEAD')), False)
-    # assert_equal(checker.is_install_req_newer(make_req('HEAD'), make_req('master')), False)
+        checker = new_req_checker(branch_a_req)
+        checker.get_available_substitute(branch_b_req)
 
-    # def helper():
-    #     checker.is_install_req_newer(make_req('test_branch_a'), make_req('test_branch_b'))
-    # # Divergent branches cannot be compared
-    # assert_raises(InstallationError, helper)
+    assert_raises(InstallationError, compare_two_different_branches)
 
 def test_requirement_set_will_include_correct_version():
     """ Out of two versions of the same package, the requirement set will contain the newer one. """

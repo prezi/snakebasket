@@ -42,8 +42,6 @@ if __name__ == '__main__':
         '-e', 'test_uninstall_editable_from_svn',
         '-e', 'test_uninstall_from_reqs_file',
         '-e', 'test_install_subversion_usersite_editable_with_distribute',
-        # Temporarily excluded to get Jenkins job to pass (errors) 
-        '-e', 'test_comparison',
         # Temporarily excluded to get Jenkins job to pass (failed) 
         '-e', 'test_requirement_set_will_include_correct_version',
         '-e', 'test_upgrade_to_specific_version',
