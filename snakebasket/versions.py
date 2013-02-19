@@ -307,7 +307,7 @@ class InstallReqChecker(object):
             return PackageData.from_dist(downloaded[0])
         for package_name in aliases:
             if self.pre_installed.has_key(package_name):
-                return PackageData.from_dist(self.pre_installed[package_name])
+                return self.pre_installed[package_name]
 
     def get_available_substitute(self, install_req):
         """Find an available substitute for the given package.
@@ -372,7 +372,7 @@ class InstallReqChecker(object):
                     return packages_in_conflict[1] if self.prefer_pinned_revision else None
 
             else:
-                return packages_in_conflict[0] if packages_in_conflict[0] > packages_in_conflict[1] else packages_in_conflict[1]
+                return None if packages_in_conflict[0] > packages_in_conflict[1] else packages_in_conflict[1]
         else:  # mixed case
             logger.notify("Conflicting requirements for %s, using editable version" % install_req.name)
             return editables[0]
