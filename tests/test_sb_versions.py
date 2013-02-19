@@ -48,12 +48,12 @@ def test_comparison():
 
     checker = new_req_checker(current_req)
 
-        # looking for an older version returns the current version
+        # there should be an available substitute (current_req) for an older version
     assert_equal(
         current_ver,
         checker.get_available_substitute(older_req).version
     )
-        # looking for a newer version returns the newer version
+        # there souldn't be a substitute for a newer version 
     assert_equal(
         None,
         checker.get_available_substitute(newer_req)
