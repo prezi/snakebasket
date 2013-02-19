@@ -361,10 +361,18 @@ class InstallReqChecker(object):
                     return packages_in_conflict[1]
                 else:
                     raise InstallationError("%s: Package installed with no version information from different urls: %s and %s" % (packages_in_conflict[0].name, packages_in_conflict[0].url, packages_in_conflict[1].url))
-            if len(versioned_packages) == 1:
-                # Return the object which includes version information
-                return versioned_packages[0]
-            return packages_in_conflict[0] if packages_in_conflict[0] > packages_in_conflict[1] else packages_in_conflict[1]
+            elif len(versioned_packages) == 1:
+
+                # if the package to be installed is the versioned package
+                if(packages_in_conflict[0] == versioned_packages[0]):
+                    return None if self.prefer_pinned_revision else packages_in_conflict[1]
+
+                # else the versioned package is the one already installed
+                else:
+                    return packages_in_conflict[1] if self.prefer_pinned_revision else None
+
+            else:
+                return packages_in_conflict[0] if packages_in_conflict[0] > packages_in_conflict[1] else packages_in_conflict[1]
         else:  # mixed case
             logger.notify("Conflicting requirements for %s, using editable version" % install_req.name)
             return editables[0]
