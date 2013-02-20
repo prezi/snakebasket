@@ -48,7 +48,6 @@ if __name__ == '__main__':
         '-e', 'test_finder_priority_page_over_deplink',
         '-e', 'test_no_upgrade_unless_requested',
         '-e', 'test_upgrade_from_reqs_file',
-        '-e', 'test_upgrade_if_requested',
         '-e', 'test_upgrade_with_newest_already_installed',
         '-e', 'test_upgrade_force_reinstall_newest',
         '-e', 'test_uninstall_before_upgrade',
