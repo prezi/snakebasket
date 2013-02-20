@@ -30,7 +30,7 @@ to clone the repository completely.
 To run snakebasket tests, you must first create a virtualenv
 and add the necessary testing packages:
 ```
-virtualenv --distribute --no-site-packages sb-venv
+virtualenv --distribute --no-site-packages -p python2.6 sb-venv
 . sb-venv/bin/activate
 pip install -r requirements-development.txt 
 ```
