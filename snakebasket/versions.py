@@ -364,7 +364,7 @@ class InstallReqChecker(object):
             elif len(versioned_packages) == 1:
 
                 # if the package to be installed is the versioned package
-                if(packages_in_conflict[0] == versioned_packages[0]):
+                if(packages_in_conflict[0] is versioned_packages[0]):
                     return None if self.prefer_pinned_revision else packages_in_conflict[1]
 
                 # else the versioned package is the one already installed
