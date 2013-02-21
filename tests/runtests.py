@@ -46,7 +46,6 @@ if __name__ == '__main__':
         '-e', 'test_install_from_mirrors',
         '-e', 'test_install_from_mirrors_with_specific_mirrors',
         '-e', 'test_finder_priority_page_over_deplink',
-        '-e', 'test_no_upgrade_unless_requested',
         '-e', 'test_upgrade_from_reqs_file',
         '-e', 'test_upgrade_with_newest_already_installed',
         '-e', 'test_upgrade_force_reinstall_newest',
@@ -60,8 +59,10 @@ if __name__ == '__main__':
         '-e', 'test_install_user_conflict_in_globalsite_and_usersite',
         '-e', 'test_install_user_conflict_in_usersite',
         '-e', 'test_upgrade_user_conflict_in_globalsite',
-        '-e', 'test_install_user_in_global_virtualenv_with_conflict_fails'
+        '-e', 'test_install_user_in_global_virtualenv_with_conflict_fails',
         # Pip tests excluded because of different functionality in snakebasket  
+        '-e', 'test_no_upgrade_unless_requested',
+        '-e', 'test_upgrade_to_specific_version'
     ]
 
     sys.argv.extend(excluded_tests)

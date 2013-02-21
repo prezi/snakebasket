@@ -53,7 +53,17 @@ class RecursiveRequirementSet(RequirementSet):
             not_found = None
             if not self.ignore_installed and not req_to_install.editable:
                 req_to_install.check_if_exists()
+
                 if req_to_install.satisfied_by:
+
+                    substitute = self.install_req_checker.get_available_substitute(req_to_install)
+                    if (
+                        req_to_install == substitute.requirement
+                        and
+                        self.install_req_checker.pre_installed[req_to_install.name].requirement is not req_to_install
+                    ):
+                        self.upgrade = True 
+
                     if self.upgrade:
                         if not self.force_reinstall and not req_to_install.url:
                             try:
@@ -196,7 +206,6 @@ class RecursiveRequirementSet(RequirementSet):
                         if req_to_install.editable and req_to_install.source_dir:
                             for subreq in self.install_requirements_txt(req_to_install):
                                 if self.add_requirement(subreq):
-                                    # TODO: what if subreq is unnamed?
                                     reqs.append(subreq)
                     if not self.has_requirement(req_to_install.name):
                         #'unnamed' requirements will get added here
