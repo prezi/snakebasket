@@ -42,6 +42,7 @@ if __name__ == '__main__':
         '-e', 'test_uninstall_editable_from_svn',
         '-e', 'test_uninstall_from_reqs_file',
         '-e', 'test_install_subversion_usersite_editable_with_distribute',
+        '-e', 'test_freeze_bazaar_clone',
         # Temporarily excluded to get Jenkins job to pass (failed) 
         '-e', 'test_install_from_mirrors',
         '-e', 'test_install_from_mirrors_with_specific_mirrors',
