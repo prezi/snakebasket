@@ -43,15 +43,15 @@ if __name__ == '__main__':
         '-e', 'test_uninstall_from_reqs_file',
         '-e', 'test_install_subversion_usersite_editable_with_distribute',
         '-e', 'test_freeze_bazaar_clone',
-        # Temporarily excluded to get Jenkins job to pass (failed) 
+        # Pip tests excluded because of different functionality in snakebasket  
+        '-e', 'test_install_from_mirrors_with_specific_mirrors',
+        '-e', 'test_no_upgrade_unless_requested',
+        '-e', 'test_upgrade_to_specific_version',
         '-e', 'test_install_user_conflict_in_globalsite',
         '-e', 'test_install_user_conflict_in_globalsite_and_usersite',
         '-e', 'test_install_user_conflict_in_usersite',
         '-e', 'test_upgrade_user_conflict_in_globalsite',
-        '-e', 'test_install_user_in_global_virtualenv_with_conflict_fails',
-        # Pip tests excluded because of different functionality in snakebasket  
-        '-e', 'test_no_upgrade_unless_requested',
-        '-e', 'test_upgrade_to_specific_version'
+        '-e', 'test_install_user_in_global_virtualenv_with_conflict_fails'
     ]
 
     sys.argv.extend(excluded_tests)
