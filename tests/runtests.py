@@ -44,8 +44,6 @@ if __name__ == '__main__':
         '-e', 'test_install_subversion_usersite_editable_with_distribute',
         '-e', 'test_freeze_bazaar_clone',
         # Temporarily excluded to get Jenkins job to pass (failed) 
-        '-e', 'test_install_from_mirrors',
-        '-e', 'test_install_from_mirrors_with_specific_mirrors',
         '-e', 'test_finder_priority_page_over_deplink',
         '-e', 'test_install_user_conflict_in_globalsite',
         '-e', 'test_install_user_conflict_in_globalsite_and_usersite',
