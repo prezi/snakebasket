@@ -60,7 +60,11 @@ class RecursiveRequirementSet(RequirementSet):
                     if (
                         req_to_install == substitute.requirement
                         and
-                        self.install_req_checker.pre_installed[req_to_install.name].requirement is not req_to_install
+                        (
+                            req_to_install.name not in self.install_req_checker.pre_installed
+                            or
+                            self.install_req_checker.pre_installed[req_to_install.name].requirement is not req_to_install
+                        )
                     ):
                         self.upgrade = True 
 
