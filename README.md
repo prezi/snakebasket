@@ -56,7 +56,7 @@ or, if you have a list of dependencies:
 
 pip works great for basic applications with few dependencies and a flat structure (packages that don't depend on other packages which then  depend on other packages), but when you try and use pip for an application like this:
 
-![dependency hell](wiki/dependency_hell.jpg)
+![dependency hell](https://github.com/prezi/snakebasket/wiki/dependency_hell.jpg)
 
 pip chokes. And that's where snakebasket comes in.
 
