@@ -11,7 +11,7 @@ snakebasket does two things:
 
 Installation
 ---
-Within your virtualenv, run:
+Within your [virtualenv](https://pypi.python.org/pypi/virtualenv) of choice, run:
 `curl -ss -L http://href.prezi.com/snakebasket | bash -s`
 
 Development
