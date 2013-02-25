@@ -18,7 +18,7 @@ Development
 ---
 Because snakebasket includes a particular [pip](https://github.com/pypa/pip) commit as a sub-repo, use
 ```bash
-git clone --recursive git@github.com:prezi/snakebasket.git 
+$ git clone --recursive git@github.com:prezi/snakebasket.git 
 ```
 to clone both snakebasket and the pip sub-repo completely.
 
