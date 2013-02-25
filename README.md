@@ -14,7 +14,7 @@ Within your virtualenv, run:
 
 Development
 ---
-Because snakebasket includes [pip](http://pypi.python.org/pypi/pip) as a sub-repo, use
+Because snakebasket includes [pip](https://github.com/pypa/pip) as a sub-repo, use
 ```bash
 git clone --recursive git@github.com:prezi/snakebasket.git 
 ```
