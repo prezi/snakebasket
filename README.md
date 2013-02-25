@@ -24,15 +24,23 @@ Within your [virtualenv](https://pypi.python.org/pypi/virtualenv) of choice, run
 
 Development
 ---
-Because snakebasket includes a particular [pip](https://github.com/pypa/pip) commit as a sub-repo, use
+Because snakebasket includes a particular [pip](https://github.com/pypa/pip) commit as a submodule, use
 ```bash
 $ git clone --recursive git@github.com:prezi/snakebasket.git 
 ```
-to clone both snakebasket and the pip sub-repo completely.
+to clone both snakebasket and the pip submodule completely.
 
 ###Testing
 
-snakebasket's testing suite is comprised primarily of verbaitum pip tests (with some exclusions) and a handful of snakebasket specific tests.
+snakebasket's testing suite is comprised primarily of verbaitum pip tests (with some exclusions) and a handful of snakebasket specific tests. In the `tests` directory you'll see:
+
+```
+tests/
+    * test_*.py
+    * test_sb_*.py
+```
+
+`test_*.py` are symlinks to their corresponding `pip/tests/test_*.py` in the pip submodule. `test_sb_*.py` are snakebasket specific tests.
 
 To run snakebasket tests, you must first create a virtualenv
 and add the necessary testing packages:
