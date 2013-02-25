@@ -5,12 +5,14 @@ snakebasket is a layer on top of [pip](https://github.com/pypa/pip) which makes 
 
 Two things snakebasket **does** (but pip doesn't):
 
-1. Recursively reads requirements from simple `requirements.txt` or old-school `setup.ph` files during `sb install`.
+1. Recursively read requirements from simple `requirements.txt` or old-school `setup.ph` files during `sb install`.
 
-2. Chooses and installs the latest depedency versions, in the case of conflicting requirements.
+2. Choose and install the latest depedency versions, in the case of conflicting requirements.
 
 One thing snakebasket **doesn't** (but pip does):
+
 1. Support SVN
+
 2. Support Mercurial
 
 git and PyPI snakes only, please.
