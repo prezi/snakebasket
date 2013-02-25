@@ -42,6 +42,8 @@ tests/
 
 `test_*.py` are symlinks to their corresponding `pip/tests/test_*.py` in the pip submodule. `test_sb_*.py` are snakebasket specific tests.
 
+The pip tests that are excluded are declared to be so in `tests/excluded_tests.py`
+
 To run snakebasket tests, you must first create a virtualenv
 and add the necessary testing packages:
 ```bash
