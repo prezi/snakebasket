@@ -1,22 +1,16 @@
 Snakebasket
 ===============
 
-The pip++ which will eventually make python development a little easier:
-Features:
- * Follow requirements.txt or requirements-$POSTFIX.txt files in 
-   the root of editable requirements during install.
- * In case of conflicting requirements, choose the newer version.
+snakebasket is the pip++ which makes multi-package python development a little easier:
+
+snakebasket does two things:
+ * Recursively reads simple `requirements.txt` or old-school `setup.ph` files during install.
+ * Chooses and installs the latest depedency versions, in the case of conflicting requirements.
 
 Installation
 ---
 Within your virtualenv, run:
 `curl -ss -L http://href.prezi.com/snakebasket | bash -s`
-
-Legacy
----
-*Don't use this version unless you want to spend countless hours debugging unreadable code!*
-The old and untested version of snakebasket can be installed via pip from:
-`pip install -e git+git@github.com:prezi/snakebasket.git@v1.0.0#egg=snakebasket`
 
 Development
 ---
@@ -96,7 +90,7 @@ Thus, to use pip by itself is to have to manually keep all versions in sync acro
 
 In the above situation, snakebasket picks the latest version, and then it `sb install`s that decision.
 
-You can specify package dependencies in a few ways (including via setup.py above), but the recommended way is to specify the requirements in a simple `requirements.txt` from which snakebasket automatically reads:
+You can specify package dependencies in a few ways (including via setup.py above), but the recommended way is to specify the requirements in a simple `requirements.txt` (or `requirements-$POSTFIX.txt`) from which snakebasket automatically reads:
 
 ```
 #foo/requirements.txt
