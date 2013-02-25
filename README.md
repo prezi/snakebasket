@@ -25,16 +25,16 @@ to clone both snakebasket and the pip sub-repo completely.
 
 To run snakebasket tests, you must first create a virtualenv
 and add the necessary testing packages:
-```
-virtualenv --distribute --no-site-packages -p python2.6 sb-venv
-. sb-venv/bin/activate
-pip install -r requirements-development.txt 
+```bash
+$ virtualenv --distribute --no-site-packages -p python2.6 sb-venv
+$ . sb-venv/bin/activate
+(sb-venv)$ pip install -r requirements-development.txt 
 ```
 To run tests, make sure the virtualenv is active, then execute the
 following from the project root:
-```
-cd tests/
-python runtests.py
+```bash
+(sb-venv)$ cd tests/
+(sb-venv)$ python runtests.py
 ```
 Warnings about certificates are expected, pay them no attention:
 ```
@@ -44,11 +44,11 @@ warning: bitbucket.org certificate with fingerprint 24:9c:45:8b:9c:aa:ba:55:4e:0
 ### Detailed Description
 In the Python world, pip is a popular tool for installing packages and dependencies:
 
-`pip install Django`
+`$ pip install Django`
 
 or, if you have a list of dependencies:
 
-`pip install -r packages_we_need.txt`
+`$ pip install -r packages_we_need.txt`
 
 pip works great for basic applications with few dependencies and a flat structure (packages that don't depend on other packages which then depend on other packages), but when you try and use pip for an application like this:
 
