@@ -16,7 +16,7 @@ Within your [virtualenv](https://pypi.python.org/pypi/virtualenv) of choice, run
 
 Development
 ---
-Because snakebasket includes [pip](https://github.com/pypa/pip) as a sub-repo, use
+Because snakebasket includes a particular [pip](https://github.com/pypa/pip) commit as a sub-repo, use
 ```bash
 git clone --recursive git@github.com:prezi/snakebasket.git 
 ```
