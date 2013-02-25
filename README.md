@@ -36,8 +36,8 @@ snakebasket's testing suite is comprised primarily of verbaitum pip tests (with 
 
 ```
 tests/
-    * test_*.py
-    * test_sb_*.py
+    - test_*.py
+    - test_sb_*.py
 ```
 
 `test_*.py` are symlinks to their corresponding `pip/tests/test_*.py` in the pip submodule. `test_sb_*.py` are snakebasket specific tests.
