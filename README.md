@@ -20,7 +20,7 @@ Because snakebasket includes [pip](https://github.com/pypa/pip) as a sub-repo, u
 ```bash
 git clone --recursive git@github.com:prezi/snakebasket.git 
 ```
-to clone the repository completely.
+to clone both snakebasket and the pip sub-repo completely.
 
 
 To run snakebasket tests, you must first create a virtualenv
