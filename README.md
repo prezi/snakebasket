@@ -54,23 +54,23 @@ or, if you have a list of dependencies:
 
 `pip install -r packages_we_need.txt`
 
-pip works great for basic applications with few dependencies and a flat structure (packages that don't depend on other packages which then  depend on other packages), but when you try and use pip for an application like this:
+pip works great for basic applications with few dependencies and a flat structure (packages that don't depend on other packages which then depend on other packages), but when you try and use pip for an application like this:
 
 ![dependency hell](https://github.com/prezi/snakebasket/wiki/dependency_hell.jpg)
 
 pip chokes. And that's where snakebasket comes in.
 
-There are two major features of snakebasket that make up for two of pip's shortcomings: 
+snakebasket does two big things that help make up for pip's shortcomings: 
 
 **1. Installs recursive dependencies.**
 
-    With pip, every desired package needs to be manually `pip installed`.
+With pip, every desired package needs to be manually `pip installed`.
 
-    snakebasket `sb install`s (via `pip install`) a list of dependencies from the desired package's `requirements.txt` file—and then it installs further packages form the `requirements.txt` file of every subsequent dependency, recursively.
+snakebasket `sb install`s (via `pip install`) a list of dependencies from the desired package's `requirements.txt` file—and then it installs further packages from the `requirements.txt` file of every subsequent dependency, recursively.
 
 **2. Decides between conflicting versions of the same package.**
 
-    pip allows exactly one version of a package to be installed in a given environment, and thus expects all packages to depend on that same single version. In this example:
+pip allows exactly one version of a package to be specified in a given environment, and thus expects all packages to depend on that same single version. In this example:
 
 ```python
 #foo/setup.py
@@ -94,9 +94,10 @@ where foo.py and bar.py are installed in the same environment, pip would break a
 
 Thus, to use pip by itself is to have to manually keep all versions in sync across an environment. In complex applications with many contributors, this doesn't scale well.
 
-In the above situation, snakebasket installs the latest version, and then it `sb install`s that decision.
+In the above situation, snakebasket picks the latest version, and then it `sb install`s that decision.
 
-It is recommended to specify the requirements in a simple `requirements.txt` from which snakebasket automatically reads:
+You can specify package dependencies in a few ways (including via setup.py above), but the recommended way is to specify the requirements in a simple `requirements.txt` from which snakebasket automatically reads:
+
 ```
 #foo/requirements.txt
 ReportLab=1.7
@@ -107,9 +108,8 @@ ReportLab=1.7
 ReportLab=0.9
 ```
 
-Explicit versions are always recommended. Regardless of where it is in the hierarchy, the latest specified version of any dependency is the one that is ultimately installed. If an explicit version is not specified, snakebasket interprets that to mean the latest available version.
+Explicit versions are always recommended. Regardless of where it is in the hierarchy, the latest specified version of any dependency is the one that will ultimately be installed. If an explicit version is not specified, snakebasket interprets that to mean the latest available version.
 
-The only situation where the non-latest version could be installed is where one depedency version is implict (not pinned), another (earlier) dependency version is explicit, and the `--prefer-pinned-revision` flag is set during `sb install`
+The only situation where the non-latest version could be installed is where one depedency version is implict (not pinned), another (earlier) dependency version is explicit, and the install command is `sb install --prefer-pinned-revision`.
 
 Of course, all of this *makes a huge assumption on the backwards compatibility of dependencies*. snakebasket currently relies on this assumption.
-
