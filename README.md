@@ -4,8 +4,8 @@ Snakebasket
 snakebasket is the pip++ which makes multi-package python development a little easier:
 
 snakebasket does two things:
- * Recursively reads simple `requirements.txt` or old-school `setup.ph` files during install.
- * Chooses and installs the latest depedency versions, in the case of conflicting requirements.
+1. Recursively reads requirements from simple `requirements.txt` or old-school `setup.ph` files during `sb install`.
+2. Chooses and installs the latest depedency versions, in the case of conflicting requirements.
 
 Installation
 ---
