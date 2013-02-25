@@ -1,7 +1,7 @@
 Snakebasket
 ===============
 
-snakebasket is the pip++ which makes multi-package python development a little easier:
+snakebasket is a layer on top of [pip](https://github.com/pypa/pip) which makes multi-package python development a little easier:
 
 snakebasket does two things:
 
@@ -22,6 +22,7 @@ $ git clone --recursive git@github.com:prezi/snakebasket.git
 ```
 to clone both snakebasket and the pip sub-repo completely.
 
+##Testing
 
 To run snakebasket tests, you must first create a virtualenv
 and add the necessary testing packages:
