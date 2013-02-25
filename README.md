@@ -3,11 +3,17 @@ Snakebasket
 
 snakebasket is a layer on top of [pip](https://github.com/pypa/pip) which makes multi-package python development a little easier:
 
-snakebasket does two things:
+Two things snakebasket **does** (but pip doesn't):
 
 1. Recursively reads requirements from simple `requirements.txt` or old-school `setup.ph` files during `sb install`.
 
 2. Chooses and installs the latest depedency versions, in the case of conflicting requirements.
+
+One thing snakebasket **doesn't** (but pip does):
+1. Support SVN
+2. Support Mercurial
+
+git and PyPI snakes only, please.
 
 Installation
 ---
@@ -22,7 +28,9 @@ $ git clone --recursive git@github.com:prezi/snakebasket.git
 ```
 to clone both snakebasket and the pip sub-repo completely.
 
-##Testing
+###Testing
+
+snakebasket's testing suite is comprised primarily of verbaitum pip tests (with some exclusions) and a handful of snakebasket specific tests.
 
 To run snakebasket tests, you must first create a virtualenv
 and add the necessary testing packages:
@@ -42,7 +50,8 @@ Warnings about certificates are expected, pay them no attention:
 warning: bitbucket.org certificate with fingerprint 24:9c:45:8b:9c:aa:ba:55:4e:01:6d:58:ff:e4:28:7d:2a:14:ae:3b not verified (check hostfingerprints or web.cacerts config setting)
 ```
 
-### Detailed Description
+Detailed Description
+---
 In the Python world, pip is a popular tool for installing packages and dependencies:
 
 `$ pip install Django`
