@@ -60,7 +60,7 @@ snakebasket does two big things that help make up for pip's shortcomings:
 
 **1. Installs recursive dependencies.**
 
-With pip, every desired package needs to be manually `pip installed`.
+With pip, every desired package needs to be manually `pip install`ed.
 
 snakebasket `sb install`s (via `pip install`) a list of dependencies from the desired package's `requirements.txt` file—and then it installs further packages from the `requirements.txt` file of every subsequent dependency, recursively.
 
