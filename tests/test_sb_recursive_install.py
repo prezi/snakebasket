@@ -97,3 +97,10 @@ def test_reinstall_interrupted_install_with_missing_deps():
     a['snakebasket'][0].egg_info
     """
     assert True
+
+
+def test_non_editable_version_conflict_no_versions():
+    """ STUB: Non-editable packages could potentially have
+    no version information in the downloaded state.
+    """
+    assert True
