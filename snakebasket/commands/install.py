@@ -57,6 +57,14 @@ class RecursiveRequirementSet(RequirementSet):
                 if req_to_install.satisfied_by:
 
                     substitute = self.install_req_checker.get_available_substitute(req_to_install)
+
+                    # if the req_to_install is identified as the best available substitue
+                    # AND
+                    # ( no version with req_to_install.name has been installed 
+                        # OR a different version of req_to_install.name is has been installed
+                    # )
+                    # then set the self.upgrade flag to True to install req_to_install
+
                     if (
                         req_to_install == substitute.requirement
                         and
