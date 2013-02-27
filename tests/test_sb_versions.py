@@ -114,7 +114,6 @@ def test_requirement_set_will_include_correct_version():
         '-e', '%s@0.2.1#egg=sb-test-package' % local_url]
     result = run_pip(*args, **{"expect_error": True})
     result.assert_installed('sb-test-package')
-    # import sys ; sys.exit(result.stdout)
     v020 = 'sb-test-package 0.2.0'
     v021 = 'sb-test-package 0.2.1'
     assert not (v020 in result.stdout)
