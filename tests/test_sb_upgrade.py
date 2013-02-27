@@ -4,7 +4,7 @@ from tests.test_pip import (here, reset_env, run_pip, assert_all_changes,
                             _change_test_package_version)
 from tests.local_repos import local_checkout
 
-def test_no_upgrade_if_prefer_pinned():
+def test_no_upgrade_pypi_if_prefer_pinned():
     """
     No upgrade if 1)--prefer-pinned-revision is True and 2) previously installed version is pinned.
 
@@ -14,7 +14,7 @@ def test_no_upgrade_if_prefer_pinned():
     result = run_pip('install','--prefer-pinned-revision', 'INITools', expect_error=True)
     assert not result.files_created, 'pip install INITools upgraded when it should not have'
 
-def test_upgrade_if_no_prefer_pinned():
+def test_upgrade_pypi_if_no_prefer_pinned():
     """
     Upgrade if 1)--prefer-pinned-revision is False and 2) previously installed version is pinned.
 
