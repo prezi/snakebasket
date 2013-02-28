@@ -40,6 +40,7 @@ class RecursiveRequirementSet(RequirementSet):
         self.install_req_checker.prefer_pinned_revision = value.prefer_pinned_revision
 
     def prepare_files(self, finder, force_root_egg_info=False, bundle=False):
+
         """Prepare process. Create temp directories, download and/or unpack files."""
         unnamed = list(self.unnamed_requirements)
         reqs = list(self.requirements.values())
@@ -97,7 +98,7 @@ class RecursiveRequirementSet(RequirementSet):
                             req_to_install.satisfied_by = None
                     else:
                         install = False
-                if req_to_install.satisfied_by:
+                if req_to_install.satisfied_by and self.upgrade == False:
                     if best_installed:
                         logger.notify('Requirement already up-to-date: %s'
                                       % req_to_install)
@@ -106,7 +107,7 @@ class RecursiveRequirementSet(RequirementSet):
                                       '(use --upgrade to upgrade): %s'
                                       % req_to_install)
             if req_to_install.editable:
-                logger.notify('Obtaining %s' % req_to_install)
+                logger.notify('Obtainng %s' % req_to_install)
             elif install:
                 logger.notify('Downloading/unpacking %s' % req_to_install)
             logger.indent += 2
