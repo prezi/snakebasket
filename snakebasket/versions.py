@@ -28,6 +28,7 @@ from pip.vcs import subversion, git, bazaar, mercurial
 import pkg_resources
 from distutils.version import StrictVersion, LooseVersion
 import itertools
+from distutils.sysconfig import get_python_lib
 
 
 class SeparateBranchException(Exception):
@@ -202,8 +203,7 @@ class PackageData(object):
         if hasattr(dist, 'location'):
             location = dist.location
         elif name is not None and url is not None and editable:
-            # TODO: use non-virtualenv basedir instead of '/' if not in virtualenv
-            location_candidate = os.path.join(os.environ.get('VIRTUAL_ENV', '/'), 'src', dist.name, '.git')
+            location_candidate = os.path.join(os.environ.get('VIRTUAL_ENV', get_python_lib()), 'src', dist.name, '.git')
             if os.path.exists(location_candidate):
                 location = location_candidate
                 if hasattr(dist, 'url') and dist.url:
