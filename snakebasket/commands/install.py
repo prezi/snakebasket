@@ -98,7 +98,7 @@ class RecursiveRequirementSet(RequirementSet):
                             req_to_install.satisfied_by = None
                     else:
                         install = False
-                if req_to_install.satisfied_by and self.upgrade == False:
+                if req_to_install.satisfied_by:
                     if best_installed:
                         logger.notify('Requirement already up-to-date: %s'
                                       % req_to_install)
