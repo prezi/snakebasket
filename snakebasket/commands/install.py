@@ -107,7 +107,7 @@ class RecursiveRequirementSet(RequirementSet):
                                       '(use --upgrade to upgrade): %s'
                                       % req_to_install)
             if req_to_install.editable:
-                logger.notify('Obtainng %s' % req_to_install)
+                logger.notify('Obtaining %s' % req_to_install)
             elif install:
                 logger.notify('Downloading/unpacking %s' % req_to_install)
             logger.indent += 2
