@@ -62,7 +62,7 @@ class RecursiveRequirementSet(RequirementSet):
                     # if the req_to_install is identified as the best available substitue
                     # AND
                     # ( no version with req_to_install.name has been installed 
-                        # OR a different version of req_to_install.name is has been installed
+                        # OR a different version of req_to_install.name has been installed
                     # )
                     # then set the self.upgrade flag to True to install req_to_install
 
