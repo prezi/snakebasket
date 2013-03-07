@@ -56,11 +56,28 @@ def test_no_upgrade_editable_if_prefer_pinned():
 
 def test_upgrade_editable_if_no_prefer_pinned():
     """
-    Upgrade editable if 1)--prefer-pinned-revision is False (default) and 2) previously installed version is pinned.
+    Upgrade editable if 1)--prefer-pinned-revision is False (default) and 2) previously installed version is pinned and not the latest version.
 
     """
-    env = reset_env()
-    # run_pip('install', 'INITools==0.1', expect_error=True)
-    # result = run_pip('install', 'INITools', expect_error=True)
-    # assert result.files_created, 'pip install --upgrade did not upgrade'
-    # assert env.site_packages/'INITools-0.1-py%s.egg-info' % pyversion not in result.files_created
+    reset_env()
+
+    local_url = local_checkout('git+http://github.com/prezi/sb-test-package.git')
+
+    args = ['install',
+        # older version
+        '-e', '%s@0.2.0#egg=sb-test-package' % local_url]
+
+    result = run_pip(*args, **{"expect_error": True})
+    result.assert_installed('sb-test-package')
+
+    args = ['install',
+        # unpinned newer version
+        '-e', '%s#egg=sb-test-package' % local_url]
+    result = run_pip(*args, **{"expect_error": True})
+
+    # worrysome_files_created are all files that aren't located in .git/, created by the comparison `git fetch`
+    expected_files_regex = re.compile('[.]git')
+    new_files_created = [file_path for file_path in result.files_created.keys() if not expected_files_regex.search(file_path)]
+
+    # new_files_created should contain a file that appears in versions >=0.2.1, but not in 0.2.2
+    assert new_files_created, 'sb install sb-test-package did not upgrade when it should have'
