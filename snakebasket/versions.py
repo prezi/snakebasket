@@ -250,13 +250,11 @@ class InstallReqChecker(object):
 
     def checkout_if_necessary(self, pd):
         if pd.location is None:
-            print '___FETCHING!___'
             pd.location = GitVersionComparator.checkout_pkg_repo(pd.url, pd.clone_dir(self.src_dir))
             self.repo_up_to_date[pd.location] = True
         # self.repo_up_to_date[pd.location] is False if the git repo existed before this
         # snakebasket run, and has not yet been fetched (therefore may contain old data).
         elif self.repo_up_to_date.get(pd.location, True) == False:
-            print '___GONE!___'
             # Do a git fetch for repos which were not checked out recently.
             logger.notify("Performing git fetch in pre-existing directory %s" % pd.location)
             GitVersionComparator.do_fetch(pd.location)
