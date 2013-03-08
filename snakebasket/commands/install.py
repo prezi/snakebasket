@@ -338,11 +338,11 @@ class RInstallCommand(InstallCommand):
         if not requirement_set.has_requirements:
             opts = {'name': self.name}
             if options.find_links:
-                msg = ('You must give at least one requirement to %(name)s '
+                msg = ('You must give at least one valid requirement to %(name)s '
                        '(maybe you meant "pip %(name)s %(links)s"?)' %
                        dict(opts, links=' '.join(options.find_links)))
             else:
-                msg = ('You must give at least one requirement '
+                msg = ('You must give at least one valid requirement '
                        'to %(name)s (see "pip help %(name)s")' % opts)
             logger.warn(msg)
             return
