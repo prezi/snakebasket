@@ -23,7 +23,8 @@ from pip.exceptions import InstallationError
 import re
 from pip.util import call_subprocess
 from pip.log import logger
-import os
+import subprocess
+import os, re, io
 from pip.vcs import subversion, git, bazaar, mercurial
 import pkg_resources
 from distutils.version import StrictVersion, LooseVersion
@@ -261,6 +262,22 @@ class InstallReqChecker(object):
             self.repo_up_to_date[pd.location] = True
         return pd.location
 
+    def check_for_uncommited_git_changes(self, working_directory):
+
+        # Check for modifications
+        git_status = subprocess.Popen(['git', 'status', '-s'], cwd=working_directory, stdout=subprocess.PIPE)
+
+        listed_modifications = git_status.stdout.read().splitlines()
+
+        # Strip out non-source-controlled .egg-info directory
+        egg_info_regex = re.compile('[.]egg-info/')
+        actual_modifications = [change for change in listed_modifications if not egg_info_regex.search(change) ]
+        number_of_changes = len(actual_modifications)
+
+        # Return True if at least one modification has been made
+        return (number_of_changes > 0)
+
+
     # Both directions are saved, but the outcome is the opposite, eg:
     # 0.1.2 vs 0.1.1 -> GT
     # 0.1.1 vs 0.1.2 -> LT
@@ -324,6 +341,11 @@ class InstallReqChecker(object):
         packages_in_conflict = [pd, existing_req]
         editables = [p for p in packages_in_conflict if p.editable]
         if len(editables) == 2:
+
+            if self.check_for_uncommited_git_changes(os.path.join(sys.prefix, 'src', existing_req.name)):
+                logger.notify('Cannot be upgraded due to uncommitted git modifications')
+                return existing_req
+
             # This is an expensive comparison, so let's cache results
             competing_version_urls = [str(r.url) for r in packages_in_conflict]
             cmp_result = self.get_cached_comparison_result(*competing_version_urls)
