@@ -28,5 +28,8 @@ excluded_tests = [
     '-e', 'test_install_user_conflict_in_globalsite_and_usersite',
     '-e', 'test_install_user_conflict_in_usersite',
     '-e', 'test_upgrade_user_conflict_in_globalsite',
-    '-e', 'test_install_user_in_global_virtualenv_with_conflict_fails'
+    '-e', 'test_install_user_in_global_virtualenv_with_conflict_fails',
+    # Pip tests excluded because of incompatibility with current `pip search` results format  
+    '-e', 'test_search',
+    '-e', 'test_multiple_search'
 ]
