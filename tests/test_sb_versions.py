@@ -21,6 +21,7 @@ def test_comparison():
         install_requirement = InstallRequirement(req, None, editable = True, url = req.url)
 
         return install_requirement
+
     reset_env()
 
     older_ver = '0.1'
