@@ -133,8 +133,6 @@ def test_no_upgrade_editable_if_uncommitted_new_file():
 
     # Create a new file that isn't in source control
     subprocess.Popen(['touch', 'new_file.txt'], cwd=os.path.join(env.venv_path, 'src/sb-test-package'), stdout=subprocess.PIPE)
-    
-    from nose.tools import set_trace ; set_trace()
 
     # Attempt to install a new version
     args = ['install',
