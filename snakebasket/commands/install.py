@@ -336,15 +336,20 @@ class RInstallCommand(InstallCommand):
             for req in parse_requirements(filename, finder=finder, options=options):
                 requirement_set.add_requirement(req)
         if not requirement_set.has_requirements:
-            opts = {'name': self.name}
-            if options.find_links:
-                msg = ('You must give at least one valid requirement to %(name)s '
-                       '(maybe you meant "pip %(name)s %(links)s"?)' %
-                       dict(opts, links=' '.join(options.find_links)))
+            if args or options.editables or options.requirements:
+                msg = 'All requirements seem to be already satisfied.'
+                logger.notify(msg)
             else:
-                msg = ('You must give at least one valid requirement '
-                       'to %(name)s (see "pip help %(name)s")' % opts)
-            logger.warn(msg)
+                opts = {'name': self.name}
+                if options.find_links:
+                    msg = ('You must give at least one valid requirement to %(name)s '
+                           '(maybe you meant "pip %(name)s %(links)s"?)' %
+                           dict(opts, links=' '.join(options.find_links)))
+                else:
+                    msg = ('You must give at least one valid requirement '
+                           'to %(name)s (see "pip help %(name)s")' % opts)
+                logger.warn(msg)
+
             return
 
         if (options.use_user_site and
