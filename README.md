@@ -9,7 +9,7 @@ Two things snakebasket **does** (but pip doesn't):
 
 2. Choose and install the latest depedency versions, in the case of conflicting requirements.
 
-One thing snakebasket **doesn't** (but pip does):
+Two things snakebasket **doesn't** (but pip does):
 
 1. Support SVN
 
