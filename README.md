@@ -128,6 +128,8 @@ ReportLab=0.9
 
 Explicit versions are always recommended. Regardless of where it is in the hierarchy, the latest specified version of any dependency is the one that will ultimately be installed. If an explicit version is not specified, snakebasket interprets that to mean the latest available version.
 
+**--prefer-pinned-revision**
+
 The only situation where the non-latest version could be installed is where one depedency version is implict (not pinned), another (earlier) dependency version is explicit, and the install command is `sb install --prefer-pinned-revision`.
 
-Of course, all of this *makes a huge assumption on the backwards compatibility of dependencies*. snakebasket currently relies on this assumption.
+Of course, all of the above *makes a huge assumption on the backwards compatibility of dependencies*. snakebasket currently relies on this assumption.
