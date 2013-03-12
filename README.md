@@ -47,6 +47,7 @@ The pip tests that are excluded are declared to be so in `tests/excluded_tests.p
 To run snakebasket tests, you must first create a virtualenv
 and add the necessary testing packages:
 ```bash
+$ cd snakebasket
 $ virtualenv --distribute --no-site-packages -p python2.6 sb-venv
 $ . sb-venv/bin/activate
 (sb-venv)$ pip install -r requirements-development.txt 
