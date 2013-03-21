@@ -329,16 +329,16 @@ class InstallReqChecker(object):
         """Find an available substitute for the given package.
            Returns a PackageData object.
         """
-        pd = PackageData.from_dist(install_req)
-        if pd.name is None:
+        new_candidate_package_data = PackageData.from_dist(install_req)
+        if new_candidate_package_data.name is None:
             # cannot find alternative versions without a name.
             return None
 
-        existing_req = self.find_potential_substitutes(pd.name)
-        if existing_req is None:
+        existing_package_data = self.find_potential_substitutes(new_candidate_package_data.name)
+        if existing_package_data is None:
             return None
 
-        packages_in_conflict = [pd, existing_req]
+        packages_in_conflict = [new_candidate_package_data, existing_package_data]
         editables = [p for p in packages_in_conflict if p.editable]
         if len(editables) == 2:
 
@@ -357,46 +357,46 @@ class InstallReqChecker(object):
                 # the given repo (its just the version that's not decided yet).
                 # So let's check out the repo into the src directory. Later (when we have the version) update_editable
                 # will use the correct version anyway.
-                repo_dir = self.checkout_if_necessary(packages_in_conflict[0])
+                repo_dir = self.checkout_if_necessary(new_candidate_package_data)
                 cmp = GitVersionComparator(repo_dir, self.prefer_pinned_revision)
                 try:
                     versions = [GitVersionComparator.get_version_string_from_url(r.url) for r in packages_in_conflict]
                     if len([v for v in versions if v == None]) == 2:
                         # if either the existing requirement or the new candidate has no version info and is editable,
                         # we better update our clone and re-run setup.
-                        return None  # OPTIMIZE return with the installed version
+                        return existing_package_data  # OPTIMIZE return with the installed version
                     cmp_result = cmp.compare_versions(*versions)
 
                     self.save_comparison_result(competing_version_urls[0], competing_version_urls[1], cmp_result)
                 except SeparateBranchException, exc:
                     raise InstallationError(
                         "%s: Conflicting versions cannot be compared as they are not direct descendants according to git. Exception: %s, Package data: %s." % (
-                        packages_in_conflict[0].name,
+                        new_candidate_package_data.name,
                         str([p.__dict__ for p in packages_in_conflict]),
                         str(exc.args)))
             else:
                 logger.debug("using cached comparison: %s %s -> %s" % (competing_version_urls[0], competing_version_urls[1], cmp_result))
-            return None if cmp_result == GitVersionComparator.GT else packages_in_conflict[1]
+            return None if cmp_result == GitVersionComparator.GT else existing_package_data
         elif len(editables) == 0:
             versioned_packages = [p for p in packages_in_conflict if p.version is not None]
             if len(versioned_packages) == 0:
-                if packages_in_conflict[0].url == packages_in_conflict[1].url:
+                if new_candidate_package_data.url == existing_package_data.url:
                     # It doesn't matter which InstallationRequirement object we use, they represent the same dependency.
-                    return packages_in_conflict[1]
+                    return existing_package_data
                 else:
-                    raise InstallationError("%s: Package installed with no version information from different urls: %s and %s" % (packages_in_conflict[0].name, packages_in_conflict[0].url, packages_in_conflict[1].url))
+                    raise InstallationError("%s: Package installed with no version information from different urls: %s and %s" % (new_candidate_package_data.name, new_candidate_package_data.url, existing_package_data.url))
             elif len(versioned_packages) == 1:
 
                 # if the package to be installed is the versioned package
-                if(packages_in_conflict[0] is versioned_packages[0]):
-                    return None if self.prefer_pinned_revision else packages_in_conflict[1]
+                if(new_candidate_package_data is versioned_packages[0]):
+                    return None if self.prefer_pinned_revision else existing_package_data
 
                 # else the versioned package is the one already installed
                 else:
-                    return packages_in_conflict[1] if self.prefer_pinned_revision else None
+                    return existing_package_data if self.prefer_pinned_revision else None
 
             else:
-                return None if packages_in_conflict[0] > packages_in_conflict[1] else packages_in_conflict[1]
+                return None if new_candidate_package_data > existing_package_data else existing_package_data
         else:  # mixed case
             logger.notify("Conflicting requirements for %s, using editable version" % install_req.name)
             return editables[0]
