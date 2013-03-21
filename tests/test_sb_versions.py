@@ -12,11 +12,15 @@ def test_comparison():
     url_template = "git+http://github.com/prezi/sb-test-package.git@%s#egg=sb-test-package"
     test_project_name = "sb-test-package" 
 
-    def make_install_req(ver):
+    def make_install_req(ver=None):
         req = Mock()
         req.project_name = test_project_name
-        req.url = url_template % ver
-        req.specs = [('==', ver)] 
+        if ver:
+            req.url = url_template % str(ver)
+            req.specs = [('==', ver)]
+        else:
+            req.url = url_template.replace('@','') % ''
+            req.specs = []
 
         install_requirement = InstallRequirement(req, None, editable = True, url = req.url)
 
@@ -103,6 +107,18 @@ def test_comparison():
         checker.get_available_substitute(branch_b_req)
 
     assert_raises(InstallationError, compare_two_different_branches)
+
+    # two unpinned versions of the same requirement should be equal:
+
+    unpinned_req_1 = make_install_req()
+    from nose.tools import set_trace ; set_trace()
+    unpinned_req_2 = make_install_req()
+    checker = new_req_checker(unpinned_req_1)
+
+    assert_equal(
+        unpinned_req_2,
+        checker.get_available_substitute(unpinned_req_2)
+    )
 
 def test_requirement_set_will_include_correct_version():
     """ Out of two versions of the same package, the requirement set will contain the newer one. """
