@@ -342,12 +342,12 @@ class InstallReqChecker(object):
         editables = [p for p in packages_in_conflict if p.editable]
         if len(editables) == 2:
 
-            local_editable_path = os.path.join(sys.prefix, 'src', existing_req.name)
+            local_editable_path = os.path.join(sys.prefix, 'src', existing_package_data.name)
             if os.path.isdir(local_editable_path):
                 
                 if self.check_for_uncommited_git_changes(local_editable_path):
                     logger.notify('Cannot be upgraded due to uncommitted git modifications')
-                    return existing_req
+                    return existing_package_data
 
             # This is an expensive comparison, so let's cache results
             competing_version_urls = [str(r.url) for r in packages_in_conflict]
