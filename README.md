@@ -7,7 +7,7 @@ Two things snakebasket **does** (but pip doesn't):
 
 1. Recursively read requirements from simple `requirements.txt` or old-school `setup.ph` files during `sb install`.
 
-2. Choose and install the latest depedency versions, in the case of conflicting requirements.
+2. Choose and install the latest dependency versions, in the case of conflicting requirements.
 
 Two things snakebasket **doesn't** (but pip does):
 
