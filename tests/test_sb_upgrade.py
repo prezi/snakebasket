@@ -3,7 +3,6 @@ from tests.test_pip import (here, reset_env, run_pip, assert_all_changes,
                             write_file, pyversion, _create_test_package,
                             _change_test_package_version)
 from tests.local_repos import local_checkout
-from pip.exceptions import InstallationError
 from snakebasket import versions
 import subprocess
 import os, re, io
