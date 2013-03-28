@@ -1,8 +1,10 @@
-from nose.tools import nottest
+from nose.tools import nottest, assert_raises
 from tests.test_pip import (here, reset_env, run_pip, assert_all_changes,
                             write_file, pyversion, _create_test_package,
                             _change_test_package_version)
 from tests.local_repos import local_checkout
+from pip.exceptions import InstallationError
+from snakebasket import versions
 import subprocess
 import os, re, io
 
@@ -108,12 +110,7 @@ def test_no_upgrade_editable_if_uncommitted_change():
         # unpinned newer version
         '-e', '%s#egg=sb-test-package' % local_url]
     result = run_pip(*args, **{"expect_error": True})
-
-    # worrysome_files_created are all files that aren't located in .git/, created by the comparison `git fetch`
-    expected_files_regex = re.compile('[.]git')
-    worrysome_files_created = [file_path for file_path in result.files_created.keys() if not expected_files_regex.search(file_path)]
-
-    assert not worrysome_files_created, 'sb install sb-test-package upgraded when it should not have'
+    assert versions.__InstallationErrorMessage__ in result.stdout
 
 def test_no_upgrade_editable_if_uncommitted_new_file():
     """
@@ -139,9 +136,10 @@ def test_no_upgrade_editable_if_uncommitted_new_file():
         # unpinned newer version
         '-e', '%s#egg=sb-test-package' % local_url]
     result = run_pip(*args, **{"expect_error": True})
+    assert versions.__InstallationErrorMessage__ in result.stdout
 
-    # worrysome_files_created are all files that aren't located in .git/, created by the comparison `git fetch`
-    expected_files_regex = re.compile('[.]git')
-    worrysome_files_created = [file_path for file_path in result.files_created.keys() if not expected_files_regex.search(file_path)]
+    # # worrysome_files_created are all files that aren't located in .git/, created by the comparison `git fetch`
+    # expected_files_regex = re.compile('[.]git')
+    # worrysome_files_created = [file_path for file_path in result.files_created.keys() if not expected_files_regex.search(file_path)]
 
-    assert not worrysome_files_created, 'sb install sb-test-package upgraded when it should not have'
+    # assert not worrysome_files_created, 'sb install sb-test-package upgraded when it should not have'

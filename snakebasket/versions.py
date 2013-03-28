@@ -25,11 +25,14 @@ from pip.util import call_subprocess
 from pip.log import logger
 import subprocess
 import os, re, io
+from pip.exceptions import InstallationError
 from pip.vcs import subversion, git, bazaar, mercurial
 import pkg_resources
 from distutils.version import StrictVersion, LooseVersion
 import itertools
 import sys
+
+__InstallationErrorMessage__ = 'Cannot be upgraded due to uncommitted git modifications'
 
 class SeparateBranchException(Exception):
     def __init__(self, *args, **kwargs):
@@ -329,6 +332,8 @@ class InstallReqChecker(object):
         """Find an available substitute for the given package.
            Returns a PackageData object.
         """
+        global __InstallationErrorMessage__
+
         new_candidate_package_data = PackageData.from_dist(install_req)
         if new_candidate_package_data.name is None:
             # cannot find alternative versions without a name.
@@ -346,7 +351,8 @@ class InstallReqChecker(object):
             if os.path.isdir(local_editable_path):
                 
                 if self.check_for_uncommited_git_changes(local_editable_path):
-                    logger.notify('Cannot be upgraded due to uncommitted git modifications')
+                    # logger.notify('Cannot be upgraded due to uncommitted git modifications')
+                    raise InstallationError(__InstallationErrorMessage__)
                     return existing_package_data
 
             # This is an expensive comparison, so let's cache results
