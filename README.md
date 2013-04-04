@@ -25,6 +25,7 @@ But let's say you're developing a large project with a dependency graph such as 
 ![dependency hell](https://github.com/prezi/snakebasket/wiki/dependency_hell.jpg)
 
 Two big issues come up.
+
 1. You will be `pip install`ing all day, levels and levels of dependencies deep.
 
 2. It's up to you to manually patch packages that depend on different versions of a shared dependency.
