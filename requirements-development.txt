@@ -2,3 +2,4 @@ ScriptTest==1.2
 mock==1.0.1
 nose==1.2.1
 virtualenv==1.8.4
+-e git+git@github.com:prezi/sb-test-package.git@0.2.1#egg=sb-test-package
