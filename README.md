@@ -14,7 +14,7 @@ Within your [virtualenv](https://pypi.python.org/pypi/virtualenv) of choice, run
 
 At Prezi, Python applications make up a large portion of our web infrastructure. From our early beginnings, we have grown with Python as our primary language for web projects. We have seen many advantages and pitfalls of both the Python ecosystem and the language itself. To avoid some of the pitfalls, we write internal tools to support our Python development and ensure that we remain productive when working with our fast-growing codebase.
 
-snakebakset is one of those tools.
+snakebasket is one of those tools.
 
 ### What problem does it solve?
 
