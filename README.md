@@ -152,3 +152,7 @@ warning: bitbucket.org certificate with fingerprint 24:9c:45:8b:9c:aa:ba:55:4e:0
 ```
 
 Pull requests and issue tickets are welcome!
+
+# License
+
+snakebasket is released under the [MIT License](http://opensource.org/licenses/MIT).
