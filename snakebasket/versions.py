@@ -349,10 +349,12 @@ class InstallReqChecker(object):
 
             local_editable_path = os.path.join(sys.prefix, 'src', existing_package_data.name)
             if os.path.isdir(local_editable_path):
-                
+
                 if self.check_for_uncommited_git_changes(local_editable_path):
                     # logger.notify('Cannot be upgraded due to uncommitted git modifications')
-                    raise InstallationError(__InstallationErrorMessage__)
+                    raise InstallationError("{message}. In path: {path}".format(
+                                            message=__InstallationErrorMessage__,
+                                            path=local_editable_path)
                     return existing_package_data
 
             # This is an expensive comparison, so let's cache results
