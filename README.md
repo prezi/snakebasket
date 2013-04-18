@@ -3,7 +3,7 @@
 
 ## In 50 words or less?
 
-snakebasket is a recursive python package installer that makes multi-package python development a little easier. It's a layer on top of [pip](https://github.com/pypa/pip) that can resolve and install an entire dependency graph with a single command: `sb install`.
+snakebasket is a recursive Python package installer that makes multi-package Python development a little easier. It's a layer on top of [pip](https://github.com/pypa/pip) that can resolve and install an entire dependency graph with a single command: `sb install`.
 
 ## Installation
 ---
