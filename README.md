@@ -10,6 +10,8 @@ snakebasket is a recursive Python package installer that makes multi-package Pyt
 Within your [virtualenv](https://pypi.python.org/pypi/virtualenv) of choice, run:
 `curl -ss -L http://href.prezi.com/snakebasket | bash -s`
 
+If you are completely new to pip and virtualenvs, you can read this [excellent primer](http://dabapps.com/blog/introduction-to-pip-and-virtualenv-python/).
+
 ## Detailed Description
 
 At Prezi, Python applications make up a large portion of our web infrastructure. From our early beginnings, we have grown with Python as our primary language for web projects. We have seen many advantages and pitfalls of both the Python ecosystem and the language itself. To avoid some of the pitfalls, we write internal tools to support our Python development and ensure that we remain productive when working with our fast-growing codebase.
