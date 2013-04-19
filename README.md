@@ -46,7 +46,7 @@ And two things snakebasket **doesn't** (but pip does):
 
 git and PyPI packages only at this point.
 
-## How do we use snakebaset at Prezi?
+## How do we use snakebasket at Prezi?
 
 Many of our projects have dependency hierarchies multiple layers deep. When we want to install one for development or a production build, we simply run `sb install -r requirements.txt` from the project's root, and all packages in the hierarchy are installed in minutes.
 
