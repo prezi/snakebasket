@@ -10,7 +10,7 @@ snakebasket is a recursive Python package installer that makes multi-package Pyt
 Within your [virtualenv](https://pypi.python.org/pypi/virtualenv) of choice, run:
 `curl -ss -L http://href.prezi.com/snakebasket | bash -s`
 
-If you are completely new to pip and virtualenvs, you can read this [excellent primer](http://dabapps.com/blog/introduction-to-pip-and-virtualenv-python/).
+If you are new to pip and virtualenvs, you can read this [excellent primer](http://dabapps.com/blog/introduction-to-pip-and-virtualenv-python/).
 
 ## Detailed Description
 
