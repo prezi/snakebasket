@@ -13,6 +13,7 @@ import shutil
 from pip.backwardcompat import home_lib
 from pip.locations import virtualenv_no_global
 from pip.util import dist_in_usersite
+from pip.baseparser import create_main_parser 
 from ..versions import  InstallReqChecker, PackageData
 
 class ExtendedRequirements(Requirements):
@@ -271,7 +272,7 @@ class RInstallCommand(InstallCommand):
     summary = 'Recursively install packages'
 
     def __init__(self):
-        super(RInstallCommand, self).__init__()
+        super(RInstallCommand, self).__init__(create_main_parser())
         # Add env variable to specify which requirements.txt to run
         self.parser.add_option(
             '--env',
