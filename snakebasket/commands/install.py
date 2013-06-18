@@ -271,8 +271,8 @@ class RecursiveRequirementSet(RequirementSet):
 class RInstallCommand(InstallCommand):
     summary = 'Recursively install packages'
 
-    def __init__(self):
-        super(RInstallCommand, self).__init__(create_main_parser())
+    def __init__(self, *args, **kw):
+        super(RInstallCommand, self).__init__(*args, **kw)
         # Add env variable to specify which requirements.txt to run
         self.parser.add_option(
             '--env',
@@ -397,5 +397,3 @@ class RInstallCommand(InstallCommand):
                 )
             shutil.rmtree(temp_target_dir)
         return requirement_set
-
-RInstallCommand()
