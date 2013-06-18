@@ -354,8 +354,7 @@ class InstallReqChecker(object):
                     # logger.notify('Cannot be upgraded due to uncommitted git modifications')
                     raise InstallationError("{message}. In path: {path}".format(
                                             message=__InstallationErrorMessage__,
-                                            path=local_editable_path)
-                    return existing_package_data
+                                            path=local_editable_path))
 
             # This is an expensive comparison, so let's cache results
             competing_version_urls = [str(r.url) for r in packages_in_conflict]
