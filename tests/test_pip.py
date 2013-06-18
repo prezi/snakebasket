@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+import re
 import tempfile
 import shutil
 import glob
@@ -693,6 +694,16 @@ def _change_test_package_version(env, version_pkg_path):
             '-am', 'messed version',
             cwd=version_pkg_path, expect_stderr=True)
 
+
+def assert_raises_regexp(exception, reg, run, *args, **kwargs):
+    """Like assertRaisesRegexp in unittest"""
+    try:
+        run(*args, **kwargs)
+        assert False, "%s should have been thrown" %exception
+    except Exception:
+        e = sys.exc_info()[1]
+        p = re.compile(reg)
+        assert p.search(str(e)), str(e)
 
 if __name__ == '__main__':
     sys.stderr.write("Run pip's tests using nosetests. Requires virtualenv, ScriptTest, mock, and nose.\n")
