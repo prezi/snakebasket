@@ -246,7 +246,7 @@ class InstallReqChecker(object):
     def load_installed_distributions(self):
         import pip
         from pip.util import get_installed_distributions
-        for dist in get_installed_distributions(local_only=True):
+        for dist in get_installed_distributions(local_only=True, skip=[]):
             pd = PackageData.from_dist(pip.FrozenRequirement.from_dist(dist, [], find_tags=True), pre_installed=True)
             if pd.editable and pd.location is not None:
                 self.repo_up_to_date[pd.location] = False
