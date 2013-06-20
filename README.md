@@ -10,7 +10,7 @@ snakebasket is a recursive Python package installer that makes multi-package Pyt
 Within your [virtualenv](https://pypi.python.org/pypi/virtualenv) of choice, run:
 `curl -ss -L http://href.prezi.com/snakebasket | bash -s`
 
-If you are completely new to pip and virtualenvs, you can read this [excellent primer](http://dabapps.com/blog/introduction-to-pip-and-virtualenv-python/).
+If you are new to pip and virtualenvs, you can read this [excellent primer](http://dabapps.com/blog/introduction-to-pip-and-virtualenv-python/).
 
 ## Detailed Description
 
@@ -46,7 +46,7 @@ And two things snakebasket **doesn't** (but pip does):
 
 git and PyPI packages only at this point.
 
-## How do we use snakebaset at Prezi?
+## How do we use snakebasket at Prezi?
 
 Many of our projects have dependency hierarchies multiple layers deep. When we want to install one for development or a production build, we simply run `sb install -r requirements.txt` from the project's root, and all packages in the hierarchy are installed in minutes.
 
