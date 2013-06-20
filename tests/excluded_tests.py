@@ -1,4 +1,6 @@
 excluded_tests = [
+    # Temporarily excluded until migrated to pip 1.3.x
+    '-e', 'test_uninstall_namespace_package',
     # Excluded because snakebasket doesn't support Mercurial nor Subversion
     '-e', 'test_install_editable_from_hg',
     '-e', 'test_cleanup_after_install_editable_from_hg',
