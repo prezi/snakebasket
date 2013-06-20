@@ -7,7 +7,7 @@ def main(*args, **kwargs):
 
 def install_pip_patches():
     from snakebasket.commands import install
-    sys.modules['pip.commands.install'] = install
+    sys.modules['pip'].commands['install'] = install.RInstallCommand
     return
     import pip.vcs.git
     from patches import patched_git_get_src_requirement

@@ -246,7 +246,7 @@ class InstallReqChecker(object):
     def load_installed_distributions(self):
         import pip
         from pip.util import get_installed_distributions
-        for dist in get_installed_distributions(local_only=True):
+        for dist in get_installed_distributions(local_only=True, skip=[]):
             pd = PackageData.from_dist(pip.FrozenRequirement.from_dist(dist, [], find_tags=True), pre_installed=True)
             if pd.editable and pd.location is not None:
                 self.repo_up_to_date[pd.location] = False
@@ -353,7 +353,7 @@ class InstallReqChecker(object):
                 if self.check_for_uncommited_git_changes(local_editable_path):                    
                     raise InstallationError("{message}. In path: {path}".format(
                                             message=__InstallationErrorMessage__,
-                                            path=local_editable_path))                    
+                                            path=local_editable_path))
 
             # This is an expensive comparison, so let's cache results
             competing_version_urls = [str(r.url) for r in packages_in_conflict]
