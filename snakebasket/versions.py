@@ -249,7 +249,7 @@ class InstallReqChecker(object):
         for dist in get_installed_distributions(local_only=True, skip=[]):
             dist_as_req = dist.as_requirement()
             # if pip patches an earlier version of setuptools as distribute, skip it
-            if (dist_as_req.project_name == 'distribute' and dist_as_req.specs = []):
+            if (dist_as_req.project_name == 'distribute' and dist_as_req.specs == []):
                continue 
             pd = PackageData.from_dist(pip.FrozenRequirement.from_dist(dist, [], find_tags=True), pre_installed=True)
             if pd.editable and pd.location is not None:
