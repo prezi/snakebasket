@@ -174,6 +174,9 @@ class PackageData(object):
         except Exception:
             return LooseVersion(self.version).__cmp__(LooseVersion(other.version))
 
+    def __hash__(self):
+        return hash(self.__repr__())
+
     def clone_dir(self, src_dir):
         # This method should only be run on editable InstallRequirement objects.
         if self.requirement is not None and hasattr(self.requirement, "build_location"):
@@ -348,7 +351,7 @@ class InstallReqChecker(object):
             return None
 
         packages_in_conflict = [new_candidate_package_data, existing_package_data]
-        editables = [p for p in packages_in_conflict if p.editable]
+        editables = set([p for p in packages_in_conflict if p.editable])
         if len(editables) == 2:
 
             local_editable_path = os.path.join(sys.prefix, 'src', existing_package_data.name)
@@ -409,4 +412,4 @@ class InstallReqChecker(object):
                 return None if new_candidate_package_data > existing_package_data else existing_package_data
         else:  # mixed case
             logger.notify("Conflicting requirements for %s, using editable version" % install_req.name)
-            return editables[0]
+            return new_candidate_package_data
