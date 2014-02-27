@@ -250,7 +250,7 @@ class InstallReqChecker(object):
             dist_as_req = dist.as_requirement()
             # if pip patches an earlier version of setuptools as distribute, skip it
             if (dist_as_req.project_name == 'distribute' and dist_as_req.specs == []):
-               continue 
+               continue
             pd = PackageData.from_dist(pip.FrozenRequirement.from_dist(dist, [], find_tags=True), pre_installed=True)
             if pd.editable and pd.location is not None:
                 self.repo_up_to_date[pd.location] = False
@@ -354,7 +354,7 @@ class InstallReqChecker(object):
             local_editable_path = os.path.join(sys.prefix, 'src', existing_package_data.name)
             if os.path.isdir(local_editable_path):
 
-                if self.check_for_uncommited_git_changes(local_editable_path):                    
+                if self.check_for_uncommited_git_changes(local_editable_path):
                     raise InstallationError("{message}. In path: {path}".format(
                                             message=__InstallationErrorMessage__,
                                             path=local_editable_path))
