@@ -274,8 +274,8 @@ class InstallReqChecker(object):
 
     def check_for_uncommited_git_changes(self, working_directory):
 
-        # Check for modifications
-        git_status = subprocess.Popen(['git', 'status', '-s'], cwd=working_directory, stdout=subprocess.PIPE)
+        # Check for modifications, ignoring untracked files
+        git_status = subprocess.Popen(['git', 'status', '-s', '--untracked-files=no'], cwd=working_directory, stdout=subprocess.PIPE)
 
         listed_modifications = git_status.stdout.read().splitlines()
 
