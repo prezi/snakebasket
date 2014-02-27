@@ -351,7 +351,8 @@ class InstallReqChecker(object):
             return None
 
         packages_in_conflict = [new_candidate_package_data, existing_package_data]
-        editables = set([p for p in packages_in_conflict if p.editable])
+        # Force a hash so that the cmp operator is not used
+        editables = set([hash(p) for p in packages_in_conflict if p.editable])
         if len(editables) == 2:
 
             local_editable_path = os.path.join(sys.prefix, 'src', existing_package_data.name)
