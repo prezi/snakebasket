@@ -245,6 +245,7 @@ class InstallReqChecker(object):
             logger.notify("Exception loading installed distributions " + str(e))
             raise
         self.prefer_pinned_revision = False
+        self.ignore_untracked_files = False
 
     def load_installed_distributions(self):
         import pip
@@ -273,9 +274,13 @@ class InstallReqChecker(object):
         return pd.location
 
     def check_for_uncommited_git_changes(self, working_directory):
+        git_args = ['git', 'status', '-s']
 
         # Check for modifications, ignoring untracked files
-        git_status = subprocess.Popen(['git', 'status', '-s', '--untracked-files=no'], cwd=working_directory, stdout=subprocess.PIPE)
+        if self.ignore_untracked_files:
+            git_args += ['--untracked-files=no']
+
+        git_status = subprocess.Popen(git_args, cwd=working_directory, stdout=subprocess.PIPE)
 
         listed_modifications = git_status.stdout.read().splitlines()
 
