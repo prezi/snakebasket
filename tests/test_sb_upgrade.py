@@ -102,7 +102,7 @@ def test_no_upgrade_editable_if_uncommitted_change():
 
     # Make modification to an existing file
     with open(os.path.join(env.venv_path, 'src/sb-test-package', 'requirements.txt'), 'a') as file:
-        file.write('local modification!') 
+        file.write('local modification!')
 
     # Attempt to install a new version
     args = ['install',
