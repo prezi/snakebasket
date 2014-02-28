@@ -103,7 +103,7 @@ Of course, all of the above *makes a huge assumption on the backwards compatibil
 
 ### --ignore-untracked-files
 
-By default, snakebasket will not attempt to upgrade an editable package if it detects untracked files. These could either be new files or files that were are not properly added to .gitignore. Passing this argument will cause snakebasket to execute 'git status' with the '--untracked-files=no' argument.
+By default, snakebasket will not attempt to upgrade an editable package if it detects untracked files. These could either be new files or files that were are not properly added to .gitignore. Passing this argument will cause snakebasket to execute `git status` with the `--untracked-files=no` argument.
 
 ---
 
