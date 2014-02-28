@@ -10,9 +10,11 @@ from pip.log import logger
 from pip.index import Link
 import tempfile
 import shutil
-from pip.locations import virtualenv_no_global, distutils_scheme
+from pip.backwardcompat import home_lib
+from pip.locations import virtualenv_no_global
 from pip.util import dist_in_usersite
-from ..versions import  InstallReqChecker
+from pip.baseparser import create_main_parser
+from ..versions import  InstallReqChecker, PackageData
 
 class ExtendedRequirements(Requirements):
     def __init__(self, *args, **kwargs):
@@ -318,9 +320,7 @@ class RInstallCommand(InstallCommand):
             logger.notify('Ignoring indexes: %s' % ','.join(index_urls))
             index_urls = []
 
-        session = self._build_session(options)
-
-        finder = self._build_package_finder(options, index_urls, session)
+        finder = self._build_package_finder(options, index_urls)
 
         requirement_set = RecursiveRequirementSet(
             build_dir=options.build_dir,
@@ -396,7 +396,7 @@ class RInstallCommand(InstallCommand):
         if options.target_dir:
             if not os.path.exists(options.target_dir):
                 os.makedirs(options.target_dir)
-            lib_dir = distutils_scheme('', home=temp_target_dir)['purelib']
+            lib_dir = home_lib(temp_target_dir)
             for item in os.listdir(lib_dir):
                 shutil.move(
                     os.path.join(lib_dir, item),
