@@ -34,7 +34,7 @@ Two big issues come up.
 
 snakebasket's purpose is to solve these two headaches. Here are the two main things snakebasket **does** (but pip doesn't):
 
-1. Recursively reads requirements from simple `requirements.txt` or old-school `setup.ph` files when `sb install` is run.
+1. Recursively reads requirements from simple `requirements.txt` or old-school `setup.py` files when `sb install` is run.
 
 2. Decides between conflicting versions and installs the latest one, regardless of where in the dependency tree it can be specified.
 
