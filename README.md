@@ -34,7 +34,7 @@ Two big issues come up.
 
 snakebasket's purpose is to solve these two headaches. Here are the two main things snakebasket **does** (but pip doesn't):
 
-1. Recursively reads requirements from simple `requirements.txt` or old-school `setup.ph` files when `sb install` is run.
+1. Recursively reads requirements from simple `requirements.txt` or old-school `setup.py` files when `sb install` is run.
 
 2. Decides between conflicting versions and installs the latest one, regardless of where in the dependency tree it can be specified.
 
@@ -100,6 +100,10 @@ ReportLab=0.9
 The only situation where the non-latest version could be installed is where one depedency version is implict (not pinned), another (earlier) dependency version is explicit, and the install command is `sb install --prefer-pinned-revision`.
 
 Of course, all of the above *makes a huge assumption on the backwards compatibility of dependencies*. snakebasket currently relies on this assumption.
+
+### --ignore-untracked-files
+
+By default, snakebasket will not attempt to upgrade an editable package if it detects untracked files. These could either be new files or files that were are not properly added to .gitignore. Passing this argument will cause snakebasket to execute `git status` with the `--untracked-files=no` argument.
 
 ---
 

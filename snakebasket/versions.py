@@ -174,6 +174,9 @@ class PackageData(object):
         except Exception:
             return LooseVersion(self.version).__cmp__(LooseVersion(other.version))
 
+    def __hash__(self):
+        return hash(self.__repr__())
+
     def clone_dir(self, src_dir):
         # This method should only be run on editable InstallRequirement objects.
         if self.requirement is not None and hasattr(self.requirement, "build_location"):
@@ -242,6 +245,7 @@ class InstallReqChecker(object):
             logger.notify("Exception loading installed distributions " + str(e))
             raise
         self.prefer_pinned_revision = False
+        self.ignore_untracked_files = False
 
     def load_installed_distributions(self):
         import pip
@@ -250,7 +254,7 @@ class InstallReqChecker(object):
             dist_as_req = dist.as_requirement()
             # if pip patches an earlier version of setuptools as distribute, skip it
             if (dist_as_req.project_name == 'distribute' and dist_as_req.specs == []):
-               continue 
+               continue
             pd = PackageData.from_dist(pip.FrozenRequirement.from_dist(dist, [], find_tags=True), pre_installed=True)
             if pd.editable and pd.location is not None:
                 self.repo_up_to_date[pd.location] = False
@@ -270,9 +274,13 @@ class InstallReqChecker(object):
         return pd.location
 
     def check_for_uncommited_git_changes(self, working_directory):
+        git_args = ['git', 'status', '-s']
 
-        # Check for modifications
-        git_status = subprocess.Popen(['git', 'status', '-s'], cwd=working_directory, stdout=subprocess.PIPE)
+        # Check for modifications, ignoring untracked files
+        if self.ignore_untracked_files:
+            git_args += ['--untracked-files=no']
+
+        git_status = subprocess.Popen(git_args, cwd=working_directory, stdout=subprocess.PIPE)
 
         listed_modifications = git_status.stdout.read().splitlines()
 
@@ -348,13 +356,14 @@ class InstallReqChecker(object):
             return None
 
         packages_in_conflict = [new_candidate_package_data, existing_package_data]
-        editables = [p for p in packages_in_conflict if p.editable]
+        # Force a hash so that the cmp operator is not used
+        editables = set([hash(p) for p in packages_in_conflict if p.editable])
         if len(editables) == 2:
 
             local_editable_path = os.path.join(sys.prefix, 'src', existing_package_data.name)
             if os.path.isdir(local_editable_path):
 
-                if self.check_for_uncommited_git_changes(local_editable_path):                    
+                if self.check_for_uncommited_git_changes(local_editable_path):
                     raise InstallationError("{message}. In path: {path}".format(
                                             message=__InstallationErrorMessage__,
                                             path=local_editable_path))
@@ -409,4 +418,4 @@ class InstallReqChecker(object):
                 return None if new_candidate_package_data > existing_package_data else existing_package_data
         else:  # mixed case
             logger.notify("Conflicting requirements for %s, using editable version" % install_req.name)
-            return editables[0]
+            return new_candidate_package_data

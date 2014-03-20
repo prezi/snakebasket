@@ -13,7 +13,7 @@ import shutil
 from pip.backwardcompat import home_lib
 from pip.locations import virtualenv_no_global
 from pip.util import dist_in_usersite
-from pip.baseparser import create_main_parser 
+from pip.baseparser import create_main_parser
 from ..versions import  InstallReqChecker, PackageData
 
 class ExtendedRequirements(Requirements):
@@ -39,6 +39,7 @@ class RecursiveRequirementSet(RequirementSet):
     def set_options(self, value):
         self.options = value
         self.install_req_checker.prefer_pinned_revision = value.prefer_pinned_revision
+        self.install_req_checker.ignore_untracked_files = value.ignore_untracked_files
 
     def prepare_files(self, finder, force_root_egg_info=False, bundle=False):
 
@@ -62,7 +63,7 @@ class RecursiveRequirementSet(RequirementSet):
 
                     # if the req_to_install is identified as the best available substitue
                     # AND
-                    # ( no version with req_to_install.name has been installed 
+                    # ( no version with req_to_install.name has been installed
                         # OR a different version of req_to_install.name has been installed
                     # )
                     # then set the self.upgrade flag to True to install req_to_install
@@ -76,7 +77,7 @@ class RecursiveRequirementSet(RequirementSet):
                             self.install_req_checker.pre_installed[req_to_install.name].requirement is not req_to_install
                         )
                     ):
-                        self.upgrade = True 
+                        self.upgrade = True
 
                     if self.upgrade:
                         if not self.force_reinstall and not req_to_install.url:
@@ -287,6 +288,12 @@ class RInstallCommand(InstallCommand):
             action='store_true',
             default=False,
             help='When comparing editables with explicitly given version with the default (no-version data in URL), use the pinned version.')
+        self.parser.add_option(
+            '--ignore-untracked-files',
+            dest='ignore_untracked_files',
+            action='store_true',
+            default=False,
+            help='When comparing editables, ignore untracked files')
 
 
     def run(self, options, args):
