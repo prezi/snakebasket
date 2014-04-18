@@ -250,7 +250,7 @@ class InstallReqChecker(object):
             dist_as_req = dist.as_requirement()
             # if pip patches an earlier version of setuptools as distribute, skip it
             if (dist_as_req.project_name == 'distribute' and dist_as_req.specs == []):
-               continue 
+                continue
             pd = PackageData.from_dist(pip.FrozenRequirement.from_dist(dist, [], find_tags=True), pre_installed=True)
             if pd.editable and pd.location is not None:
                 self.repo_up_to_date[pd.location] = False
@@ -263,10 +263,15 @@ class InstallReqChecker(object):
         # self.repo_up_to_date[pd.location] is False if the git repo existed before this
         # snakebasket run, and has not yet been fetched (therefore may contain old data).
         elif self.repo_up_to_date.get(pd.location, True) == False:
-            # Do a git fetch for repos which were not checked out recently.
-            logger.notify("Performing git fetch in pre-existing directory %s" % pd.location)
-            GitVersionComparator.do_fetch(pd.location)
-            self.repo_up_to_date[pd.location] = True
+            #import pdb; pdb.set_trace()
+            try:
+                call_subprocess(['git', 'show', pd.version], cwd=pd.location, show_stdout=False)
+                logger.notify("Not performing git fetch in pre-existing directory %s, because %s is already fetched" % (pd.location, pd.version))
+            except:
+                # Do a git fetch for repos which were not checked out recently.
+                logger.notify("Performing git fetch in pre-existing directory %s" % pd.location)
+                GitVersionComparator.do_fetch(pd.location)
+                self.repo_up_to_date[pd.location] = True
         return pd.location
 
     def check_for_uncommited_git_changes(self, working_directory):
