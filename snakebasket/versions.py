@@ -90,6 +90,10 @@ class GitVersionComparator(object):
     def do_fetch(repodir):
         call_subprocess(['git', 'fetch', '-q'], cwd=repodir)
 
+    @staticmethod
+    def do_checkout(remote_repository, checkout_dir, revision):
+        git.Git(remote_repository).switch(checkout_dir, remote_repository, revision)
+
     # copied from tests/local_repos.py
     @staticmethod
     def checkout_pkg_repo(remote_repository, checkout_dir):
@@ -263,9 +267,8 @@ class InstallReqChecker(object):
         # self.repo_up_to_date[pd.location] is False if the git repo existed before this
         # snakebasket run, and has not yet been fetched (therefore may contain old data).
         elif self.repo_up_to_date.get(pd.location, True) == False:
-            #import pdb; pdb.set_trace()
             try:
-                call_subprocess(['git', 'show', pd.version], cwd=pd.location, show_stdout=False)
+                GitVersionComparator.do_fetch(pd.location)
                 logger.notify("Not performing git fetch in pre-existing directory %s, because %s is already fetched" % (pd.location, pd.version))
             except:
                 # Do a git fetch for repos which were not checked out recently.
