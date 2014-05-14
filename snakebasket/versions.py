@@ -106,13 +106,6 @@ class GitVersionComparator(object):
             remote_repository = '%s+%s' % (default_vcs, remote_repository)
         vcs, repository_path = remote_repository.split('+', 1)
         vcs_class = vcs_classes[vcs]
-        branch = ''
-        if vcs == 'svn':
-            branch = os.path.basename(remote_repository)
-            repository_name = os.path.basename(remote_repository[:-len(branch) - 1])  # remove the slash
-        else:
-            repository_name = os.path.basename(remote_repository)
-
         vcs_class(remote_repository).obtain(checkout_dir)
         return checkout_dir
 
